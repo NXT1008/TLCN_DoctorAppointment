@@ -7,3 +7,6 @@ export interface Doctor {
   hospitalId: string; // Tham chiếu đến mã ID của bệnh viện nơi bác sĩ làm việc
   specializationId: string; // Tham chiếu đến mã ID của chuyên khoa mà bác sĩ thuộc về
 }
+
+
+// fake data

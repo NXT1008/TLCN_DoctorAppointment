@@ -7,6 +7,7 @@ import ProfileNavigator from '../Navigator/ProfileNavigator';
 import {Home2} from 'iconsax-react-native';
 import {Row, TextComponent} from '../../components';
 import { fontFamilies } from '../../constants/fontFamilies';
+import AppointmentNavigator from '../Navigator/AppointmentNavigator';
 
 const TabNavigator = () => {
   const styleImage = {height: 25, width: 25};
@@ -89,7 +90,7 @@ const TabNavigator = () => {
       })}>
       <Tab.Screen name="HomeTab" component={HomeNavigator} />
       <Tab.Screen name="DoctorTab" component={DoctorNavigator} />
-      <Tab.Screen name="HistoryTab" component={HomeNavigator} />
+      <Tab.Screen name="HistoryTab" component={AppointmentNavigator} />
       <Tab.Screen name="ProfileTab" component={ProfileNavigator} />
     </Tab.Navigator>
   );

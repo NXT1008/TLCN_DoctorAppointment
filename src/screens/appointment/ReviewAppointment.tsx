@@ -8,7 +8,7 @@ import {
   StyleSheet,
 } from 'react-native';
 import {Review} from '../../models/Review';
-import {User} from '../../models/User';
+import {User} from '../../models/Patient';
 const mockDoctor: User = {
   id: 'doctor1',
   name: 'Dr. Olivia Turner, M.D.',
@@ -67,10 +67,13 @@ const ReviewScreen = () => {
     <View style={styles.container}>
       <View style={styles.topNavigator}>
         <TouchableOpacity
-          onPress={() => {{}}}
+          onPress={() => {
+            {
+            }
+          }}
           style={styles.backButton}>
           <Image
-            source={require('../assets/back_arrow.png')}
+            source={require('../../assets/images/back_arrow.png')}
             style={styles.backImage}
           />
         </TouchableOpacity>
@@ -83,7 +86,10 @@ const ReviewScreen = () => {
         lot of work and pain.
       </Text>
 
-      <Image source={require('../../assets/images/doctor.png')} style={styles.image} />
+      <Image
+        source={require('../../assets/images/doctor.png')}
+        style={styles.image}
+      />
 
       <Text style={styles.doctorName}>{mockDoctor.name}</Text>
       <Text style={styles.doctorSpecialty}>{mockDoctor.specializationId}</Text>
@@ -91,7 +97,7 @@ const ReviewScreen = () => {
       <View style={styles.ratingContainer}>
         <View style={styles.heartContainer}>
           <Image
-            source={require('../assets/heart.png')}
+            source={require('../../assets/images/heart.png')}
             style={styles.heartIcon}
           />
         </View>
@@ -102,8 +108,8 @@ const ReviewScreen = () => {
               <Image
                 source={
                   item <= rating
-                    ? require('../assets/fill-star.png')
-                    : require('../assets/empty_star.png')
+                    ? require('../../assets/images/fill-star.png')
+                    : require('../../assets/images/empty_star.png')
                 }
                 style={styles.starIcon}
               />

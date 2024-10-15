@@ -13,7 +13,7 @@ import UpcomingCard from './components/UpcomingCard';
 import CancelCard from './components/CancelCard';
 import {Appointment} from '../../models/Appointment';
 import BottomNavigation from './components/BottomNavigation';
-import {User} from '../../models/User';
+import {User} from '../../models/Patient';
 
 const appointments: Appointment[] = [
   {
@@ -191,7 +191,10 @@ const AppointmentScreen: React.FC = () => {
     <View style={styles.container}>
       <View style={styles.topNavigator}>
         <TouchableOpacity
-          onPress={() => {{}}}
+          onPress={() => {
+            {
+            }
+          }}
           style={styles.backButton}>
           <Image
             source={require('../../assets/images/back_arrow.png')}
@@ -247,8 +250,6 @@ const AppointmentScreen: React.FC = () => {
           showsVerticalScrollIndicator={false}
         />
       )}
-
-      <BottomNavigation></BottomNavigation>
     </View>
   );
 };

@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from 'react-native';
-import {User} from '../../../models/User';
+import {User} from '../../../models/Patient';
 
 interface DoctorProps {
   doctor: User;
