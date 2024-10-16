@@ -1,5 +1,15 @@
 import firestore from '@react-native-firebase/firestore';
-import { appointments, cancellations, doctors, hospitals, patients, payments, reviews, schedules, specializations } from './Sampledata'; // Import file sampledata.ts
+import {
+  appointments,
+  cancellations,
+  doctors,
+  hospitals,
+  patients,
+  payments,
+  reviews,
+  schedules,
+  specializations,
+} from './SampleData'; // Import file sampledata.ts
 
 async function uploadDataToFirestore() {
   try {
