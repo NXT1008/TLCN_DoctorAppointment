@@ -56,6 +56,7 @@ const LoginScreen = ({navigation}: any) => {
           text="Welcome Back!"
           color="#21a691"
           size={30}
+          font={fontFamilies.medium}
           styles={{textAlign: 'center'}}
         />
 
@@ -73,8 +74,11 @@ const LoginScreen = ({navigation}: any) => {
             onChange={val => {
               setEmail(val);
             }}
+            clear
+            prefix
             placeholder="Enter your email"
             color="#f4f6f9"
+            inputStyles={{fontFamily: fontFamilies.regular, fontSize: 12}}
           />
         </Section>
 
@@ -88,11 +92,14 @@ const LoginScreen = ({navigation}: any) => {
           <Space height={8} />
           <Input
             value={password}
+            password
+            prefix
             onChange={val => {
               setPassword(val);
             }}
             placeholder="Enter your password"
             color="#f4f6f9"
+            inputStyles={{fontFamily: fontFamilies.regular, fontSize: 12}}
           />
         </Section>
 
@@ -101,7 +108,7 @@ const LoginScreen = ({navigation}: any) => {
             <Row>
               <TickSquare size={20} variant="Bold" color={colors.gray} />
               <Space width={8} />
-              <TextComponent text="Remember me" color={colors.gray} size={13} />
+              <TextComponent text="Remember me" color={colors.gray} size={13} font={fontFamilies.regular} />
             </Row>
             <Space width={80} />
             <Row>
@@ -109,7 +116,7 @@ const LoginScreen = ({navigation}: any) => {
                 styles={{marginTop: 8, marginBottom: 8}}
                 title="Forgot password"
                 type="link"
-                textStyleProps={{color: '#21a691', fontSize: 13}}
+                textStyleProps={{ color: '#21a691', fontSize: 12, fontFamily: 'Poppins-Regular' }}
                 onPress={() => {}}
               />
             </Row>
@@ -165,7 +172,7 @@ const LoginScreen = ({navigation}: any) => {
 
           <TouchableOpacity
             onPress={() => {
-              navigation.navigate('SignUp');
+              navigation.navigate('DoctorReview');
             }}>
             <Text style={styles.signUpText}>Sign Up</Text>
           </TouchableOpacity>
@@ -183,20 +190,19 @@ const styles = StyleSheet.create({
   },
 
   backButton: {
-    height: 46,
-    width: 46,
+    height: 25,
+    width: 25,
     left: 0,
     top: 0,
-    marginTop: 15,
-    marginBottom: 29,
-    marginLeft: 25,
+    marginTop: 25,
+    marginLeft: 15,
   },
 
   backImage: {
     height: 25,
     width: 25,
-    top: 10,
-    left: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
     position: 'absolute',
   },
 

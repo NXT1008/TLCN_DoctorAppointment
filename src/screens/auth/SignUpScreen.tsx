@@ -59,7 +59,14 @@ const SignUpScreen = ({navigation}: any) => {
             style={styles.backImage}></Image>
         </TouchableOpacity>
 
-        <Text style={styles.welcomeText}>Register Your New Account!</Text>
+        {/* <Text style={styles.welcomeText}>Register Your New Account!</Text> */}
+        <TextComponent
+          text="Register Your New Account!"
+          color="#21a691"
+          size={30}
+          font={fontFamilies.medium}
+          styles={{textAlign: 'center'}}
+        />
 
         <Section
           styles={{marginHorizontal: 10, marginTop: 60, paddingBottom: 0}}>
@@ -78,6 +85,8 @@ const SignUpScreen = ({navigation}: any) => {
             placeholder="Enter your name"
             clear
             color="#f4f6f9"
+            inputStyles={{fontFamily: fontFamilies.regular, fontSize: 13}}
+            prefix
           />
         </Section>
 
@@ -97,6 +106,8 @@ const SignUpScreen = ({navigation}: any) => {
             placeholder="Enter your email"
             clear
             color="#f4f6f9"
+            inputStyles={{fontFamily: fontFamilies.regular, fontSize: 13}}
+            prefix
           />
         </Section>
 
@@ -116,6 +127,8 @@ const SignUpScreen = ({navigation}: any) => {
             placeholder="Enter your password"
             clear
             color="#f4f6f9"
+            inputStyles={{fontFamily: fontFamilies.regular, fontSize: 13}}
+            prefix
           />
         </Section>
 
@@ -135,17 +148,19 @@ const SignUpScreen = ({navigation}: any) => {
             placeholder="Enter confirm password"
             clear
             color="#f4f6f9"
+            inputStyles={{fontFamily: fontFamilies.regular, fontSize: 13}}
+            prefix
           />
         </Section>
 
         <Button
-          loading = {isLoading}
-          title="Sign In"
+          loading={isLoading}
+          title="Sign Up"
           styles={{
             backgroundColor: '#27403e',
             marginHorizontal: 25,
             borderRadius: 20,
-            marginTop: 20
+            marginTop: 20,
           }}
           textStyleProps={{
             color: '#fff',
