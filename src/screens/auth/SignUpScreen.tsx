@@ -59,6 +59,7 @@ const SignUpScreen = ({navigation}: any) => {
             style={styles.backImage}></Image>
         </TouchableOpacity>
 
+<<<<<<< HEAD
         {/* <Text style={styles.welcomeText}>Register Your New Account!</Text> */}
         <TextComponent
           text="Register Your New Account!"
@@ -67,6 +68,9 @@ const SignUpScreen = ({navigation}: any) => {
           font={fontFamilies.medium}
           styles={{textAlign: 'center'}}
         />
+=======
+        <Text style={styles.welcomeText}>Register Your New Account!</Text>
+>>>>>>> 447045d (push my project)
 
         <Section
           styles={{marginHorizontal: 10, marginTop: 60, paddingBottom: 0}}>
@@ -85,8 +89,11 @@ const SignUpScreen = ({navigation}: any) => {
             placeholder="Enter your name"
             clear
             color="#f4f6f9"
+<<<<<<< HEAD
             inputStyles={{fontFamily: fontFamilies.regular, fontSize: 13}}
             prefix
+=======
+>>>>>>> 447045d (push my project)
           />
         </Section>
 
@@ -106,8 +113,11 @@ const SignUpScreen = ({navigation}: any) => {
             placeholder="Enter your email"
             clear
             color="#f4f6f9"
+<<<<<<< HEAD
             inputStyles={{fontFamily: fontFamilies.regular, fontSize: 13}}
             prefix
+=======
+>>>>>>> 447045d (push my project)
           />
         </Section>
 
@@ -127,8 +137,11 @@ const SignUpScreen = ({navigation}: any) => {
             placeholder="Enter your password"
             clear
             color="#f4f6f9"
+<<<<<<< HEAD
             inputStyles={{fontFamily: fontFamilies.regular, fontSize: 13}}
             prefix
+=======
+>>>>>>> 447045d (push my project)
           />
         </Section>
 
@@ -148,19 +161,31 @@ const SignUpScreen = ({navigation}: any) => {
             placeholder="Enter confirm password"
             clear
             color="#f4f6f9"
+<<<<<<< HEAD
             inputStyles={{fontFamily: fontFamilies.regular, fontSize: 13}}
             prefix
+=======
+>>>>>>> 447045d (push my project)
           />
         </Section>
 
         <Button
+<<<<<<< HEAD
           loading={isLoading}
           title="Sign Up"
+=======
+          loading = {isLoading}
+          title="Sign In"
+>>>>>>> 447045d (push my project)
           styles={{
             backgroundColor: '#27403e',
             marginHorizontal: 25,
             borderRadius: 20,
+<<<<<<< HEAD
             marginTop: 20,
+=======
+            marginTop: 20
+>>>>>>> 447045d (push my project)
           }}
           textStyleProps={{
             color: '#fff',

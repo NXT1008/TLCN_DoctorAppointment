@@ -8,7 +8,11 @@ import {
   StyleSheet,
 } from 'react-native';
 import {Review} from '../../models/Review';
+<<<<<<< HEAD
 import {User} from '../../models/Patient';
+=======
+import {User} from '../../models/User';
+>>>>>>> 447045d (push my project)
 const mockDoctor: User = {
   id: 'doctor1',
   name: 'Dr. Olivia Turner, M.D.',
@@ -67,6 +71,7 @@ const ReviewScreen = () => {
     <View style={styles.container}>
       <View style={styles.topNavigator}>
         <TouchableOpacity
+<<<<<<< HEAD
           onPress={() => {
             {
             }
@@ -74,6 +79,12 @@ const ReviewScreen = () => {
           style={styles.backButton}>
           <Image
             source={require('../../assets/images/back_arrow.png')}
+=======
+          onPress={() => {{}}}
+          style={styles.backButton}>
+          <Image
+            source={require('../assets/back_arrow.png')}
+>>>>>>> 447045d (push my project)
             style={styles.backImage}
           />
         </TouchableOpacity>
@@ -86,10 +97,14 @@ const ReviewScreen = () => {
         lot of work and pain.
       </Text>
 
+<<<<<<< HEAD
       <Image
         source={require('../../assets/images/doctor.png')}
         style={styles.image}
       />
+=======
+      <Image source={require('../../assets/images/doctor.png')} style={styles.image} />
+>>>>>>> 447045d (push my project)
 
       <Text style={styles.doctorName}>{mockDoctor.name}</Text>
       <Text style={styles.doctorSpecialty}>{mockDoctor.specializationId}</Text>
@@ -97,7 +112,11 @@ const ReviewScreen = () => {
       <View style={styles.ratingContainer}>
         <View style={styles.heartContainer}>
           <Image
+<<<<<<< HEAD
             source={require('../../assets/images/heart.png')}
+=======
+            source={require('../assets/heart.png')}
+>>>>>>> 447045d (push my project)
             style={styles.heartIcon}
           />
         </View>
@@ -108,8 +127,13 @@ const ReviewScreen = () => {
               <Image
                 source={
                   item <= rating
+<<<<<<< HEAD
                     ? require('../../assets/images/fill-star.png')
                     : require('../../assets/images/empty_star.png')
+=======
+                    ? require('../assets/fill-star.png')
+                    : require('../assets/empty_star.png')
+>>>>>>> 447045d (push my project)
                 }
                 style={styles.starIcon}
               />

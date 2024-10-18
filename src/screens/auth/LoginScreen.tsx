@@ -56,7 +56,10 @@ const LoginScreen = ({navigation}: any) => {
           text="Welcome Back!"
           color="#21a691"
           size={30}
+<<<<<<< HEAD
           font={fontFamilies.medium}
+=======
+>>>>>>> 447045d (push my project)
           styles={{textAlign: 'center'}}
         />
 
@@ -74,11 +77,16 @@ const LoginScreen = ({navigation}: any) => {
             onChange={val => {
               setEmail(val);
             }}
+<<<<<<< HEAD
             clear
             prefix
             placeholder="Enter your email"
             color="#f4f6f9"
             inputStyles={{fontFamily: fontFamilies.regular, fontSize: 12}}
+=======
+            placeholder="Enter your email"
+            color="#f4f6f9"
+>>>>>>> 447045d (push my project)
           />
         </Section>
 
@@ -92,14 +100,20 @@ const LoginScreen = ({navigation}: any) => {
           <Space height={8} />
           <Input
             value={password}
+<<<<<<< HEAD
             password
             prefix
+=======
+>>>>>>> 447045d (push my project)
             onChange={val => {
               setPassword(val);
             }}
             placeholder="Enter your password"
             color="#f4f6f9"
+<<<<<<< HEAD
             inputStyles={{fontFamily: fontFamilies.regular, fontSize: 12}}
+=======
+>>>>>>> 447045d (push my project)
           />
         </Section>
 
@@ -108,7 +122,11 @@ const LoginScreen = ({navigation}: any) => {
             <Row>
               <TickSquare size={20} variant="Bold" color={colors.gray} />
               <Space width={8} />
+<<<<<<< HEAD
               <TextComponent text="Remember me" color={colors.gray} size={13} font={fontFamilies.regular} />
+=======
+              <TextComponent text="Remember me" color={colors.gray} size={13} />
+>>>>>>> 447045d (push my project)
             </Row>
             <Space width={80} />
             <Row>
@@ -116,7 +134,11 @@ const LoginScreen = ({navigation}: any) => {
                 styles={{marginTop: 8, marginBottom: 8}}
                 title="Forgot password"
                 type="link"
+<<<<<<< HEAD
                 textStyleProps={{ color: '#21a691', fontSize: 12, fontFamily: 'Poppins-Regular' }}
+=======
+                textStyleProps={{color: '#21a691', fontSize: 13}}
+>>>>>>> 447045d (push my project)
                 onPress={() => {}}
               />
             </Row>
@@ -172,7 +194,11 @@ const LoginScreen = ({navigation}: any) => {
 
           <TouchableOpacity
             onPress={() => {
+<<<<<<< HEAD
               navigation.navigate('DoctorReview');
+=======
+              navigation.navigate('SignUp');
+>>>>>>> 447045d (push my project)
             }}>
             <Text style={styles.signUpText}>Sign Up</Text>
           </TouchableOpacity>
@@ -190,19 +216,34 @@ const styles = StyleSheet.create({
   },
 
   backButton: {
+<<<<<<< HEAD
     height: 25,
     width: 25,
     left: 0,
     top: 0,
     marginTop: 25,
     marginLeft: 15,
+=======
+    height: 46,
+    width: 46,
+    left: 0,
+    top: 0,
+    marginTop: 15,
+    marginBottom: 29,
+    marginLeft: 25,
+>>>>>>> 447045d (push my project)
   },
 
   backImage: {
     height: 25,
     width: 25,
+<<<<<<< HEAD
     justifyContent: 'center',
     alignItems: 'center',
+=======
+    top: 10,
+    left: 10,
+>>>>>>> 447045d (push my project)
     position: 'absolute',
   },
 
