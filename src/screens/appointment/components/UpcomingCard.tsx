@@ -19,15 +19,15 @@ const UpcomingAppointmentCard: React.FC<AppointmentCardProps> = ({
         />
         <View style={styles.doctorInfo}>
           <Text style={styles.doctorName}>{appointment.doctorId}</Text>
-          <Text style={styles.specialty}>{appointment.specializationId}</Text>
+          <Text style={styles.specialty}>SpecializationId...</Text>
         </View>
       </View>
       <View style={styles.appointmentInfo}>
-        <DateDisplay date={appointment.schedule.date} />
+        <DateDisplay date={appointment.scheduleDate} />
         <>
           <TimeDisplay
-            startTime={appointment.schedule.startTime}
-            endTime={appointment.schedule.endTime}
+            startTime={appointment.startTime}
+            endTime={appointment.endTime}
           />
         </>
       </View>

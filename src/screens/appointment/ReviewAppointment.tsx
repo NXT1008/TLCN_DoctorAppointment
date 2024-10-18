@@ -7,44 +7,26 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from 'react-native';
+import {Doctor} from '../../models/Doctor';
+import {Patient} from '../../models/Patient';
 import {Review} from '../../models/Review';
-<<<<<<< HEAD
-import {User} from '../../models/Patient';
-=======
-import {User} from '../../models/User';
->>>>>>> 447045d (push my project)
-const mockDoctor: User = {
-  id: 'doctor1',
+
+const mockDoctor: Doctor = {
+  doctorId: 'doctor01',
   name: 'Dr. Olivia Turner, M.D.',
   email: 'olivia@example.com',
   phone: '123-456-7890',
-  role: 'doctor',
-  profileImage: 'https://via.placeholder.com/150',
-  address: '123 Medical Street',
+  image: 'https://via.placeholder.com/150',
   specializationId: 'Dermato-Endocrinology',
-  hospitals: [
-    {
-      hospitalId: 'hosp001',
-      name: 'City General Hospital',
-      location: 'Ho Chi Minh City',
-    },
-  ],
-  ratings: 4.5,
-  medicalHistory: [],
+  hospitalId: 'hosp001',
 };
 
-const mockPatient: User = {
-  id: 'patient1',
+const mockPatient: Patient = {
+  patientId: 'patient1',
   name: 'John Doe',
   email: 'john@example.com',
   phone: '123-456-7890',
-  role: 'patient',
-  profileImage: '',
-  address: '456 Residential Road',
-  medicalHistory: ['No known conditions', 'Badly'],
-  specializationId: '',
-  hospitals: [],
-  ratings: 0,
+  image: '',
 };
 
 const ReviewScreen = () => {
@@ -56,10 +38,10 @@ const ReviewScreen = () => {
 
   const handleAddReview = () => {
     const newReview: Review = {
-      id: '1',
+      reviewId: '1',
       appointmentId: '123',
-      doctorId: mockDoctor.id,
-      patientId: mockPatient.id,
+      doctorId: mockDoctor.doctorId,
+      patientId: mockPatient.patientId,
       rating: rating,
       comment: comment,
     };
@@ -71,7 +53,6 @@ const ReviewScreen = () => {
     <View style={styles.container}>
       <View style={styles.topNavigator}>
         <TouchableOpacity
-<<<<<<< HEAD
           onPress={() => {
             {
             }
@@ -79,12 +60,6 @@ const ReviewScreen = () => {
           style={styles.backButton}>
           <Image
             source={require('../../assets/images/back_arrow.png')}
-=======
-          onPress={() => {{}}}
-          style={styles.backButton}>
-          <Image
-            source={require('../assets/back_arrow.png')}
->>>>>>> 447045d (push my project)
             style={styles.backImage}
           />
         </TouchableOpacity>
@@ -97,14 +72,10 @@ const ReviewScreen = () => {
         lot of work and pain.
       </Text>
 
-<<<<<<< HEAD
       <Image
         source={require('../../assets/images/doctor.png')}
         style={styles.image}
       />
-=======
-      <Image source={require('../../assets/images/doctor.png')} style={styles.image} />
->>>>>>> 447045d (push my project)
 
       <Text style={styles.doctorName}>{mockDoctor.name}</Text>
       <Text style={styles.doctorSpecialty}>{mockDoctor.specializationId}</Text>
@@ -112,11 +83,7 @@ const ReviewScreen = () => {
       <View style={styles.ratingContainer}>
         <View style={styles.heartContainer}>
           <Image
-<<<<<<< HEAD
             source={require('../../assets/images/heart.png')}
-=======
-            source={require('../assets/heart.png')}
->>>>>>> 447045d (push my project)
             style={styles.heartIcon}
           />
         </View>
@@ -127,13 +94,8 @@ const ReviewScreen = () => {
               <Image
                 source={
                   item <= rating
-<<<<<<< HEAD
                     ? require('../../assets/images/fill-star.png')
                     : require('../../assets/images/empty_star.png')
-=======
-                    ? require('../assets/fill-star.png')
-                    : require('../assets/empty_star.png')
->>>>>>> 447045d (push my project)
                 }
                 style={styles.starIcon}
               />

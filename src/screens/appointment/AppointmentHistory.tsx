@@ -11,157 +11,99 @@ import {
 import CompletedCard from './components/CompletedCard';
 import UpcomingCard from './components/UpcomingCard';
 import CancelCard from './components/CancelCard';
-import {Appointment} from '../../models/Appointment';
 import BottomNavigation from './components/BottomNavigation';
-<<<<<<< HEAD
-import {User} from '../../models/Patient';
-=======
-import {User} from '../../models/User';
->>>>>>> 447045d (push my project)
+import {Patient} from '../../models/Patient';
+import {Doctor} from '../../models/Doctor';
 
 const appointments: Appointment[] = [
   {
-    id: '1',
+    appointmentId: '1',
     patientId: 'p001',
     doctorId: 'd001',
-    hospitalId: 'h001',
-    specializationId: 's001',
-    schedule: {
-      date: new Date('2024-06-12'),
-      startTime: new Date('2024-06-12T09:30:00'),
-      endTime: new Date('2024-06-12T10:00:00'),
-    },
+    scheduleDate: new Date('2024-10-19T15:30:00'),
+    startTime: new Date('2024-10-19T15:30:00'),
+    endTime: new Date('2024-10-19T15:30:00'),
     status: 'completed',
     note: 'Hẹn gặp để kiểm tra sức khỏe tổng quát.',
   },
   {
-    id: '2',
+    appointmentId: '2',
     patientId: 'p002',
     doctorId: 'd002',
-    hospitalId: 'h002',
-    specializationId: 's002',
-    schedule: {
-      date: new Date('2024-06-13'),
-      startTime: new Date('2024-06-13T10:00:00'),
-      endTime: new Date('2024-06-13T10:30:00'),
-    },
+    scheduleDate: new Date('2024-06-13'),
+    startTime: new Date('2024-06-13T10:00:00'),
+    endTime: new Date('2024-06-13T10:30:00'),
     status: 'booked',
     note: 'Hẹn gặp bác sĩ để kiểm tra da liễu.',
   },
   {
-    id: '3',
+    appointmentId: '3',
     patientId: 'p003',
     doctorId: 'd001',
-    hospitalId: 'h003',
-    specializationId: 's001',
-    schedule: {
-      date: new Date('2024-06-14'),
-      startTime: new Date('2024-06-14T11:00:00'),
-      endTime: new Date('2024-06-14T11:30:00'),
-    },
+    scheduleDate: new Date('2024-06-14'),
+    startTime: new Date('2024-06-14T11:00:00'),
+    endTime: new Date('2024-06-14T11:30:00'),
     status: 'canceled',
     note: 'Hủy hẹn do lý do cá nhân.',
   },
   {
-    id: '4',
+    appointmentId: '4',
     patientId: 'p004',
     doctorId: 'd003',
-    hospitalId: 'h001',
-    specializationId: 's003',
-    schedule: {
-      date: new Date('2024-06-15'),
-      startTime: new Date('2024-06-15T14:00:00'),
-      endTime: new Date('2024-06-15T14:30:00'),
-    },
+    scheduleDate: new Date('2024-06-15'),
+    startTime: new Date('2024-06-15T14:00:00'),
+    endTime: new Date('2024-06-15T14:30:00'),
     status: 'completed',
     note: 'Kiểm tra định kỳ sức khỏe cho bệnh nhân.',
   },
   {
-    id: '5',
+    appointmentId: '5',
     patientId: 'p005',
     doctorId: 'd004',
-    hospitalId: 'h002',
-    specializationId: 's004',
-    schedule: {
-      date: new Date('2024-06-16'),
-      startTime: new Date('2024-06-16T15:00:00'),
-      endTime: new Date('2024-06-16T15:30:00'),
-    },
+    scheduleDate: new Date('2024-06-16'),
+    startTime: new Date('2024-06-16T15:00:00'),
+    endTime: new Date('2024-06-16T15:30:00'),
     status: 'booked',
     note: 'Khám sức khỏe tổng quát.',
   },
   {
-    id: '6',
+    appointmentId: '6',
     patientId: 'p006',
     doctorId: 'd001',
-    hospitalId: 'h003',
-    specializationId: 's001',
-    schedule: {
-      date: new Date('2024-06-17'),
-      startTime: new Date('2024-06-17T10:00:00'),
-      endTime: new Date('2024-06-17T10:30:00'),
-    },
+    scheduleDate: new Date('2024-06-17'),
+    startTime: new Date('2024-06-17T10:00:00'),
+    endTime: new Date('2024-06-17T10:30:00'),
     status: 'completed',
     note: 'Hẹn gặp để kiểm tra tình trạng sức khỏe.',
   },
 ];
-const doctors: User[] = [
+const doctors: Doctor[] = [
   {
-    id: 'doctor01',
+    doctorId: 'doctor01',
     name: 'Dr. Olivia Turner, M.D.',
     email: 'olivia@example.com',
     phone: '123-456-7890',
-    role: 'doctor',
-    profileImage: 'https://via.placeholder.com/150',
-    address: '123 Medical Street',
+    image: 'https://via.placeholder.com/150',
     specializationId: 'Dermato-Endocrinology',
-    hospitals: [
-      {
-        hospitalId: 'hosp001',
-        name: 'City General Hospital',
-        location: 'Ho Chi Minh City',
-      },
-    ],
-    ratings: 4.5,
-    medicalHistory: [],
+    hospitalId: 'hosp001',
   },
   {
-    id: 'patient01',
+    doctorId: 'doctor02',
     name: 'Dr. Olivia Turner, M.D.',
     email: 'olivia@example.com',
     phone: '123-456-7890',
-    role: 'patient',
-    profileImage: 'https://via.placeholder.com/150',
-    address: '123 Medical Street',
+    image: 'https://via.placeholder.com/150',
     specializationId: 'Dermato-Endocrinology',
-    hospitals: [
-      {
-        hospitalId: 'hosp001',
-        name: 'City General Hospital',
-        location: 'Ho Chi Minh City',
-      },
-    ],
-    ratings: 4.5,
-    medicalHistory: [],
+    hospitalId: 'hosp001',
   },
   {
-    id: 'doctor02',
+    doctorId: 'doctor03',
     name: 'Dr. Alexander Bennett, Ph.D.',
     email: 'olivia@example.com',
     phone: '123-456-7890',
-    role: 'doctor',
-    profileImage: 'https://via.placeholder.com/150',
-    address: '123 Medical Street',
+    image: 'https://via.placeholder.com/150',
     specializationId: 'Dermato-Endocrinology',
-    hospitals: [
-      {
-        hospitalId: 'hosp001',
-        name: 'City General Hospital',
-        location: 'Ho Chi Minh City',
-      },
-    ],
-    ratings: 4.5,
-    medicalHistory: [],
+    hospitalId: 'hosp001',
   },
 ];
 
@@ -195,14 +137,10 @@ const AppointmentScreen: React.FC = () => {
     <View style={styles.container}>
       <View style={styles.topNavigator}>
         <TouchableOpacity
-<<<<<<< HEAD
           onPress={() => {
             {
             }
           }}
-=======
-          onPress={() => {{}}}
->>>>>>> 447045d (push my project)
           style={styles.backButton}>
           <Image
             source={require('../../assets/images/back_arrow.png')}
@@ -236,7 +174,7 @@ const AppointmentScreen: React.FC = () => {
           renderItem={({item}) => (
             <CompletedCard appointment={item} review={undefined} />
           )}
-          keyExtractor={item => item.id}
+          keyExtractor={item => item.appointmentId}
           showsVerticalScrollIndicator={false}
         />
       )}
@@ -245,7 +183,7 @@ const AppointmentScreen: React.FC = () => {
         <FlatList
           data={appointments}
           renderItem={({item}) => <UpcomingCard appointment={item} />}
-          keyExtractor={item => item.id}
+          keyExtractor={item => item.appointmentId}
           showsVerticalScrollIndicator={false}
         />
       )}
@@ -254,15 +192,10 @@ const AppointmentScreen: React.FC = () => {
         <FlatList
           data={doctors}
           renderItem={({item}) => <CancelCard doctor={item} />}
-          keyExtractor={item => item.id}
+          keyExtractor={item => item.doctorId}
           showsVerticalScrollIndicator={false}
         />
       )}
-<<<<<<< HEAD
-=======
-
-      <BottomNavigation></BottomNavigation>
->>>>>>> 447045d (push my project)
     </View>
   );
 };

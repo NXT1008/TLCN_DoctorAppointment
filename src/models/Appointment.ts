@@ -1,12 +1,10 @@
-interface Appointment {
-  appointmentId: number;
-  scheduleDate: string;
-  startTime: string;
-  endTime: string;
+export interface Appointment {
+  appointmentId: string;
+  scheduleDate: Date;
+  startTime: Date;
+  endTime: Date;
   status: string;
   note: string;
-  patientId: number;
-  doctorId: number;
+  patientId: string;
+  doctorId: string;
 }
-
-

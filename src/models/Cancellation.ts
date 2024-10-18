@@ -3,6 +3,6 @@ export interface Cancellation {
   cancellationId: number;
   cancelReason: string;
   cancelBy: string;
-  cancelTime: string;
+  cancelTime: Date;
   appointmentId: number;
 }  

@@ -1,5 +1,6 @@
 // Data/SampleData.ts
 
+import { Appointment } from "../models/Appointment";
 import { Cancellation } from "../models/Cancellation";
 import { Doctor } from "../models/Doctor";
 import { Hospital } from "../models/Hospital";
@@ -54,30 +55,30 @@ export const doctors: Doctor[] = [
 export const schedules: Schedule[] = [
   {
     scheduleId: 1,
-    availableDate: '2024-10-20',
-    startTime: '09:00',
-    endTime: '11:00',
+    availableDate: new Date('2024-10-20'),
+    startTime: new Date('2024-10-19T15:30:00'), // Time remains as a string
+    endTime: new Date('2024-10-19T15:30:00'), // Time remains as a string
     doctorId: 1,
   },
   {
     scheduleId: 2,
-    availableDate: '2024-10-21',
-    startTime: '13:00',
-    endTime: '15:00',
+    availableDate: new Date('2024-10-21'),
+    startTime: new Date('2024-10-19T15:30:00'),
+    endTime: new Date('2024-10-19T15:30:00'),
     doctorId: 2,
   },
 ];
 
 export const patients: Patient[] = [
   {
-    patientId: 1,
+    patientId: '1',
     name: 'John Doe',
     email: 'john.doe@example.com',
     phone: '647-555-1234',
     image: '/img/patients/johndoe.jpg',
   },
   {
-    patientId: 2,
+    patientId: '2',
     name: 'Jane Smith',
     email: 'jane.smith@example.com',
     phone: '647-555-5678',
@@ -87,24 +88,24 @@ export const patients: Patient[] = [
 
 export const appointments: Appointment[] = [
   {
-    appointmentId: 1,
-    scheduleDate: '2024-10-20',
-    startTime: '09:00',
-    endTime: '10:00',
+    appointmentId: '1',
+    scheduleDate: new Date('2024-10-20'),
+    startTime: new Date('2024-10-19T09:30:00'), // Time as a string
+    endTime: new Date('2024-10-19T11:30:00'), // Time as a string
     status: 'Confirmed',
     note: 'Initial consultation',
-    patientId: 1,
-    doctorId: 1,
+    patientId: '1',
+    doctorId: '1',
   },
   {
-    appointmentId: 2,
-    scheduleDate: '2024-10-21',
-    startTime: '13:00',
-    endTime: '14:00',
+    appointmentId: '2',
+    scheduleDate: new Date('2024-10-21'),
+    startTime: new Date('2024-10-19T09:30:00'),
+    endTime: new Date('2024-10-19T11:30:00'),
     status: 'Pending',
     note: 'Follow-up visit',
-    patientId: 2,
-    doctorId: 2,
+    patientId: '2',
+    doctorId: '2',
   },
 ];
 
@@ -149,9 +150,10 @@ export const cancellations: Cancellation[] = [
     cancellationId: 1,
     cancelReason: 'Family emergency',
     cancelBy: 'Patient',
-    cancelTime: '2024-10-19 15:30',
+    cancelTime: new Date('2024-10-19T15:30:00'), // This is a full date-time object
     appointmentId: 2,
   },
 ];
+
 
 

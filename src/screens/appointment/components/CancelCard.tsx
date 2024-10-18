@@ -7,84 +7,47 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from 'react-native';
-<<<<<<< HEAD
-import {User} from '../../../models/Patient';
-=======
-import {User} from '../../../models/User';
->>>>>>> 447045d (push my project)
+import {Patient} from '../../../models/Patient';
+import {Doctor} from '../../../models/Doctor';
 
 interface DoctorProps {
-  doctor: User;
+  doctor: Doctor;
 }
-const doctors: User[] = [
+const doctors: Doctor[] = [
   {
-    id: 'doctor01',
+    doctorId: 'doctor01',
     name: 'Dr. Olivia Turner, M.D.',
     email: 'olivia@example.com',
     phone: '123-456-7890',
-    role: 'doctor',
-    profileImage: 'https://via.placeholder.com/150',
-    address: '123 Medical Street',
+    image: 'https://via.placeholder.com/150',
     specializationId: 'Dermato-Endocrinology',
-    hospitals: [
-      {
-        hospitalId: 'hosp001',
-        name: 'City General Hospital',
-        location: 'Ho Chi Minh City',
-      },
-    ],
-    ratings: 4.5,
-    medicalHistory: [],
+    hospitalId: 'hosp001',
   },
   {
-    id: 'patient01',
+    doctorId: 'doctor02',
     name: 'Dr. Olivia Turner, M.D.',
     email: 'olivia@example.com',
     phone: '123-456-7890',
-    role: 'patient',
-    profileImage: 'https://via.placeholder.com/150',
-    address: '123 Medical Street',
+    image: 'https://via.placeholder.com/150',
     specializationId: 'Dermato-Endocrinology',
-    hospitals: [
-      {
-        hospitalId: 'hosp001',
-        name: 'City General Hospital',
-        location: 'Ho Chi Minh City',
-      },
-    ],
-    ratings: 4.5,
-    medicalHistory: [],
+    hospitalId: 'hosp001',
   },
   {
-    id: 'doctor02',
+    doctorId: 'doctor03',
     name: 'Dr. Alexander Bennett, Ph.D.',
     email: 'olivia@example.com',
     phone: '123-456-7890',
-    role: 'doctor',
-    profileImage: 'https://via.placeholder.com/150',
-    address: '123 Medical Street',
+    image: 'https://via.placeholder.com/150',
     specializationId: 'Dermato-Endocrinology',
-    hospitals: [
-      {
-        hospitalId: 'hosp001',
-        name: 'City General Hospital',
-        location: 'Ho Chi Minh City',
-      },
-    ],
-    ratings: 4.5,
-    medicalHistory: [],
+    hospitalId: 'hosp001',
   },
 ];
 
 const DoctorCard: React.FC<DoctorProps> = ({doctor}) => {
-  const doctorsOnly: User[] = doctors.filter(
-    doctor => doctor.role === 'doctor',
-  );
-
   return (
     <View>
-      {doctorsOnly.map(doctor => (
-        <View key={doctor.id} style={styles.cardContainer}>
+      {doctors.map(doctor => (
+        <View key={doctor.doctorId} style={styles.cardContainer}>
           <View style={styles.profileContainer}>
             <Image
               source={require('../../../assets/images/doctor.png')}

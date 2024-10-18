@@ -3,11 +3,7 @@ import { colors } from '../../constants/colors';
 
 export const globalStyles = StyleSheet.create({
   container: {
-<<<<<<< HEAD
     backgroundColor: colors.white,
-=======
-    // backgroundColor: colors.white,
->>>>>>> 447045d (push my project)
     flex: 1,
   },
   center: {

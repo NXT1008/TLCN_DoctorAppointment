@@ -20,7 +20,7 @@ const CompletedAppointmentCard: React.FC<AppointmentCardProps> = ({
         />
         <View>
           <Text style={styles.doctorName}>{appointment.doctorId}</Text>
-          <Text style={styles.specialty}>{appointment.specializationId}</Text>
+          <Text style={styles.specialty}>specializationId...</Text>
           <View style={styles.ratingContainer}>
             <Text style={styles.ratingText}>{review?.rating}</Text>
             <Image
