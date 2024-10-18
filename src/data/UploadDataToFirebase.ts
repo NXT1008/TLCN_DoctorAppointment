@@ -80,3 +80,5 @@ async function uploadDataToFirestore() {
     console.error('Lỗi khi tải dữ liệu lên Firebase: ', error);
   }
 }
+
+export default uploadDataToFirestore;
