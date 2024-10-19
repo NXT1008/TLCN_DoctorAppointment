@@ -1,6 +1,11 @@
-import {View, Image} from 'react-native';
+import {
+  View,
+  Image,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+} from 'react-native';
 import React from 'react';
-import AntDesign from 'react-native-vector-icons/AntDesign';
 import {
   Card,
   Col,
@@ -12,15 +17,17 @@ import {
   TextComponent,
 } from '../../components';
 import auth from '@react-native-firebase/auth';
-import {colors} from '../../constants/colors';
 import {fontFamilies} from '../../constants/fontFamilies';
-import { Car } from 'iconsax-react-native';
+import DoctorCard from './components/DoctorCard';
+import Swiper from 'react-native-swiper';
+import SwiperOne from './components/SwiperOne';
+import Specialization from './components/Specialization';
 
 const HomeScreen = () => {
   const user = auth().currentUser;
 
   return (
-    <ContainerComponent>
+    <ContainerComponent isScroll>
       <Row
         styles={{
           justifyContent: 'space-between',
@@ -29,60 +36,82 @@ const HomeScreen = () => {
           width: '100%',
         }}>
         <Row>
-          <Image source={require('../../assets/IconTab/profile.png')} />
+          <Image
+            source={require('../../assets/IconTab/profile.png')}
+            style={{width: 50, height: 50}}
+          />
           <Space width={15} />
           <View>
-            <TextComponent text="Hi, welcome back!" />
-            <TextComponent text={`${user?.email}`} />
+            <TextComponent
+              text="Hi, welcome back!"
+              font={fontFamilies.regular}
+              color="#00000066"
+            />
+            <TextComponent
+              text={`${user?.email}`}
+              font={fontFamilies.semiBold}
+            />
           </View>
         </Row>
-        <TextComponent text="Icon" />
+        <TouchableOpacity>
+          <Image
+            source={require('../../assets/IconTab/notification.png')}
+            style={{width: 25, height: 25}}
+          />
+        </TouchableOpacity>
       </Row>
 
-      <Section styles={{marginTop: 15}}>
-        <Input
-          value=""
-          onChange={() => {}}
-          radius={15}
-          prefix
-          iconClear
-          placeholder="Search a Doctor"
-          styles={{backgroundColor: '#D9D9D94D'}}
-          bordered
-        />
-      </Section>
-      <Card>
-        <Row styles={{justifyContent: 'space-between'}}>
-          <Col>
-            <TextComponent
-              text="Medical Center"
-              size={22}
-              styles={{fontFamily: fontFamilies.bold}}
-            />
-            <TextComponent
-              text="Yorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac aliquet odio mattis."
-              size={12}
-              numberOfLine={4}
-              styles={{fontFamily: fontFamilies.regular}}
-            />
-          </Col>
-          <Image source={require('../../assets/images/doctor.png')} />
-        </Row>
-      </Card>
-      <TextComponent text="...." textAlign='center' />
+      <Swiper height={270} style={{marginTop: 20}} activeDotColor="#1399ba">
+        <SwiperOne />
+        <SwiperOne />
+        <SwiperOne />
+        <SwiperOne />
+      </Swiper>
       <Section>
-        <Row justifyContent='space-between'>
-          <TextComponent text='Categories' />
-          <TextComponent text='See All' />
+        <Row justifyContent="space-between">
+          <TextComponent
+            text="Doctor Speciality"
+            size={20}
+            font={fontFamilies.semiBold}
+          />
+          <TextComponent text="See All" font={fontFamilies.regular} size={12} />
         </Row>
       </Section>
       <Section>
-        <Card styles={{width: 150, height: 80, borderRadius: 15, justifyContent: 'center', alignItems: 'center'}}>
-          <TextComponent text='Denteeth'/>
-        </Card>
+        <Row>
+          <ScrollView horizontal>
+            <Specialization/>
+            <Specialization/>
+            <Specialization/>
+            <Specialization/>
+          </ScrollView>
+        </Row>
+      </Section>
+      <Section>
+        <Row justifyContent="space-between">
+          <TextComponent
+            text="Top Doctors"
+            font={fontFamilies.semiBold}
+            size={20}
+          />
+          <TextComponent text="See All" font={fontFamilies.regular} size={12} />
+        </Row>
+        <Space height={10} />
+        <DoctorCard />
+        <DoctorCard />
+        <DoctorCard />
+        <DoctorCard />
+        <DoctorCard />
       </Section>
     </ContainerComponent>
   );
 };
+
+const styles = StyleSheet.create({
+  image: {
+    width: 30,
+    height: 30,
+  },
+});
 
 export default HomeScreen;
