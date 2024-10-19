@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -14,6 +14,8 @@ import CancelCard from './components/CancelCard';
 import BottomNavigation from './components/BottomNavigation';
 import {Patient} from '../../models/Patient';
 import {Doctor} from '../../models/Doctor';
+import {Appointment} from '../../models/Appointment';
+import firestore from '@react-native-firebase/firestore';
 
 const appointments: Appointment[] = [
   {
@@ -108,8 +110,11 @@ const doctors: Doctor[] = [
 ];
 
 const AppointmentScreen: React.FC = () => {
-  // const route = useRoute<RouteProp<RootStackParamList, 'AppointmentHistory'>>();
-  // const { appointments, reviews } = route.params;
+  const [appointmentList, setAppointmentList] = useState<Appointment[]>([]);
+
+  useEffect(() => {
+    getAppointmentByPatientID();
+  }, []);
 
   const [showComplete, setShowComplete] = useState<boolean>(true);
   const [showUpcoming, setShowUpcoming] = useState<boolean>(false);
@@ -131,6 +136,32 @@ const AppointmentScreen: React.FC = () => {
     setShowUpcoming(false);
     setShowComplete(false);
     setShowCancel(true);
+  };
+
+  // Hiện tại là lấy tất cả Appointment của Patient do chưa truyền pId
+  const getAppointmentByPatientID = async () => {
+    await firestore()
+      .collection('appointments')
+      .get()
+      .then(snap => {
+        if (snap.empty) {
+          console.log('Không có appointment');
+        } else {
+          const items: Appointment[] = []; // Tạo mảng hứng dữ liệu
+          // duyệt từng item có trong snap, push vào trong list items
+          snap.forEach((item: any) =>
+            items.push({
+              id: item.id,
+              ...item.data(),
+            }),
+          );
+          setAppointmentList(items);
+          console.log(appointmentList);
+        }
+      })
+      .catch(error => {
+        console.log('Lỗi khi load dữ appointment' + error.message);
+      });
   };
 
   return (
