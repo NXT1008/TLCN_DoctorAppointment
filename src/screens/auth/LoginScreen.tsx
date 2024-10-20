@@ -11,20 +11,38 @@ import {
   TextComponent,
 } from '../../components';
 import {fontFamilies} from '../../constants/fontFamilies';
-import {TickSquare} from 'iconsax-react-native';
+import {Forbidden2, TickSquare} from 'iconsax-react-native';
 import {colors} from '../../constants/colors';
 import {Text} from 'react-native';
 import auth from '@react-native-firebase/auth';
+import ModalComponent from './components/ModalComponent';
 
 const LoginScreen = ({navigation}: any) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isError, setIsError] = useState(false);
+  const [errorText, setErrorText] = useState('');
 
   const handleLogin = async () => {
-    if (!email || !password) {
+    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+
+    if (!email && !emailRegex.test(email)) {
+      setErrorText('Please enter a valid email');
+      setIsLoading(false);
+      setIsError(true);
+      return;
+    }
+    if (!password) {
+      setErrorText('Please enter your password');
+      setIsLoading(false);
+      setIsError(true);
+      return;
     } else {
-      setIsLoading(true)
+      setIsLoading(true);
+      setIsError(false);
+      setErrorText('');
+      // Login
       await auth()
         .signInWithEmailAndPassword(email, password)
         .then(userCredential => {
@@ -32,12 +50,13 @@ const LoginScreen = ({navigation}: any) => {
           if (user) {
             console.log(user);
           }
-          setIsLoading(false);
         })
         .catch(error => {
           setIsLoading(false);
-          console.log(error)
-        })
+          setIsError(true);
+          setErrorText('Login fail! Please check your email and password');
+          console.log(error);
+        });
     }
   };
 
@@ -108,7 +127,12 @@ const LoginScreen = ({navigation}: any) => {
             <Row>
               <TickSquare size={20} variant="Bold" color={colors.gray} />
               <Space width={8} />
-              <TextComponent text="Remember me" color={colors.gray} size={13} font={fontFamilies.regular} />
+              <TextComponent
+                text="Remember me"
+                color={colors.gray}
+                size={13}
+                font={fontFamilies.regular}
+              />
             </Row>
             <Space width={80} />
             <Row>
@@ -116,7 +140,11 @@ const LoginScreen = ({navigation}: any) => {
                 styles={{marginTop: 8, marginBottom: 8}}
                 title="Forgot password"
                 type="link"
-                textStyleProps={{ color: '#21a691', fontSize: 12, fontFamily: 'Poppins-Regular' }}
+                textStyleProps={{
+                  color: '#21a691',
+                  fontSize: 12,
+                  fontFamily: 'Poppins-Regular',
+                }}
                 onPress={() => {}}
               />
             </Row>
@@ -177,6 +205,13 @@ const LoginScreen = ({navigation}: any) => {
             <Text style={styles.signUpText}>Sign Up</Text>
           </TouchableOpacity>
         </View>
+        <ModalComponent
+          isVisible={isError}
+          message={errorText}
+          onConfirm={() => setIsError(false)}
+          type="one-button"
+          icon={<Forbidden2 color="red" size={30} />}
+        />
       </View>
     </ContainerComponent>
   );
