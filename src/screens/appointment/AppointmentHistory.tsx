@@ -109,7 +109,9 @@ const doctors: Doctor[] = [
   },
 ];
 
-const AppointmentScreen: React.FC = () => {
+const AppointmentScreen: React.FC = (props: any) => {
+  const {navigation} = props;
+
   const [appointmentList, setAppointmentList] = useState<Appointment[]>([]);
 
   useEffect(() => {
@@ -222,7 +224,14 @@ const AppointmentScreen: React.FC = () => {
       {showCancel && (
         <FlatList
           data={doctors}
-          renderItem={({item}) => <CancelCard doctor={item} />}
+          renderItem={({item}) => (
+            <CancelCard
+              doctor={item}
+              onPress={() => {
+                navigation.navigate('CancelAppointment');
+              }}
+            />
+          )}
           keyExtractor={item => item.doctorId}
           showsVerticalScrollIndicator={false}
         />

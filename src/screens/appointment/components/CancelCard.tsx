@@ -6,48 +6,19 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
+  Alert,
 } from 'react-native';
-import {Patient} from '../../../models/Patient';
-import {Doctor} from '../../../models/Doctor';
+import { Doctor } from '../../../models/Doctor';
 
-interface DoctorProps {
-  doctor: Doctor;
+interface Props{
+  doctor: Doctor,
+  onPress: () => void
 }
-const doctors: Doctor[] = [
-  {
-    doctorId: 'doctor01',
-    name: 'Dr. Olivia Turner, M.D.',
-    email: 'olivia@example.com',
-    phone: '123-456-7890',
-    image: 'https://via.placeholder.com/150',
-    specializationId: 'Dermato-Endocrinology',
-    hospitalId: 'hosp001',
-  },
-  {
-    doctorId: 'doctor02',
-    name: 'Dr. Olivia Turner, M.D.',
-    email: 'olivia@example.com',
-    phone: '123-456-7890',
-    image: 'https://via.placeholder.com/150',
-    specializationId: 'Dermato-Endocrinology',
-    hospitalId: 'hosp001',
-  },
-  {
-    doctorId: 'doctor03',
-    name: 'Dr. Alexander Bennett, Ph.D.',
-    email: 'olivia@example.com',
-    phone: '123-456-7890',
-    image: 'https://via.placeholder.com/150',
-    specializationId: 'Dermato-Endocrinology',
-    hospitalId: 'hosp001',
-  },
-];
 
-const DoctorCard: React.FC<DoctorProps> = ({doctor}) => {
+const DoctorCard = (props: Props) => {
+  const { doctor, onPress } = props
   return (
-    <View>
-      {doctors.map(doctor => (
-        <View key={doctor.doctorId} style={styles.cardContainer}>
+        <View style={styles.cardContainer}>
           <View style={styles.profileContainer}>
             <Image
               source={require('../../../assets/images/doctor.png')}
@@ -59,12 +30,10 @@ const DoctorCard: React.FC<DoctorProps> = ({doctor}) => {
             </View>
           </View>
           <View style={styles.buttonContainer}>
-            <TouchableOpacity style={styles.detailsButton} onPress={() => {}}>
+            <TouchableOpacity style={styles.detailsButton} onPress={onPress}>
               <Text style={styles.buttonText}>Add Review</Text>
             </TouchableOpacity>
           </View>
-        </View>
-      ))}
     </View>
   );
 };
