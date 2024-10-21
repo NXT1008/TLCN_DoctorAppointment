@@ -26,6 +26,8 @@ import {
   DocumentText,
   Edit,
   Edit2,
+  GalleryEdit,
+  PenAdd,
   Sms,
   UserEdit,
   Warning2,
@@ -34,7 +36,7 @@ import {fontFamilies} from '../../constants/fontFamilies';
 import ProfileComponent from './components/ProfileComponent';
 import ModalComponent from './components/ModalComponent';
 
-const ProfileScreen = () => {
+const ProfileScreen = (props: any) => {
   const [isAlertVisible, setAlertVisible] = useState(false);
 
   const showAlert = () => {
@@ -55,7 +57,7 @@ const ProfileScreen = () => {
     <ContainerComponent>
       <Section>
         <Row justifyContent="space-between">
-          <ArrowLeft2 color="#000" />
+          <ArrowLeft2 color="#fff" />
           <TextComponent
             text="Profile"
             size={25}
@@ -64,7 +66,7 @@ const ProfileScreen = () => {
           />
           <TouchableOpacity
             onPress={() => {
-              Alert.alert('Edit Profile');
+              props.navigation.navigate('UpdateProfile');
             }}>
             <Edit color="#000" size={26} />
           </TouchableOpacity>
@@ -72,15 +74,38 @@ const ProfileScreen = () => {
       </Section>
       <Section>
         <Row justifyContent="flex-start" styles={{paddingHorizontal: 20}}>
-          <Image
-            source={require('../../assets/images/doctor.png')}
-            style={{
-              width: 80,
-              height: 80,
-              borderRadius: 100,
-              resizeMode: 'contain',
-            }}
-          />
+          <View>
+            <Image
+              source={require('../../assets/images/doctor.png')}
+              style={{
+                width: 80,
+                height: 80,
+                borderRadius: 100,
+                resizeMode: 'contain',
+              }}
+            />
+            <TouchableOpacity
+              onPress={() => {
+                Alert.alert('Update Image');
+              }}>
+              <View
+                style={{
+                  position: 'absolute',
+                  height: 50,
+                  width:50,
+                  bottom: -15,
+                  right: -15,
+                  backgroundColor: '#EBF0F0',
+                  borderRadius: 100,
+                  borderWidth: 5,
+                  borderColor: '#fff',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}>
+                <Edit2 color="#000" size={24} variant="Bold" />
+              </View>
+            </TouchableOpacity>
+          </View>
           <Space width={30} />
           <Col>
             <TextComponent
@@ -122,17 +147,28 @@ const ProfileScreen = () => {
         <ProfileComponent
           text="My Report"
           icon={<DocumentText color="#0B8FAC" />}
+          onPress={() => {
+            props.navigation.navigate('ReportScreen');
+          }}
+        />
+        <ProfileComponent
+          text="Payment Methods"
+          icon={<DocumentText color="#0B8FAC" />}
           onPress={() => {}}
         />
         <ProfileComponent
           text="My Favorites Doctors"
           icon={<DocumentText color="#0B8FAC" />}
-          onPress={() => {}}
+          onPress={() => {
+            props.navigation.navigate('MyfavoritesDoctor');
+          }}
         />
         <ProfileComponent
           text="Privacy Polices"
           icon={<DocumentText color="#0B8FAC" />}
-          onPress={() => {}}
+          onPress={() => {
+            props.navigation.navigate('PrivacyPolicyScreen');
+          }}
         />
         <ProfileComponent
           text="Settings"
@@ -142,7 +178,9 @@ const ProfileScreen = () => {
         <ProfileComponent
           text="FAQs"
           icon={<DocumentText color="#0B8FAC" />}
-          onPress={() => {}}
+          onPress={() => {
+            props.navigation.navigate('FAQsScreen');
+          }}
         />
         <ProfileComponent
           text="Logout"
