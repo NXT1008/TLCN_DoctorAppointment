@@ -23,9 +23,9 @@ import Swiper from 'react-native-swiper';
 import SwiperOne from './components/SwiperOne';
 import Specialization from './components/Specialization';
 
-const HomeScreen = () => {
+const HomeScreen = (props: any) => {
   const user = auth().currentUser;
-
+  
   return (
     <ContainerComponent isScroll>
       <Row
@@ -80,10 +80,10 @@ const HomeScreen = () => {
       <Section>
         <Row>
           <ScrollView horizontal>
-            <Specialization/>
-            <Specialization/>
-            <Specialization/>
-            <Specialization/>
+            <Specialization />
+            <Specialization />
+            <Specialization />
+            <Specialization />
           </ScrollView>
         </Row>
       </Section>
@@ -97,11 +97,31 @@ const HomeScreen = () => {
           <TextComponent text="See All" font={fontFamilies.regular} size={12} />
         </Row>
         <Space height={10} />
-        <DoctorCard />
-        <DoctorCard />
-        <DoctorCard />
-        <DoctorCard />
-        <DoctorCard />
+        <DoctorCard
+          onPress={() => {
+            props.navigation.navigate('DoctorDetailScreen');
+          }}
+        />
+        <DoctorCard
+          onPress={() => {
+            props.navigation.navigate('DoctorDetailScreen');
+          }}
+        />
+        <DoctorCard
+          onPress={() => {
+            props.navigation.navigate('DoctorDetailScreen');
+          }}
+        />
+        <DoctorCard
+          onPress={() => {
+            props.navigation.navigate('DoctorDetailScreen');
+          }}
+        />
+        <DoctorCard
+          onPress={() => {
+            props.navigation.navigate('DoctorDetailScreen');
+          }}
+        />
       </Section>
     </ContainerComponent>
   );

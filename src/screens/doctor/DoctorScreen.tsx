@@ -17,7 +17,7 @@ import {MenuItem} from '../../components/models/MenuProps';
 import {Clock, Home, User} from 'iconsax-react-native';
 import RadioGroup from '../../components/RadioGroup';
 
-const DoctorScreen = () => {
+const DoctorScreen = (props: any) => {
   const [selected, setSelected] = useState<MenuItem>();
   const menuItems: MenuItem[] = [
     {key: '1', label: 'Item 1', icon: <Home color="black" />, disable: false},
@@ -78,20 +78,48 @@ const DoctorScreen = () => {
             loading={false}
             placement="bottomRight">
             {selected?.label ? (
-              <TextComponent text={selected.label.toString()} size={12} font={fontFamilies.regular}/>
+              <TextComponent
+                text={selected.label.toString()}
+                size={12}
+                font={fontFamilies.regular}
+              />
             ) : (
-              <TextComponent text="Select" size={12} font={fontFamilies.regular}/> // Hoặc có thể hiển thị một placeholder nào đó
+              <TextComponent
+                text="Select"
+                size={12}
+                font={fontFamilies.regular}
+              /> // Hoặc có thể hiển thị một placeholder nào đó
             )}
           </Dropdown>
         </Row>
       </Section>
 
       <Section>
-        <DoctorComponent />
-        <DoctorComponent />
-        <DoctorComponent />
-        <DoctorComponent />
-        <DoctorComponent />
+        <DoctorComponent
+          onPress={() => {
+            props.navigation.navigate('DoctorDetailScreen');
+          }}
+        />
+        <DoctorComponent
+          onPress={() => {
+            props.navigation.navigate('DoctorDetailScreen');
+          }}
+        />
+        <DoctorComponent
+          onPress={() => {
+            props.navigation.navigate('DoctorDetailScreen');
+          }}
+        />
+        <DoctorComponent
+          onPress={() => {
+            props.navigation.navigate('DoctorDetailScreen');
+          }}
+        />
+        <DoctorComponent
+          onPress={() => {
+            props.navigation.navigate('DoctorDetailScreen');
+          }}
+        />
       </Section>
     </ContainerComponent>
   );

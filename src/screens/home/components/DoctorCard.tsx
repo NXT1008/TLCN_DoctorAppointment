@@ -10,7 +10,13 @@ import {
 } from '../../../components';
 import {fontFamilies} from '../../../constants/fontFamilies';
 
-const DoctorCard = () => {
+interface Props{
+  onPress:  () => void;
+
+}
+
+const DoctorCard = (props: Props) => {
+  const {onPress } = props
   return (
     <Card
       styles={{marginHorizontal: 0, paddingVertical: 0, borderRadius: 10}}
@@ -47,7 +53,7 @@ const DoctorCard = () => {
             <Button
               title="Book"
               textStyleProps={{fontFamily: fontFamilies.regular}}
-              onPress={() => {}}
+              onPress={onPress}
               size="small"
               color="#0B8FAC"
               styles={{width: 100}}
