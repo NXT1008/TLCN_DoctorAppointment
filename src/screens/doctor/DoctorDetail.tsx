@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { Card, Col, ContainerComponent, Row, Section, TextComponent } from '../../components';
@@ -269,3 +270,4 @@ const styles = StyleSheet.create({
 });
 
 export default DoctorDetailScreen;
+

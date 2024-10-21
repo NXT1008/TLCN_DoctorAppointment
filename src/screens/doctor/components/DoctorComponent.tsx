@@ -4,7 +4,12 @@ import {Image} from 'react-native';
 import { Clock, Icon } from 'iconsax-react-native';
 import { fontFamilies } from '../../../constants/fontFamilies';
 
-const DoctorComponent = () => {
+interface Props{
+  onPress: () => void
+}
+
+const DoctorComponent = (props: Props) => {
+  const {onPress} = props
   return (
     <Card styles={{marginHorizontal: 5, borderRadius: 20}} shadowed>
       <Row styles={{justifyContent: 'flex-start'}} flex={1}>
@@ -103,7 +108,7 @@ const DoctorComponent = () => {
           />
         </Col>
         <Button
-          onPress={() => {}}
+          onPress={onPress}
           title="Book"
           color="#5AC9B5"
           styles={{ paddingVertical: 8, marginBottom: -0 }}
