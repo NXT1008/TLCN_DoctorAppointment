@@ -1,17 +1,22 @@
 import React from 'react';
-import {View, Text, StyleSheet, TouchableOpacity, Image} from 'react-native';
-import {Appointment} from '../../../models/Appointment';
+import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { Appointment } from '../../../models/Appointment';
 import DateDisplay from './DateDisplay';
 import TimeDisplay from './TimeDisplay';
+import { Card } from '../../../components';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
+import { AppointmentStackParamList } from '../../../routers/Navigator/AppointmentNavigator';
+import { Doctor } from '../../../models/Doctor';
 
-interface AppointmentCardProps {
+interface Props {
   appointment: Appointment;
+  onPress: () => void
 }
-const UpcomingAppointmentCard: React.FC<AppointmentCardProps> = ({
-  appointment,
-}) => {
+const UpcomingAppointmentCard = (props: Props) => {
+  const navigation = useNavigation<NavigationProp<AppointmentStackParamList>>();
+  const { appointment, onPress } = props
   return (
-    <View style={styles.cardContainer}>
+    <Card styles={styles.cardContainer} shadowed>
       <View style={styles.profileContainer}>
         <Image
           source={require('../../../assets/images/doctor.png')}
@@ -32,27 +37,35 @@ const UpcomingAppointmentCard: React.FC<AppointmentCardProps> = ({
         </>
       </View>
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.detailsButton}>
+        <TouchableOpacity
+          style={styles.detailsButton}
+          onPress={onPress }>
           <Text style={styles.buttonText}>Details</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.checkButton}>
+        <TouchableOpacity
+          style={styles.checkButton}
+           onPress={() => {}}> 
           <Text style={styles.checkIcon}>✓</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.cancelButton} onPress={() => {}}>
-          <Text style={styles.cancelIcon}>✗</Text>
+        <TouchableOpacity
+          style={styles.cancelButton}
+          onPress={() => navigation.navigate('CancelAppointment', {appointment})}
+          >
+          <Text style={styles.cancelIcon}>✗</Text> 
         </TouchableOpacity>
       </View>
-    </View>
+    </Card>
   );
 };
 
 const styles = StyleSheet.create({
   cardContainer: {
-    backgroundColor: '#e6f0ff',
-    borderRadius: 15,
+    backgroundColor: '#f4f6f9',
     padding: 15,
+    marginLeft: 20,
+    marginRight: 20,
     marginBottom: 15,
-    flex: 1,
+    borderRadius: 10,
   },
   profileContainer: {
     flexDirection: 'row',

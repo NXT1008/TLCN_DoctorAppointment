@@ -10,6 +10,7 @@ import {
 import {Doctor} from '../../models/Doctor';
 import {Patient} from '../../models/Patient';
 import {Review} from '../../models/Review';
+import { useNavigation } from '@react-navigation/native';
 
 const mockDoctor: Doctor = {
   doctorId: 'doctor01',
@@ -30,6 +31,7 @@ const mockPatient: Patient = {
 };
 
 const ReviewScreen = () => {
+  const navigation = useNavigation();
   const [comment, setComment] = useState<string>('');
   const [rating, setRating] = useState<number>(0);
   const handleRating = (rate: number) => {
@@ -53,10 +55,7 @@ const ReviewScreen = () => {
     <View style={styles.container}>
       <View style={styles.topNavigator}>
         <TouchableOpacity
-          onPress={() => {
-            {
-            }
-          }}
+          onPress={() => navigation.goBack()}
           style={styles.backButton}>
           <Image
             source={require('../../assets/images/back_arrow.png')}

@@ -2,17 +2,20 @@ import React, {useState} from 'react';
 import {View, Text, StyleSheet, TouchableOpacity, Image} from 'react-native';
 import {Appointment} from '../../../models/Appointment';
 import {Review} from '../../../models/Review';
+import { Card } from '../../../components';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
+import { AppointmentStackParamList } from '../../../routers/Navigator/AppointmentNavigator';
 
-interface AppointmentCardProps {
+interface Props {
   appointment: Appointment;
   review?: Review;
+  onPress() : void
 }
-const CompletedAppointmentCard: React.FC<AppointmentCardProps> = ({
-  appointment,
-  review,
-}) => {
+const CompletedAppointmentCard = (prop: Props) => {
+  const navigation = useNavigation<NavigationProp<AppointmentStackParamList>>();
+  const {appointment, review, onPress} = prop
   return (
-    <View style={styles.appointmentContainer}>
+    <Card styles={styles.appointmentContainer} shadowed>
       <View style={styles.profileInfo}>
         <Image
           source={require('../../../assets/images/doctor.png')}
@@ -31,23 +34,25 @@ const CompletedAppointmentCard: React.FC<AppointmentCardProps> = ({
         </View>
       </View>
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.rebookButton}>
+        <TouchableOpacity style={styles.rebookButton} onPress={onPress}>
           <Text style={styles.buttonText}>Re-Book</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.addReviewButton} onPress={() => {}}>
+        <TouchableOpacity style={styles.addReviewButton} onPress={() => navigation.navigate('ReviewScreen', {appointment})}>
           <Text style={styles.buttonText}>Add Review</Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </Card>
   );
 };
 
 const styles = StyleSheet.create({
   appointmentContainer: {
-    backgroundColor: '#f4f6f9',
+    backgroundColor: '#fff',
     padding: 15,
+    marginLeft: 20,
+    marginRight: 20,
+    marginBottom: 15,
     borderRadius: 10,
-    marginBottom: 20,
   },
   profileInfo: {
     flexDirection: 'row',
