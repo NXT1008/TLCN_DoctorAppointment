@@ -6,7 +6,15 @@ import {
   Section,
   TextComponent,
 } from '../../components';
-import {Image, StyleSheet, Text, Touchable, TouchableOpacity, useWindowDimensions, View} from 'react-native';
+import {
+  Image,
+  StyleSheet,
+  Text,
+  Touchable,
+  TouchableOpacity,
+  useWindowDimensions,
+  View,
+} from 'react-native';
 import {fontFamilies} from '../../constants/fontFamilies';
 import {
   ArrowLeft,
@@ -20,7 +28,7 @@ import {
 import {SceneMap, TabBar, TabView} from 'react-native-tab-view';
 
 const DoctorDetailScreen = (props: any) => {
-  const { navigation } = props;
+  const {navigation} = props;
 
   return (
     <ContainerComponent isScroll styleHeader={{marginTop: -16}}>
