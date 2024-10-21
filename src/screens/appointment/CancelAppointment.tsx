@@ -1,3 +1,4 @@
+import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, TextInput, StyleSheet, ScrollView, Image } from 'react-native';
 interface CancellationData {
@@ -9,6 +10,7 @@ interface CancellationData {
 }
 
 const CancelAppointment = () => {
+    const navigation = useNavigation();
     const [selectedReason, setSelectedReason] = useState<string>('Weather Conditions');
     const [additionalReason, setAdditionalReason] = useState<string>('');
     const appointmentId = '12345';
@@ -39,7 +41,7 @@ const CancelAppointment = () => {
     return (
         <View style={styles.container}>
             <View style={styles.topNavigator}>
-                <TouchableOpacity onPress={() => {{}}} style={styles.backButton}>
+                <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
                     <Image source={require('../../assets/images/back_arrow.png')} style={styles.backImage} />
                 </TouchableOpacity>
             </View>

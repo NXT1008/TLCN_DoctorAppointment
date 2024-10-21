@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -9,8 +9,9 @@ import {
   Alert,
 } from 'react-native';
 import { Doctor } from '../../../models/Doctor';
+import { Card } from '../../../components';
 
-interface Props{
+interface Props {
   doctor: Doctor,
   onPress: () => void
 }
@@ -18,33 +19,34 @@ interface Props{
 const DoctorCard = (props: Props) => {
   const { doctor, onPress } = props
   return (
-        <View style={styles.cardContainer}>
-          <View style={styles.profileContainer}>
-            <Image
-              source={require('../../../assets/images/doctor.png')}
-              style={styles.profileImage}
-            />
-            <View style={styles.doctorInfo}>
-              <Text style={styles.doctorName}>{doctor.name}</Text>
-              <Text style={styles.specialty}>{doctor.specializationId}</Text>
-            </View>
-          </View>
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity style={styles.detailsButton} onPress={onPress}>
-              <Text style={styles.buttonText}>Add Review</Text>
-            </TouchableOpacity>
-          </View>
-    </View>
+    <Card styles={styles.cardContainer} shadowed>
+      <View style={styles.profileContainer}>
+        <Image
+          source={require('../../../assets/images/doctor.png')}
+          style={styles.profileImage}
+        />
+        <View style={styles.doctorInfo}>
+          <Text style={styles.doctorName}>{doctor.name}</Text>
+          <Text style={styles.specialty}>{doctor.specializationId}</Text>
+        </View>
+      </View>
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity style={styles.detailsButton} onPress={onPress}>
+          <Text style={styles.buttonText}>Add Review</Text>
+        </TouchableOpacity>
+      </View>
+    </Card>
   );
 };
 
 const styles = StyleSheet.create({
   cardContainer: {
-    backgroundColor: '#e6f0ff',
-    borderRadius: 15,
+    backgroundColor: '#fff',
     padding: 15,
+    marginLeft: 20,
+    marginRight: 20,
     marginBottom: 15,
-    flex: 1,
+    borderRadius: 10,
   },
   profileContainer: {
     flexDirection: 'row',

@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -8,21 +8,27 @@ import {
   FlatList,
 } from 'react-native';
 
+import {
+  Button,
+  ContainerComponent,
+  Row,
+  Section,
+  TextComponent
+} from '../../components'
 import CompletedCard from './components/CompletedCard';
 import UpcomingCard from './components/UpcomingCard';
 import CancelCard from './components/CancelCard';
-import BottomNavigation from './components/BottomNavigation';
-import {Patient} from '../../models/Patient';
-import {Doctor} from '../../models/Doctor';
-import {Appointment} from '../../models/Appointment';
+import { Doctor } from '../../models/Doctor';
+import { Appointment } from '../../models/Appointment';
 import firestore from '@react-native-firebase/firestore';
+import { fontFamilies } from '../../constants/fontFamilies';
 
 const appointments: Appointment[] = [
   {
     appointmentId: '1',
     patientId: 'p001',
     doctorId: 'd001',
-    scheduleDate: new Date('2024-10-19T15:30:00'),
+    scheduleDate: new Date('2024-10-19'),
     startTime: new Date('2024-10-19T15:30:00'),
     endTime: new Date('2024-10-19T15:30:00'),
     status: 'completed',
@@ -109,8 +115,8 @@ const doctors: Doctor[] = [
   },
 ];
 
-const AppointmentScreen: React.FC = (props: any) => {
-  const {navigation} = props;
+const AppointmentScreen = (props: any) => {
+  const { navigation } = props;
 
   const [appointmentList, setAppointmentList] = useState<Appointment[]>([]);
 
@@ -167,45 +173,57 @@ const AppointmentScreen: React.FC = (props: any) => {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.topNavigator}>
-        <TouchableOpacity
-          onPress={() => {
-            {
-            }
-          }}
-          style={styles.backButton}>
-          <Image
-            source={require('../../assets/images/back_arrow.png')}
-            style={styles.backImage}
-          />
-        </TouchableOpacity>
-      </View>
-      <Text style={styles.title}>All Appointment</Text>
+    <ContainerComponent>
+      <TextComponent
+        text="All Appointment"
+        size={25}
+        font={fontFamilies.semiBold}
+        color="#0B8FAC"
+        textAlign='center'
+      />
 
-      <View style={styles.filterContainer}>
-        <TouchableOpacity
-          style={[styles.filterButton, showComplete && styles.buttonActive]}
-          onPress={handleCompleteButtonClick}>
-          <Text style={styles.filterText}>Complete</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
+      <Section>
+        <Row justifyContent='space-between'>
+          <TouchableOpacity
+            style={[styles.filterButton, showComplete && styles.buttonActive]}
+            onPress={handleCompleteButtonClick}>
+            <TextComponent 
+             text= "Complete"
+             size = {14}
+             color='#ffffff'
+             />
+          </TouchableOpacity>
+
+          <TouchableOpacity
           style={[styles.filterButton, showUpcoming && styles.buttonActive]}
           onPress={handleUpcomingButtonClick}>
-          <Text style={styles.filterText}>Upcoming</Text>
+          <TextComponent
+            text='Upcoming'
+            size={14}
+            color='#ffffff'
+            />
         </TouchableOpacity>
+
         <TouchableOpacity
           style={[styles.filterButton, showCancel && styles.buttonActive]}
           onPress={handleCancelButtonClick}>
-          <Text style={styles.filterText}>Cancelled</Text>
+        <TextComponent
+            text='Cancelled'
+            size={14}
+            color='#ffffff'
+            />
         </TouchableOpacity>
-      </View>
+        </Row>
+      </Section>
 
       {showComplete && (
         <FlatList
           data={appointments}
-          renderItem={({item}) => (
-            <CompletedCard appointment={item} review={undefined} />
+          renderItem={({ item }) => (
+            <CompletedCard 
+            appointment={item} 
+            review={undefined} 
+            onPress={() => navigation.navigate('BookingScreen')}/>
           )}
           keyExtractor={item => item.appointmentId}
           showsVerticalScrollIndicator={false}
@@ -215,7 +233,12 @@ const AppointmentScreen: React.FC = (props: any) => {
       {showUpcoming && (
         <FlatList
           data={appointments}
-          renderItem={({item}) => <UpcomingCard appointment={item} />}
+          renderItem={({ item }) => (
+          <UpcomingCard 
+            appointment={item}
+            onPress={() => navigation.navigate('DoctorDetailScreen')}
+          />)}
+    
           keyExtractor={item => item.appointmentId}
           showsVerticalScrollIndicator={false}
         />
@@ -224,11 +247,11 @@ const AppointmentScreen: React.FC = (props: any) => {
       {showCancel && (
         <FlatList
           data={doctors}
-          renderItem={({item}) => (
+          renderItem={({ item }) => (
             <CancelCard
               doctor={item}
               onPress={() => {
-                navigation.navigate('CancelAppointment');
+                navigation.navigate('ReviewScreen');
               }}
             />
           )}
@@ -236,7 +259,8 @@ const AppointmentScreen: React.FC = (props: any) => {
           showsVerticalScrollIndicator={false}
         />
       )}
-    </View>
+
+</ContainerComponent>
   );
 };
 
@@ -268,8 +292,8 @@ const styles = StyleSheet.create({
   title: {
     color: '#21a691',
     textAlign: 'center',
-    fontFamily: 'Poppins-Medium',
-    fontSize: 24,
+    fontFamily: 'Poppins-SemiBold',
+    fontSize: 25,
     fontWeight: '700',
     position: 'relative',
     top: 0,
