@@ -6,7 +6,7 @@ import {
   ScrollView,
   Dimensions,
 } from 'react-native';
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   Card,
   Col,
@@ -22,12 +22,94 @@ import {fontFamilies} from '../../constants/fontFamilies';
 import DoctorCard from './components/DoctorCard';
 import Swiper from 'react-native-swiper';
 import SwiperOne from './components/SwiperOne';
-import Specialization from './components/Specialization';
+import SpecializationComponent from './components/SpecializationComponent';
 import {Message, Messages1, Messages3} from 'iconsax-react-native';
+import firestore from '@react-native-firebase/firestore';
+import {Specialization} from '../../models/Specialization';
+import {Doctor} from '../../models/Doctor';
+import { Patient } from '../../models/Patient';
 
 const HomeScreen = (props: any) => {
   const user = auth().currentUser;
   const {width, height} = Dimensions.get('window');
+  const [listSpecialization, setListSpecialization] = useState<
+    Specialization[]
+  >([]);
+  const [listDoctor, setListDoctor] = useState<Doctor[]>([]);
+
+  const [patient, setPatient] = useState<Patient>();
+
+  useEffect(() => {
+    const getCurrentPatient = async () => {
+      await firestore()
+        .collection('patients')
+        .doc(user?.uid)
+        .get()
+        .then(snap => {
+          if (!snap.exists) {
+            console.log('No such document!');
+          } else {
+            const patient = snap.data() as Patient;
+            setPatient(patient);
+          }
+        })
+        .catch(e => {
+          console.log(e);
+        });
+    };
+    getCurrentPatient();
+  }, [patient]);
+
+  useEffect(() => {
+    getAllSpecializations();
+    getAllDoctors();
+  }, []);
+
+  const getAllSpecializations = async () => {
+    await firestore()
+      .collection('specializations')
+      .get()
+      .then(snapshot => {
+        if (snapshot.empty) {
+          console.log('Không có specialization');
+          return;
+        }
+        const items: Specialization[] = [];
+        snapshot.forEach((item: any) => {
+          items.push({
+            id: item.id,
+            ...item.data(),
+          });
+        });
+        setListSpecialization(items);
+      })
+      .catch(error => {
+        console.error('Error fetching specializations:', error); // Log lỗi
+      });
+  };
+
+  const getAllDoctors = async () => {
+    await firestore()
+      .collection('doctors')
+      .get()
+      .then(snap => {
+        if (snap.empty) {
+          console.log('Không có bác sĩ');
+          return;
+        }
+        const items: Doctor[] = [];
+        snap.forEach((item: any) => {
+          items.push({
+            id: item.id,
+            ...item.data(),
+          });
+        });
+        setListDoctor(items);
+      })
+      .catch(error => {
+        console.error('Error fetching doctor:', error); // Log lỗi
+      });
+  };
 
   return (
     <>
@@ -53,7 +135,7 @@ const HomeScreen = (props: any) => {
                   color="#00000066"
                 />
                 <TextComponent
-                  text={`${user?.email}`}
+                  text={`${patient ? patient.nickname ? patient.nickname : patient.name : ''}`}
                   font={fontFamilies.semiBold}
                 />
               </View>
@@ -89,10 +171,9 @@ const HomeScreen = (props: any) => {
           <Section>
             <Row>
               <ScrollView horizontal>
-                <Specialization />
-                <Specialization />
-                <Specialization />
-                <Specialization />
+                {listSpecialization.slice(0, 5).map((item, index) => (
+                  <SpecializationComponent key={index} data={item} />
+                ))}
               </ScrollView>
             </Row>
           </Section>
@@ -111,31 +192,15 @@ const HomeScreen = (props: any) => {
               />
             </Row>
             <Space height={10} />
-            <DoctorCard
-              onPress={() => {
-                props.navigation.navigate('DoctorDetailScreen');
-              }}
-            />
-            <DoctorCard
-              onPress={() => {
-                props.navigation.navigate('DoctorDetailScreen');
-              }}
-            />
-            <DoctorCard
-              onPress={() => {
-                props.navigation.navigate('DoctorDetailScreen');
-              }}
-            />
-            <DoctorCard
-              onPress={() => {
-                props.navigation.navigate('DoctorDetailScreen');
-              }}
-            />
-            <DoctorCard
-              onPress={() => {
-                props.navigation.navigate('DoctorDetailScreen');
-              }}
-            />
+            {listDoctor.slice(0, 5).map((item, index) => (
+              <DoctorCard
+                key={index}
+                data={item}
+                onPress={() => {
+                  props.navigation.navigate('DoctorDetailScreen');
+                }}
+              />
+            ))}
           </Section>
         </View>
       </ContainerComponent>

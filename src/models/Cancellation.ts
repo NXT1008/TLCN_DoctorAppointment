@@ -1,8 +1,8 @@
 // Models/Cancellation.ts
 export interface Cancellation {
-  cancellationId: number;
+  cancellationId: string;
   cancelReason: string;
   cancelBy: string;
   cancelTime: Date;
-  appointmentId: number;
+  appointmentId: string;
 }  

@@ -1,5 +1,5 @@
 import {Alert, Image, Touchable, TouchableOpacity, View} from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   Button,
   Col,
@@ -35,8 +35,36 @@ import {
 import {fontFamilies} from '../../constants/fontFamilies';
 import ProfileComponent from './components/ProfileComponent';
 import ModalComponent from './components/ModalComponent';
+import deleteAllData from '../../data/zResetData';
+import uploadDataToFirestore from '../../data/UploadDataToFirebase';
+import firestore from '@react-native-firebase/firestore';
+import {Patient} from '../../models/Patient';
 
 const ProfileScreen = (props: any) => {
+  const user = auth().currentUser;
+  const [patient, setPatient] = useState<Patient>();
+
+  useEffect(() => {
+    const getCurrentPatient = async () => {
+      await firestore()
+        .collection('patients')
+        .doc(user?.uid)
+        .get()
+        .then(snap => {
+          if (!snap.exists) {
+            console.log('No such document!');
+          } else {
+            const patient = snap.data() as Patient;
+            setPatient(patient);
+          }
+        })
+        .catch(e => {
+          console.log(e);
+        });
+    };
+    getCurrentPatient();
+  }, [patient]);
+
   const [isAlertVisible, setAlertVisible] = useState(false);
 
   const showAlert = () => {
@@ -66,7 +94,7 @@ const ProfileScreen = (props: any) => {
           />
           <TouchableOpacity
             onPress={() => {
-              props.navigation.navigate('UpdateProfile');
+              props.navigation.navigate('UpdateProfile', {patient});
             }}>
             <Edit color="#000" size={26} />
           </TouchableOpacity>
@@ -92,7 +120,7 @@ const ProfileScreen = (props: any) => {
                 style={{
                   position: 'absolute',
                   height: 50,
-                  width:50,
+                  width: 50,
                   bottom: -15,
                   right: -15,
                   backgroundColor: '#EBF0F0',
@@ -109,12 +137,18 @@ const ProfileScreen = (props: any) => {
           <Space width={30} />
           <Col>
             <TextComponent
-              text="UserName"
+              text={
+                patient
+                  ? patient.nickname
+                    ? patient.nickname
+                    : patient.name
+                  : ''
+              }
               size={20}
               font={fontFamilies.semiBold}
             />
             <TextComponent
-              text="Gender"
+              text={patient ? patient.gender : ''}
               size={12}
               font={fontFamilies.regular}
             />
@@ -125,7 +159,17 @@ const ProfileScreen = (props: any) => {
           <Call color="#000" />
           <Space width={20} />
           <TextComponent
-            text="0793-988-509"
+            text={
+              patient
+                ? patient.phone
+                  ? patient.phone.slice(0, 4) +
+                    '-' +
+                    patient.phone.slice(4, 7) +
+                    '-' +
+                    patient.phone.slice(7)
+                  : "Don't have"
+                : ''
+            }
             size={12}
             font={fontFamilies.regular}
           />
@@ -136,7 +180,7 @@ const ProfileScreen = (props: any) => {
           <Sms color="#000" />
           <Space width={20} />
           <TextComponent
-            text="nguyenxuanthe@gmail.com"
+            text={patient ? patient.email : ''}
             size={12}
             font={fontFamilies.regular}
           />

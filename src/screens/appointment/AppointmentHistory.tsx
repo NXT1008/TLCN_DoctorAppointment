@@ -164,7 +164,6 @@ const AppointmentScreen = (props: any) => {
             }),
           );
           setAppointmentList(items);
-          console.log(appointmentList);
         }
       })
       .catch(error => {

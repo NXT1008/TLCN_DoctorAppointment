@@ -16,6 +16,8 @@ import {colors} from '../../constants/colors';
 import {Text} from 'react-native';
 import auth from '@react-native-firebase/auth';
 import ModalComponent from './components/ModalComponent';
+import firestore from '@react-native-firebase/firestore';
+import { Patient } from '../../models/Patient';
 
 const LoginScreen = ({navigation}: any) => {
   const [email, setEmail] = useState('');
@@ -27,7 +29,7 @@ const LoginScreen = ({navigation}: any) => {
   const handleLogin = async () => {
     const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
 
-    if (!email && !emailRegex.test(email)) {
+    if (!email || !emailRegex.test(email)) {
       setErrorText('Please enter a valid email');
       setIsLoading(false);
       setIsError(true);
@@ -47,9 +49,7 @@ const LoginScreen = ({navigation}: any) => {
         .signInWithEmailAndPassword(email, password)
         .then(userCredential => {
           const user = userCredential.user;
-          if (user) {
-            console.log(user);
-          }
+          
         })
         .catch(error => {
           setIsLoading(false);
@@ -200,7 +200,7 @@ const LoginScreen = ({navigation}: any) => {
 
           <TouchableOpacity
             onPress={() => {
-              navigation.navigate('DoctorReview');
+              navigation.navigate('SignUp');
             }}>
             <Text style={styles.signUpText}>Sign Up</Text>
           </TouchableOpacity>

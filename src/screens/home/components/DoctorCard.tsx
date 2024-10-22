@@ -9,14 +9,15 @@ import {
   TextComponent,
 } from '../../../components';
 import {fontFamilies} from '../../../constants/fontFamilies';
+import { Doctor } from '../../../models/Doctor';
 
 interface Props{
   onPress:  () => void;
-
+  data: Doctor
 }
 
 const DoctorCard = (props: Props) => {
-  const {onPress } = props
+  const {onPress, data } = props
   return (
     <Card
       styles={{marginHorizontal: 0, paddingVertical: 0, borderRadius: 10}}
@@ -33,8 +34,8 @@ const DoctorCard = (props: Props) => {
         <Col flex={1} styles={{paddingLeft: 15, marginTop: 10}}>
           <Row justifyContent="space-between">
             <TextComponent
-              text="Doctor Name"
-              size={18}
+              text={data.name}
+              size={16}
               font={fontFamilies.semiBold}
             />
             <Image source={require('../../../assets/images/heart.png')} />
