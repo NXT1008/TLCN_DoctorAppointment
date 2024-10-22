@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   ScrollView,
   StyleSheet,
@@ -21,13 +21,30 @@ import {
   Input,
 } from '../../../components';
 import {fontFamilies} from '../../../constants/fontFamilies';
-import {ArrowLeft2, Heart} from 'iconsax-react-native';
+import {ArrowLeft2, Backward5Seconds, Heart} from 'iconsax-react-native';
 
 const ReportScreen = (props: any) => {
-  const [bloodPressure, setBloodPressure] = useState('120/80');
-  const [heartRate, setHeartRate] = useState('75');
-  const [temperature, setTemperature] = useState('36.6');
+  const [bloodPressure, setBloodPressure] = useState('');
+  const [sys, setSys] = useState('118');
+  const [dia, setDia] = useState('76');
+  const [pul, setPul] = useState('73');
+  const [heartRate, setHeartRate] = useState('73');
+  const [bloodSugar, setBloodSugar] = useState('4.0');
+  const [weight, setWeight] = useState('60');
+  const [height, setHeight] = useState('170');
+  const [bmi, setBMI] = useState('19.7');
+  const [temperature, setTemperature] = useState('');
   const [isFormVisible, setIsFormVisible] = useState(false);
+
+  // Thời gian cập nhật
+  const currentDate = new Date();
+  const day = String(currentDate.getDate()).padStart(2, '0');
+  const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+  const year = currentDate.getFullYear();
+  const hours = String(currentDate.getHours()).padStart(2, '0');
+  const minutes = String(currentDate.getMinutes()).padStart(2, '0');
+  const seconds = String(currentDate.getSeconds()).padStart(2, '0');
+  const time = `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
 
   const handleUpdate = () => {
     setIsFormVisible(true);
@@ -46,6 +63,21 @@ const ReportScreen = (props: any) => {
           text: 'OK',
           onPress: () => {
             // Cập nhật các thông số
+            setSys(bloodPressure.split('/')[0]); // Lấy giá trị SYS từ bloodPressure
+            setDia(bloodPressure.split('/')[1]); // Lấy giá trị DIA từ bloodPressure
+            setPul(bloodPressure.split('/')[2]); // Lấy giá trị PUL từ bloodPressure
+            setHeartRate(heartRate); // Cập nhật heartRate
+            setBloodSugar(bloodSugar); // Cập nhật bloodSugar
+            setHeight(height); // Cập nhật height
+            setWeight(weight); // Cập nhật weight
+
+            // Tính lại BMI khi có weight và height
+            const heightInMeters = parseFloat(height) / 100;
+            const calculatedBMI = (
+              parseFloat(weight) /
+              (heightInMeters * heightInMeters)
+            ).toFixed(1);
+            setBMI(calculatedBMI);
             console.log(bloodPressure);
             setIsFormVisible(false);
           },
@@ -76,12 +108,17 @@ const ReportScreen = (props: any) => {
       </Section>
       <Section>
         <TextComponent
-          text="Current health indicators:"
+          text="Current health indicators"
           size={16}
           font={fontFamilies.regular}
-          styles={styles.instruction}
         />
-
+        <TextComponent
+          text={'Update last at: ' + time}
+          size={14}
+          font={fontFamilies.regular}
+          color="gray"
+        />
+        <Space height={20} />
         <Card color="#D6F3F1" styles={{borderRadius: 20}}>
           <Row justifyContent="flex-start">
             <Image
@@ -97,7 +134,7 @@ const ReportScreen = (props: any) => {
           <Row>
             <Col styles={{alignItems: 'center'}}>
               <TextComponent
-                text="118"
+                text={sys}
                 size={25}
                 font={fontFamilies.semiBold}
               />
@@ -109,7 +146,11 @@ const ReportScreen = (props: any) => {
               />
             </Col>
             <Col styles={{alignItems: 'center'}}>
-              <TextComponent text="76" size={25} font={fontFamilies.semiBold} />
+              <TextComponent
+                text={dia}
+                size={25}
+                font={fontFamilies.semiBold}
+              />
               <TextComponent
                 text="DIA"
                 size={14}
@@ -118,7 +159,11 @@ const ReportScreen = (props: any) => {
               />
             </Col>
             <Col styles={{alignItems: 'center'}}>
-              <TextComponent text="73" size={25} font={fontFamilies.semiBold} />
+              <TextComponent
+                text={pul}
+                size={25}
+                font={fontFamilies.semiBold}
+              />
               <TextComponent
                 text="PUL"
                 size={14}
@@ -128,6 +173,7 @@ const ReportScreen = (props: any) => {
             </Col>
           </Row>
         </Card>
+        <Space height={20} />
         <Card color="#FADFE4" styles={{borderRadius: 20}}>
           <Row justifyContent="flex-start">
             <Image source={require('../../../assets/images/heart-rate.png')} />
@@ -139,7 +185,11 @@ const ReportScreen = (props: any) => {
             />
           </Row>
           <Row justifyContent="flex-start" styles={{paddingHorizontal: 60}}>
-            <TextComponent text="73" size={25} font={fontFamilies.semiBold} />
+            <TextComponent
+              text={heartRate}
+              size={25}
+              font={fontFamilies.semiBold}
+            />
             <Space width={10} />
             <TextComponent
               text="bpm"
@@ -149,6 +199,7 @@ const ReportScreen = (props: any) => {
             />
           </Row>
         </Card>
+        <Space height={20} />
         <Row>
           <Card color="#FCE8DD" styles={{flex: 1, borderRadius: 20}}>
             <Row justifyContent="flex-start">
@@ -164,11 +215,17 @@ const ReportScreen = (props: any) => {
             </Row>
             <Row>
               <TextComponent
-                text="4.0"
+                text={bloodSugar}
                 size={25}
                 font={fontFamilies.semiBold}
               />
-              <TextComponent text="mmol/l" />
+              <Space width={8} />
+              <TextComponent
+                text="mmol/l"
+                size={12}
+                font={fontFamilies.semiBold}
+                color="gray"
+              />
             </Row>
           </Card>
           <Card color="#DCEDF4" styles={{flex: 1, borderRadius: 20}}>
@@ -186,16 +243,28 @@ const ReportScreen = (props: any) => {
             </Row>
             <Row>
               <TextComponent
-                text="19.7"
+                text={bmi}
                 size={25}
                 font={fontFamilies.semiBold}
               />
-              <TextComponent text="Kg/m2" />
+              <Space width={8} />
+              <TextComponent
+                text="Kg/m2"
+                size={12}
+                font={fontFamilies.semiBold}
+                color="gray"
+              />
             </Row>
           </Card>
         </Row>
 
-        <Button title="Update" onPress={handleUpdate} color="#0B8FAC" styles={ {marginHorizontal:50, marginVertical: 20}} />
+        <Button
+          title="Update"
+          onPress={handleUpdate}
+          color="#0B8FAC"
+          styles={{ marginHorizontal: 50, marginVertical: 20 }}
+          textStyleProps={{ fontFamily: fontFamilies.semiBold}}
+        />
 
         <Modal
           transparent={true}
@@ -203,32 +272,80 @@ const ReportScreen = (props: any) => {
           visible={isFormVisible}
           onRequestClose={() => setIsFormVisible(false)}>
           <View style={styles.modalBackground}>
-            <View style={styles.modalContainer}>
-              <TextInput
-                style={styles.textInput}
-                placeholder="Enter Heart Rate..."
+            <Card styles={[styles.modalContainer, {}]}>
+              <Input
+                label="Blood pressure"
+                value={sys + '/' + dia + '/' + pul}
+                onChange={setBloodPressure}
+                styles={{width: '100%', borderRadius: 10, marginTop: -5}}
+                labelStyleProps={{fontFamily: fontFamilies.regular}}
+                inputStyles={{fontFamily: fontFamilies.regular}}
+                placeholder="SYS/DIA/PUL"
+              />
+              <Input
+                label="Heart rate"
                 value={heartRate}
-                onChangeText={setHeartRate}
-                keyboardType="numeric"
+                onChange={setHeartRate}
+                styles={{width: '100%', borderRadius: 10, marginTop: -5}}
+                labelStyleProps={{fontFamily: fontFamilies.regular}}
+                inputStyles={{fontFamily: fontFamilies.regular}}
+                placeholder="BPM"
               />
-              <Input value={heartRate} onChange={setHeartRate} styles={{width: '100%'}} placeholder='bpm'/>
-              <TextInput
-                style={styles.textInput}
-                placeholder="Enter Body Temperature..."
-                value={temperature}
-                onChangeText={setTemperature}
-                keyboardType="numeric"
+              <Input
+                label="Blood sugar"
+                value={bloodSugar}
+                onChange={setBloodSugar}
+                styles={{width: '100%', borderRadius: 10, marginTop: -5}}
+                labelStyleProps={{fontFamily: fontFamilies.regular}}
+                inputStyles={{fontFamily: fontFamilies.regular}}
+                placeholder="mmol"
               />
-              <TextInput
-                style={styles.textInput}
-                placeholder="Enter Blood Pressure..."
-                value={bloodPressure}
-                onChangeText={setBloodPressure}
-                keyboardType="numeric"
-              />
-              <Button title="Submit" onPress={handleSubmit} />
-              <Button title="Cancel" onPress={() => setIsFormVisible(false)} />
-            </View>
+              <Row justifyContent="space-between" styles={{width: '100%'}}>
+                <Input
+                  label="Your height"
+                  value={height}
+                  onChange={setHeight}
+                  styles={{width: '90%', borderRadius: 10, marginTop: -5}}
+                  labelStyleProps={{fontFamily: fontFamilies.regular}}
+                  inputStyles={{fontFamily: fontFamilies.regular}}
+                  placeholder="Cm"
+                />
+                <Space width={15} />
+                <Input
+                  label="Your weight"
+                  value={weight}
+                  onChange={setWeight}
+                  styles={{width: '90%', borderRadius: 10, marginTop: -5}}
+                  labelStyleProps={{fontFamily: fontFamilies.regular}}
+                  inputStyles={{fontFamily: fontFamilies.regular}}
+                  placeholder="Kg"
+                />
+              </Row>
+              <Row
+                justifyContent="space-between"
+                styles={{width: '80%', marginTop: 20}}>
+                <Button
+                  title="Cancel"
+                  onPress={() => setIsFormVisible(false)}
+                  styles={{borderRadius: 15, backgroundColor: '#e05368'}}
+                  textStyleProps={{
+                    fontFamily: fontFamilies.medium,
+                    fontSize: 14,
+                    color: '#fff'
+                  }}
+                />
+                <Button
+                  title="Submit"
+                  onPress={handleSubmit}
+                  styles={{borderRadius: 15, backgroundColor: '#21becc'}}
+                  textStyleProps={{
+                    fontFamily: fontFamilies.medium,
+                    fontSize: 14,
+                    color: '#fff'
+                  }}
+                />
+              </Row>
+            </Card>
           </View>
         </Modal>
       </Section>
@@ -248,9 +365,6 @@ const styles = StyleSheet.create({
   contentContainer: {
     paddingHorizontal: 20,
     paddingBottom: 20,
-  },
-  instruction: {
-    marginBottom: 10,
   },
   inputContainer: {
     flexDirection: 'row',
