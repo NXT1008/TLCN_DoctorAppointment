@@ -9,7 +9,7 @@ import {
   reviews,
   schedules,
   specializations,
-} from './SampleData'; // Import file sampledata.ts
+} from './index'; // Import file index.ts
 
 async function uploadDataToFirestore() {
   try {

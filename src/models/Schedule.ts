@@ -1,7 +1,7 @@
 export interface Schedule {
-  scheduleId: number;
+  scheduleId: string;
   availableDate: Date;
   startTime: Date;
   endTime: Date;
-  doctorId: number;
+  doctorId: string;
 }

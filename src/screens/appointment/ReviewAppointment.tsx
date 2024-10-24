@@ -27,6 +27,7 @@ const mockDoctor: Doctor = {
 const mockPatient: Patient = {
   patientId: 'patient1',
   name: 'John Doe',
+  gender: 'male',
   email: 'john@example.com',
   phone: '123-456-7890',
   image: '',

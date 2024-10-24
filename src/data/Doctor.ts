@@ -1,204 +1,236 @@
-[    {
-        "id": 345,
-        "name": "Dr. Bowen Chan",
-        "gender": "M",
-        "image": "/img/doctors/chan_small.jpg",
-        "availability" : {
-            "Monday": "8:30am - 5:30pm",
-            "Wednesday": "1:30pm - 7:30pm",
-            "Thrusday": "10am - 8pm",
-            "Friday": "9am - 12pm"
-        },
-        "phone": "416-486-1956",
-        "address": {
-            "street": "473 Dupont Street",
-            "city": "Toronto",
-            "prov": "ON",
-            "postal": "M6G 1Y6"
-        },
-        "reviews": [
-            {
-                "name": "",
-                "rating": 5,
-                "comments": "Very good doctor.",
-                "attributes": {
-                    "staff": 5,
-                    "punctual": 5,
-                    "helpful": 5,
-                    "knowledge": 5
-                }
-            },
-            {
-                "name": "",
-                "rating": 5,
-                "comments": "They are particularly wonderful with my baby daughter",
-                "attributes": {
-                    "staff": 5,
-                    "punctual": 5,
-                    "helpful": 5,
-                    "knowledge": 5
-                }
-            },
-            {
-                "name": "",
-                "rating": 4.75,
-                "comments": "Awesome doc that really knows his stuff.",
-                "attributes": {
-                    "staff": 5,
-                    "punctual": 4,
-                    "helpful": 5,
-                    "knowledge": 5
-                }
-            },
-            {
-                "name": "",
-                "rating": 3.75,
-                "comments": "We had to find a new Dr. with the sudden passing of ours. Dr. Chan & his Associates are very caring.",
-                "attributes": {
-                    "staff": 3,
-                    "punctual": 4,
-                    "helpful": 5,
-                    "knowledge": 3
-                }
-            }
-        ]
-    },
-    {
-        "id": 564,
-        "name": "Dr. Michael Lewis BSc, MD, CCFP",
-        "gender": "M",
-        "image": "/img/doctors/Michael_Lewis_small.jpg",
-        "availability" : {
-            "Monday": "9am - 5pm",
-            "Tuesday": "9am - 12pm",
-            "Friday": "9am - 12pm"
-        },
-        "phone": "416-486-1956",
-        "address": {
-            "street": "200 St. Clair Ave. West Suite 110",
-            "city": "Toronto",
-            "prov": "ON",
-            "postal": "M4V 1R1"
-        },
-        "reviews": [
-            {
-                "name": "",
-                "rating": 2.5,
-                "comments": "Dr. Lewis is good, but the person whop answers the phone and who you depend on to get an appointment, keep track of information, etc, is terrible. Her command of the english language isn't great, and results in a LOT of errors.",
-                "attributes": {
-                    "staff": 1,
-                    "punctual": 2,
-                    "helpful": 3,
-                    "knowledge": 4
-                }
-            }
-        ]
-    },
-    {
-        "id": 675,
-        "name": "Dr. Sharon Hind BScH, MD, CCFP",
-        "gender": "F",
-        "image": "/img/doctors/sharonwelch_small.jpg",
-        "availability" : {
-            "Monday": "10am - 2pm",
-            "Tuesday": "11am - 5pm",
-            "Wednesday": "10am - 5pm"
-        },
-        "phone": "416-486-1956",
-        "address": {
-            "street": "200 St. Clair Ave. West Suite 110",
-            "city": "Toronto",
-            "prov": "ON",
-            "postal": "M4V 1R1"
-        },
-        "reviews": [
-            {
-                "name": "",
-                "rating": 5,
-                "comments": "",
-                "attributes": {
-                    "staff": 5,
-                    "punctual": 5,
-                    "helpful": 5,
-                    "knowledge": 5
-                }
-            },
-            {
-                "name": "",
-                "rating": 4.75,
-                "comments": "",
-                "attributes": {
-                    "staff": 5,
-                    "punctual": 5,
-                    "helpful": 5,
-                    "knowledge": 4
-                }
-            },
-            {
-                "name": "",
-                "rating": 4.75,
-                "comments": "very caring and attentive",
-                "attributes": {
-                    "staff": 4,
-                    "punctual": 5,
-                    "helpful": 5,
-                    "knowledge": 5
-                }
-            },
-            {
-                "name": "",
-                "rating": 4.75,
-                "comments": "",
-                "attributes": {
-                    "staff": 4,
-                    "punctual": 5,
-                    "helpful": 5,
-                    "knowledge": 3
-                }
-            }
-        ]
-    },
-    {
-        "id": 152,
-        "name": "Dr. Sheeja Mathai",
-        "gender": "F",
-        "image": "/img/doctors/drmathai_small.jpg",
-        "availability" : {
-        },
-        "phone": "647-722-2370",
-        "address": {
-            "street": "390 Steeles Avenue West",
-            "city": "Vaughan",
-            "prov": "ON",
-            "postal": "L4J"
-        },
-        "reviews": []
-    },
-    {
-        "id": 222,
-        "name": "Dr. Preston Tran",
-        "gender": "M",
-        "image": "/img/doctors/TranTriet_small.jpg",
-        "phone": "647-722-2370",
-        "address": {
-            "street": "390 Steeles Avenue West",
-            "city": "Vaughan",
-            "prov": "ON",
-            "postal": "L4J"
-        },
-        "reviews": [
-            {
-                "name": "",
-                "rating": 4.5,
-                "comments": "Wonderful doctor: respectful, skillful, thorough, takes time, cares. ",
-                "attributes": {
-                    "staff": 4,
-                    "punctual": 4,
-                    "helpful": 5,
-                    "knowledge": 5
-                }
-            }
-        ]
-    }
+import {Doctor} from '../models/Doctor';
+export const doctors: Doctor[] = [
+  // Bác sĩ thuộc khoa spec_1 (Cardiology)
+  {
+    doctorId: 'doc_01',
+    name: 'Dr. Bowen Chan',
+    email: 'dr.chan@hospital.com',
+    phone: '416-486-1956',
+    image: '/img/doctors/chan.jpg',
+    hospitalId: 'hos_01',
+    specializationId: 'spec_1',
+  },
+  {
+    doctorId: 'doc_02',
+    name: 'Dr. Amelia Smith',
+    email: 'dr.smith@hospital.com',
+    phone: '416-986-7896',
+    image: '/img/doctors/smith.jpg',
+    hospitalId: 'hos_02',
+    specializationId: 'spec_1',
+  },
+  {
+    doctorId: 'doc_03',
+    name: 'Dr. Michael Lee',
+    email: 'dr.lee@clinic.com',
+    phone: '416-123-4567',
+    image: '/img/doctors/lee.jpg',
+    hospitalId: 'hos_03',
+    specializationId: 'spec_1',
+  },
+  {
+    doctorId: 'doc_04',
+    name: 'Dr. Patricia Green',
+    email: 'dr.green@clinic.com',
+    phone: '416-654-7896',
+    image: '/img/doctors/green.jpg',
+    hospitalId: 'hos_04',
+    specializationId: 'spec_1',
+  },
+  {
+    doctorId: 'doc_05',
+    name: 'Dr. David White',
+    email: 'dr.white@hospital.com',
+    phone: '416-564-7896',
+    image: '/img/doctors/white.jpg',
+    hospitalId: 'hos_05',
+    specializationId: 'spec_1',
+  },
 
-]
+  // Bác sĩ thuộc khoa spec_2 (Dermatology)
+  {
+    doctorId: 'doc_06',
+    name: 'Dr. Sharon Hind',
+    email: 'dr.hind@clinic.com',
+    phone: '416-486-1967',
+    image: '/img/doctors/hind.jpg',
+    hospitalId: 'hos_01',
+    specializationId: 'spec_2',
+  },
+  {
+    doctorId: 'doc_07',
+    name: 'Dr. Rachel Long',
+    email: 'dr.long@clinic.com',
+    phone: '416-234-5678',
+    image: '/img/doctors/long.jpg',
+    hospitalId: 'hos_02',
+    specializationId: 'spec_2',
+  },
+  {
+    doctorId: 'doc_08',
+    name: 'Dr. James Bond',
+    email: 'dr.bond@clinic.com',
+    phone: '416-345-6789',
+    image: '/img/doctors/bond.jpg',
+    hospitalId: 'hos_03',
+    specializationId: 'spec_2',
+  },
+  {
+    doctorId: 'doc_09',
+    name: 'Dr. Sarah King',
+    email: 'dr.king@hospital.com',
+    phone: '416-456-7890',
+    image: '/img/doctors/king.jpg',
+    hospitalId: 'hos_04',
+    specializationId: 'spec_2',
+  },
+  {
+    doctorId: 'doc_10',
+    name: 'Dr. Bruce Banner',
+    email: 'dr.banner@clinic.com',
+    phone: '416-567-8901',
+    image: '/img/doctors/banner.jpg',
+    hospitalId: 'hos_05',
+    specializationId: 'spec_2',
+  },
+
+  // Bác sĩ thuộc khoa spec_3 (Neurology)
+  {
+    doctorId: 'doc_11',
+    name: 'Dr. Tony Stark',
+    email: 'dr.stark@hospital.com',
+    phone: '416-678-9012',
+    image: '/img/doctors/stark.jpg',
+    hospitalId: 'hos_01',
+    specializationId: 'spec_3',
+  },
+  {
+    doctorId: 'doc_12',
+    name: 'Dr. Natasha Romanoff',
+    email: 'dr.romanoff@clinic.com',
+    phone: '416-789-0123',
+    image: '/img/doctors/romanoff.jpg',
+    hospitalId: 'hos_02',
+    specializationId: 'spec_3',
+  },
+  {
+    doctorId: 'doc_13',
+    name: 'Dr. Bruce Wayne',
+    email: 'dr.wayne@clinic.com',
+    phone: '416-890-1234',
+    image: '/img/doctors/wayne.jpg',
+    hospitalId: 'hos_03',
+    specializationId: 'spec_3',
+  },
+  {
+    doctorId: 'doc_14',
+    name: 'Dr. Clark Kent',
+    email: 'dr.kent@hospital.com',
+    phone: '416-901-2345',
+    image: '/img/doctors/kent.jpg',
+    hospitalId: 'hos_04',
+    specializationId: 'spec_3',
+  },
+  {
+    doctorId: 'doc_15',
+    name: 'Dr. Diana Prince',
+    email: 'dr.prince@clinic.com',
+    phone: '416-012-3456',
+    image: '/img/doctors/prince.jpg',
+    hospitalId: 'hos_05',
+    specializationId: 'spec_3',
+  },
+  // Bác sĩ thuộc khoa spec_4 (Pediatrics)
+  {
+    doctorId: 'doc_16',
+    name: 'Dr. Peter Parker',
+    email: 'dr.parker@hospital.com',
+    phone: '416-234-5678',
+    image: '/img/doctors/parker.jpg',
+    hospitalId: 'hos_06',
+    specializationId: 'spec_4',
+  },
+  {
+    doctorId: 'doc_17',
+    name: 'Dr. Stephen Strange',
+    email: 'dr.strange@hospital.com',
+    phone: '416-345-6789',
+    image: '/img/doctors/strange.jpg',
+    hospitalId: 'hos_07',
+    specializationId: 'spec_4',
+  },
+  {
+    doctorId: 'doc_18',
+    name: 'Dr. Wanda Maximoff',
+    email: 'dr.maximoff@hospital.com',
+    phone: '416-456-7890',
+    image: '/img/doctors/maximoff.jpg',
+    hospitalId: 'hos_08',
+    specializationId: 'spec_4',
+  },
+  {
+    doctorId: 'doc_19',
+    name: 'Dr. Steve Rogers',
+    email: 'dr.rogers@clinic.com',
+    phone: '416-567-8901',
+    image: '/img/doctors/rogers.jpg',
+    hospitalId: 'hos_09',
+    specializationId: 'spec_4',
+  },
+  {
+    doctorId: 'doc_20',
+    name: 'Dr. Scott Lang',
+    email: 'dr.lang@clinic.com',
+    phone: '416-678-9012',
+    image: '/img/doctors/lang.jpg',
+    hospitalId: 'hos_10',
+    specializationId: 'spec_4',
+  },
+
+  // Bác sĩ thuộc khoa spec_5 (Orthopedics)
+  {
+    doctorId: 'doc_21',
+    name: 'Dr. Bruce Banner',
+    email: 'dr.banner@hospital.com',
+    phone: '416-789-0123',
+    image: '/img/doctors/banner.jpg',
+    hospitalId: 'hos_06',
+    specializationId: 'spec_5',
+  },
+  {
+    doctorId: 'doc_22',
+    name: 'Dr. Sam Wilson',
+    email: 'dr.wilson@hospital.com',
+    phone: '416-890-1234',
+    image: '/img/doctors/wilson.jpg',
+    hospitalId: 'hos_07',
+    specializationId: 'spec_5',
+  },
+  {
+    doctorId: 'doc_23',
+    name: 'Dr. Bucky Barnes',
+    email: 'dr.barnes@hospital.com',
+    phone: '416-901-2345',
+    image: '/img/doctors/barnes.jpg',
+    hospitalId: 'hos_08',
+    specializationId: 'spec_5',
+  },
+  {
+    doctorId: 'doc_24',
+    name: 'Dr. Carol Danvers',
+    email: 'dr.danvers@clinic.com',
+    phone: '416-012-3456',
+    image: '/img/doctors/danvers.jpg',
+    hospitalId: 'hos_09',
+    specializationId: 'spec_5',
+  },
+  {
+    doctorId: 'doc_25',
+    name: 'Dr. T.Challa',
+    email: 'dr.tchalla@clinic.com',
+    phone: '416-123-4567',
+    image: '/img/doctors/tchalla.jpg',
+    hospitalId: 'hos_10',
+    specializationId: 'spec_5',
+  },
+];

@@ -1,5 +1,5 @@
 import {View, Text, Image, TouchableOpacity} from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   ContainerComponent,
   Dropdown,
@@ -16,8 +16,18 @@ import {fontFamilies} from '../../constants/fontFamilies';
 import {MenuItem} from '../../components/models/MenuProps';
 import {Clock, Home, User} from 'iconsax-react-native';
 import RadioGroup from '../../components/RadioGroup';
+import {Doctor} from '../../models/Doctor';
+import firestore from '@react-native-firebase/firestore';
+import {Specialization} from '../../models/Specialization';
 
 const DoctorScreen = (props: any) => {
+  const [doctorList, setDoctorList] = useState<Doctor[]>([]);
+
+  useEffect(() => {
+    getAllDoctors();
+  }, []);
+
+  /// Dropdown menu
   const [selected, setSelected] = useState<MenuItem>();
   const menuItems: MenuItem[] = [
     {key: '1', label: 'Item 1', icon: <Home color="black" />, disable: false},
@@ -29,6 +39,29 @@ const DoctorScreen = (props: any) => {
     {key: '7', label: 'Item 3', icon: <User color="black" />, disable: false},
   ];
 
+  const getAllDoctors = async () => {
+    await firestore()
+      .collection('doctors')
+      .get()
+      .then(snap => {
+        if (snap.empty) {
+          console.log('Không có bác sĩ');
+          return;
+        }
+        const items: Doctor[] = [];
+        snap.forEach((item: any) => {
+          items.push({
+            id: item.id,
+            ...item.data(),
+          });
+        });
+        setDoctorList(items);
+      })
+      .catch(error => {
+        console.error('Error fetching doctor:', error); // Log lỗi
+      });
+  };
+
   const handleMenuClick = (key: string | number) => {
     const item = menuItems.find(menuItem => menuItem.key === key); // Tìm menu item dựa trên key
     if (item) {
@@ -37,7 +70,7 @@ const DoctorScreen = (props: any) => {
   };
 
   return (
-    <ContainerComponent isScroll>
+    <ContainerComponent isScroll style={{marginTop: -16}}>
       <Section styles={{marginTop: 10}}>
         <TextComponent
           text="Find your doctor"
@@ -95,31 +128,15 @@ const DoctorScreen = (props: any) => {
       </Section>
 
       <Section>
-        <DoctorComponent
-          onPress={() => {
-            props.navigation.navigate('DoctorDetailScreen');
-          }}
-        />
-        <DoctorComponent
-          onPress={() => {
-            props.navigation.navigate('DoctorDetailScreen');
-          }}
-        />
-        <DoctorComponent
-          onPress={() => {
-            props.navigation.navigate('DoctorDetailScreen');
-          }}
-        />
-        <DoctorComponent
-          onPress={() => {
-            props.navigation.navigate('DoctorDetailScreen');
-          }}
-        />
-        <DoctorComponent
-          onPress={() => {
-            props.navigation.navigate('DoctorDetailScreen');
-          }}
-        />
+        {doctorList.map((item, index) => (
+          <DoctorComponent
+            key={index}
+            data={item}
+            onPress={() => {
+              props.navigation.navigate('DoctorDetail', {doctor: item});
+            }}
+          />
+        ))}
       </Section>
     </ContainerComponent>
   );

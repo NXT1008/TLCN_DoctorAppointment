@@ -1,5 +1,5 @@
 import {Alert, Image, Touchable, TouchableOpacity, View} from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   Button,
   Col,
@@ -26,6 +26,8 @@ import {
   DocumentText,
   Edit,
   Edit2,
+  GalleryEdit,
+  PenAdd,
   Sms,
   UserEdit,
   Warning2,
@@ -33,8 +35,36 @@ import {
 import {fontFamilies} from '../../constants/fontFamilies';
 import ProfileComponent from './components/ProfileComponent';
 import ModalComponent from './components/ModalComponent';
+import deleteAllData from '../../data/zResetData';
+import uploadDataToFirestore from '../../data/UploadDataToFirebase';
+import firestore from '@react-native-firebase/firestore';
+import {Patient} from '../../models/Patient';
 
-const ProfileScreen = () => {
+const ProfileScreen = (props: any) => {
+  const user = auth().currentUser;
+  const [patient, setPatient] = useState<Patient>();
+
+  useEffect(() => {
+    const getCurrentPatient = async () => {
+      await firestore()
+        .collection('patients')
+        .doc(user?.uid)
+        .get()
+        .then(snap => {
+          if (!snap.exists) {
+            console.log('No such document!');
+          } else {
+            const patient = snap.data() as Patient;
+            setPatient(patient);
+          }
+        })
+        .catch(e => {
+          console.log(e);
+        });
+    };
+    getCurrentPatient();
+  }, [patient]);
+
   const [isAlertVisible, setAlertVisible] = useState(false);
 
   const showAlert = () => {
@@ -55,7 +85,7 @@ const ProfileScreen = () => {
     <ContainerComponent>
       <Section>
         <Row justifyContent="space-between">
-          <ArrowLeft2 color="#000" />
+          <ArrowLeft2 color="#fff" />
           <TextComponent
             text="Profile"
             size={25}
@@ -64,7 +94,7 @@ const ProfileScreen = () => {
           />
           <TouchableOpacity
             onPress={() => {
-              Alert.alert('Edit Profile');
+              props.navigation.navigate('UpdateProfile', {patient});
             }}>
             <Edit color="#000" size={26} />
           </TouchableOpacity>
@@ -72,24 +102,53 @@ const ProfileScreen = () => {
       </Section>
       <Section>
         <Row justifyContent="flex-start" styles={{paddingHorizontal: 20}}>
-          <Image
-            source={require('../../assets/images/doctor.png')}
-            style={{
-              width: 80,
-              height: 80,
-              borderRadius: 100,
-              resizeMode: 'contain',
-            }}
-          />
+          <View>
+            <Image
+              source={require('../../assets/images/doctor.png')}
+              style={{
+                width: 80,
+                height: 80,
+                borderRadius: 100,
+                resizeMode: 'contain',
+              }}
+            />
+            <TouchableOpacity
+              onPress={() => {
+                Alert.alert('Update Image');
+              }}>
+              <View
+                style={{
+                  position: 'absolute',
+                  height: 50,
+                  width: 50,
+                  bottom: -15,
+                  right: -15,
+                  backgroundColor: '#EBF0F0',
+                  borderRadius: 100,
+                  borderWidth: 5,
+                  borderColor: '#fff',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}>
+                <Edit2 color="#000" size={24} variant="Bold" />
+              </View>
+            </TouchableOpacity>
+          </View>
           <Space width={30} />
           <Col>
             <TextComponent
-              text="UserName"
+              text={
+                patient
+                  ? patient.nickname
+                    ? patient.nickname
+                    : patient.name
+                  : ''
+              }
               size={20}
               font={fontFamilies.semiBold}
             />
             <TextComponent
-              text="Gender"
+              text={patient ? patient.gender : ''}
               size={12}
               font={fontFamilies.regular}
             />
@@ -100,7 +159,17 @@ const ProfileScreen = () => {
           <Call color="#000" />
           <Space width={20} />
           <TextComponent
-            text="0793-988-509"
+            text={
+              patient
+                ? patient.phone
+                  ? patient.phone.slice(0, 4) +
+                    '-' +
+                    patient.phone.slice(4, 7) +
+                    '-' +
+                    patient.phone.slice(7)
+                  : "Don't have"
+                : ''
+            }
             size={12}
             font={fontFamilies.regular}
           />
@@ -111,7 +180,7 @@ const ProfileScreen = () => {
           <Sms color="#000" />
           <Space width={20} />
           <TextComponent
-            text="nguyenxuanthe@gmail.com"
+            text={patient ? patient.email : ''}
             size={12}
             font={fontFamilies.regular}
           />
@@ -122,27 +191,42 @@ const ProfileScreen = () => {
         <ProfileComponent
           text="My Report"
           icon={<DocumentText color="#0B8FAC" />}
+          onPress={() => {
+            props.navigation.navigate('ReportScreen');
+          }}
+        />
+        <ProfileComponent
+          text="Payment Methods"
+          icon={<DocumentText color="#0B8FAC" />}
           onPress={() => {}}
         />
         <ProfileComponent
           text="My Favorites Doctors"
           icon={<DocumentText color="#0B8FAC" />}
-          onPress={() => {}}
+          onPress={() => {
+            props.navigation.navigate('MyfavoritesDoctor');
+          }}
         />
         <ProfileComponent
           text="Privacy Polices"
           icon={<DocumentText color="#0B8FAC" />}
-          onPress={() => {}}
+          onPress={() => {
+            props.navigation.navigate('PrivacyPolicyScreen');
+          }}
         />
         <ProfileComponent
           text="Settings"
           icon={<DocumentText color="#0B8FAC" />}
-          onPress={() => {}}
+          onPress={() => {
+            props.navigation.navigate('SettingScreen');
+          }}
         />
         <ProfileComponent
           text="FAQs"
           icon={<DocumentText color="#0B8FAC" />}
-          onPress={() => {}}
+          onPress={() => {
+            props.navigation.navigate('FAQsScreen');
+          }}
         />
         <ProfileComponent
           text="Logout"

@@ -99,6 +99,7 @@ interface Props {
   styles?: StyleProp<ViewStyle>;
   required?: boolean;
   helpText?: string;
+  styleHelpText?: StyleProp<TextStyle>;
   disable?: boolean;
   color?: string;
   labelStyleProps?: StyleProp<TextStyle>;
@@ -128,6 +129,7 @@ const Input = (props: Props) => {
     rows,
     required,
     helpText,
+    styleHelpText,
     disable,
     iconClear,
     passwordShowHideButton,
@@ -203,7 +205,7 @@ const Input = (props: Props) => {
           keyboardType={keyboardType}
           placeholderTextColor={placeholderColor ?? colors.gray400}
           placeholder={placeholder}
-          value={text}
+          value={value}
           onChangeText={val => {
             setText(val);
             onChange(val);
@@ -266,7 +268,7 @@ const Input = (props: Props) => {
         <View style={{flex: 1}}>
           {required && isError && helpText && (
             <Text
-              styles={{marginTop: 8}}
+              styles={[{marginTop: 8}, styleHelpText]}
               text={helpText}
               color={colors.danger}
               size={12}

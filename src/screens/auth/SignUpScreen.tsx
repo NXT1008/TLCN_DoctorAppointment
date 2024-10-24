@@ -14,11 +14,15 @@ import {
   Section,
   Space,
   TextComponent,
-  Button
+  Button,
 } from '../../components';
 import {fontFamilies} from '../../constants/fontFamilies';
 
 import auth from '@react-native-firebase/auth';
+import ModalComponent from './components/ModalComponent';
+import { Forbidden2 } from 'iconsax-react-native';
+import { Patient } from '../../models/Patient';
+import firestore from '@react-native-firebase/firestore'
 
 const SignUpScreen = ({navigation}: any) => {
   const [name, setName] = useState('');
@@ -26,26 +30,58 @@ const SignUpScreen = ({navigation}: any) => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isError, setIsError] = useState(false);
+  const [errorText, setErrorText] = useState('');
 
   const handleSignInWithEmail = async () => {
-    if (!email || !password) {
-      console.log("Rong")
+    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+
+    if (!name) {
+      setErrorText('Please enter your name');
+      setIsError(true);
+      return;
+    }
+
+    if (!email || !emailRegex.test(email)) {
+      setErrorText('Please enter a valid email');
+      setIsError(true);
+      setIsLoading(false);
+      return;
+    }
+    if (password.length < 6) {
+      setErrorText('Password must be at least 6 characters long');
+      setIsError(true);
+      setIsLoading(false);
+      return;
+    }
+    if (confirmPassword !== password) {
+      setErrorText('Passwords do not match');
+      setIsError(true);
+      setIsLoading(false);
+      return;
     } else {
       setIsLoading(true);
       await auth()
         .createUserWithEmailAndPassword(email, password)
         .then(userCridential => {
           const user = userCridential.user;
-          if (user) {
-            console.log(user);
+          const patient: Patient = {
+            patientId: user.uid,
+            name: name,
+            nickname: '',
+            email: email,
+            gender: '',
+            phone: '',
+            image: ''
           }
+          firestore().collection('patients').doc(user.uid).set(patient)
 
           // save user to firestore
           setIsLoading(false);
         })
         .catch((error: any) => {
           setIsLoading(false);
-          console.log(error.message);
+          setErrorText(error)
         });
     }
   };
@@ -120,12 +156,12 @@ const SignUpScreen = ({navigation}: any) => {
           />
           <Space height={8} />
           <Input
+            password
             value={password}
             onChange={val => {
               setPassword(val);
             }}
             placeholder="Enter your password"
-            clear
             color="#f4f6f9"
             inputStyles={{fontFamily: fontFamilies.regular, fontSize: 13}}
             prefix
@@ -141,12 +177,12 @@ const SignUpScreen = ({navigation}: any) => {
           />
           <Space height={8} />
           <Input
+            password
             value={confirmPassword}
             onChange={val => {
               setConfirmPassword(val);
             }}
             placeholder="Enter confirm password"
-            clear
             color="#f4f6f9"
             inputStyles={{fontFamily: fontFamilies.regular, fontSize: 13}}
             prefix
@@ -176,6 +212,13 @@ const SignUpScreen = ({navigation}: any) => {
             <Text style={styles.signInText}>Sign In</Text>
           </TouchableOpacity>
         </View>
+        <ModalComponent
+          isVisible={isError}
+          message={errorText}
+          onConfirm={() => setIsError(false)}
+          type="one-button"
+          icon={<Forbidden2 color="red" size={30} />}
+        />
       </View>
     </ContainerComponent>
   );

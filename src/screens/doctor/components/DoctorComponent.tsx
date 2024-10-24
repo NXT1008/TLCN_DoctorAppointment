@@ -1,15 +1,74 @@
-import React from 'react';
-import {Button, Card, Col, Divider, Row, Space, TextComponent} from '../../../components';
+import React, {useEffect, useState} from 'react';
+import {
+  Button,
+  Card,
+  Col,
+  Divider,
+  Row,
+  Space,
+  TextComponent,
+} from '../../../components';
 import {Image} from 'react-native';
-import { Clock, Icon } from 'iconsax-react-native';
-import { fontFamilies } from '../../../constants/fontFamilies';
+import {Clock, Icon} from 'iconsax-react-native';
+import {fontFamilies} from '../../../constants/fontFamilies';
+import {Doctor} from '../../../models/Doctor';
+import firestore from '@react-native-firebase/firestore';
+import {Specialization} from '../../../models/Specialization';
+import {Hospital} from '../../../models/Hospital';
 
-interface Props{
-  onPress: () => void
+interface Props {
+  onPress: () => void;
+  data: Doctor;
 }
 
 const DoctorComponent = (props: Props) => {
-  const {onPress} = props
+  const {onPress, data} = props;
+  const [spec, setSpec] = useState<Specialization>();
+  const [hospital, setHospital] = useState<Hospital>();
+  const doctor = data;
+
+  useEffect(() => {
+    getSpectializationByDoctorID();
+    getHospitalByDoctorID()
+  }, []);
+
+  const getSpectializationByDoctorID = async () => {
+    try {
+      const specializationDoc = await firestore()
+        .collection('specializations')
+        .doc(doctor.specializationId)
+        .get();
+
+      if (specializationDoc.exists) {
+        const specializationData = specializationDoc.data() as Specialization;
+        setSpec(specializationData);
+      } else {
+        console.error('Specialization document not found');
+      }
+    } catch (error) {
+      console.error('Error fetching specialization:', error);
+    }
+  };
+
+  const getHospitalByDoctorID = async () => {
+    try {
+      const hospital = await firestore()
+        .collection('hospitals')
+        .doc(doctor.hospitalId)
+        .get();
+      
+      if (hospital.exists) {
+        const hospitalData = hospital.data() as Hospital;
+        setHospital(hospitalData)
+      }
+      else {
+        console.error('Hospital document not found');
+      }
+    } catch (error) {
+      console.error('Error fetching hospital:', error);
+    }
+  };
+
   return (
     <Card styles={{marginHorizontal: 5, borderRadius: 20}} shadowed>
       <Row styles={{justifyContent: 'flex-start'}} flex={1}>
@@ -26,12 +85,12 @@ const DoctorComponent = (props: Props) => {
         <Space width={10} />
         <Col flex={2}>
           <TextComponent
-            text="Doctor Name"
+            text={data.name}
             size={16}
             font={fontFamilies.semiBold}
           />
           <TextComponent
-            text="Specialization"
+            text={spec ? spec.name : ''}
             size={14}
             font={fontFamilies.regular}
             color="gray"
@@ -79,7 +138,7 @@ const DoctorComponent = (props: Props) => {
             />
           </Row>
           <TextComponent
-            text="Hospital Name"
+            text={hospital ? hospital.name : ''}
             size={14}
             font={fontFamilies.regular}
             color="gray"
@@ -111,8 +170,8 @@ const DoctorComponent = (props: Props) => {
           onPress={onPress}
           title="Book"
           color="#5AC9B5"
-          styles={{ paddingVertical: 8, marginBottom: -0 }}
-          textStyleProps={{fontSize:14, fontFamily: fontFamilies.semiBold}}
+          styles={{paddingVertical: 8, marginBottom: -0}}
+          textStyleProps={{fontSize: 14, fontFamily: fontFamilies.semiBold}}
         />
       </Row>
     </Card>
