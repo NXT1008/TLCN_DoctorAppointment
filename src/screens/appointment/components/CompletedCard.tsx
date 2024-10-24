@@ -66,17 +66,17 @@ const styles = StyleSheet.create({
   },
   doctorName: {
     fontSize: 16,
-    fontWeight: '500',
     color: '#21a691',
     letterSpacing: 0,
     left: 0,
     top: 0,
+    fontFamily: 'Poppins-Medium'
   },
   specialty: {
     fontSize: 14,
     color: '#27403e',
-    fontWeight: '400',
     marginTop: 6,
+    fontFamily: 'Poppins-Regular'
   },
   ratingContainer: {
     flexDirection: 'row',
@@ -110,7 +110,6 @@ const styles = StyleSheet.create({
     width: 116,
     borderRadius: 18,
     marginTop: 9,
-
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -127,7 +126,7 @@ const styles = StyleSheet.create({
     color: '#fff',
     textAlign: 'center',
     fontSize: 14,
-    fontWeight: 'bold',
+    fontFamily: 'Poppins-Medium'
   },
 });
 

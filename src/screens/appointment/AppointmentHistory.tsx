@@ -182,7 +182,7 @@ const AppointmentScreen = (props: any) => {
         textAlign='center'
       />
 
-      <Section>
+      <Section styles={{marginTop: 10}}>
         <Row justifyContent='space-between'>
           <TouchableOpacity
             style={[styles.filterButton, showComplete && styles.buttonActive]}
@@ -191,6 +191,7 @@ const AppointmentScreen = (props: any) => {
              text= "Complete"
              size = {14}
              color='#ffffff'
+             font = 'Poppins-Medium'
              />
           </TouchableOpacity>
 
@@ -201,6 +202,7 @@ const AppointmentScreen = (props: any) => {
             text='Upcoming'
             size={14}
             color='#ffffff'
+            font = 'Poppins-Medium'
             />
         </TouchableOpacity>
 
@@ -211,6 +213,7 @@ const AppointmentScreen = (props: any) => {
             text='Cancelled'
             size={14}
             color='#ffffff'
+            font = 'Poppins-Medium'
             />
         </TouchableOpacity>
         </Row>

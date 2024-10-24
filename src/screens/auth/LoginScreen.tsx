@@ -200,7 +200,7 @@ const LoginScreen = ({navigation}: any) => {
 
           <TouchableOpacity
             onPress={() => {
-              navigation.navigate('DoctorReview');
+              navigation.navigate('SignUp');
             }}>
             <Text style={styles.signUpText}>Sign Up</Text>
           </TouchableOpacity>

@@ -21,7 +21,7 @@ import {useNavigation} from '@react-navigation/native';
 import {Screen} from 'react-native-screens';
 import {fontFamilies} from '../../constants/fontFamilies';
 
-const DoctorDetailScreen = () => {
+const DoctorDetailScreen = (props: any) => {
   const navigation = useNavigation();
   return (
     <ContainerComponent isScroll styleHeader={{marginTop: -16}}>
@@ -33,7 +33,7 @@ const DoctorDetailScreen = () => {
           flexShrink: 1,
         }}>
         <View style={{paddingHorizontal: 20, marginTop: 16}}>
-          <TouchableOpacity onPress={() => {}}>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
             <ArrowLeft2 color="#000" />
           </TouchableOpacity>
         </View>
@@ -265,7 +265,7 @@ const DoctorDetailScreen = () => {
         </TouchableOpacity>
       </Section>
 
-      <TouchableOpacity style={styles.bookButton} onPress={() => {}}>
+      <TouchableOpacity style={styles.bookButton} onPress={() => props.navigation.navigate('BookingScreen')}>
         <Text style={styles.bookButtonText}>Book Appointment</Text>
       </TouchableOpacity>
     </ContainerComponent>

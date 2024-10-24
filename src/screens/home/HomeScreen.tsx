@@ -22,10 +22,10 @@ import DoctorCard from './components/DoctorCard';
 import Swiper from 'react-native-swiper';
 import SwiperOne from './components/SwiperOne';
 import Specialization from './components/Specialization';
+import { useNavigation } from '@react-navigation/native';
 
 const HomeScreen = (props: any) => {
-  const user = auth().currentUser;
-  
+  const user = auth().currentUser
   return (
     <ContainerComponent isScroll>
       <Row
@@ -53,7 +53,7 @@ const HomeScreen = (props: any) => {
             />
           </View>
         </Row>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => props.navigation.navigate('Notification')}>
           <Image
             source={require('../../assets/IconTab/notification.png')}
             style={{width: 25, height: 25}}
