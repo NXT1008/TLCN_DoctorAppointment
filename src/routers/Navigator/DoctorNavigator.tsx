@@ -10,9 +10,6 @@ const DoctorNavigator = () => {
   return (
     <Stack.Navigator screenOptions={{headerShown: false}}>
       <Stack.Screen name="DoctorScreen" component={DoctorScreen} />
-      <Stack.Screen name="DoctorDetail" component={DoctorDetailScreen}/>
-      <Stack.Screen name="BookingScreen" component={BookingScreen}/>
-
     </Stack.Navigator>
   );
 };

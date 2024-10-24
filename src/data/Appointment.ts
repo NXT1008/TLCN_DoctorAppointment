@@ -3,96 +3,96 @@ import { Appointment } from "../models/Appointment";
 export const appointments: Appointment[] = [
   // Bệnh nhân 1
   {
-    appointmentId: 'app_1',
+    appointmentId: 'app_01',
     scheduleDate: new Date('2024-10-20'),
     startTime: new Date('2024-10-20T09:00:00'),
     endTime: new Date('2024-10-20T10:00:00'),
     status: 'Upcoming',
     note: 'Initial consultation',
-    patientId: 'pat_1',
-    doctorId: 'doc_1',
+    patientId: 'pat_01',
+    doctorId: 'doc_01',
   },
   {
-    appointmentId: 'app_2',
+    appointmentId: 'app_02',
     scheduleDate: new Date('2024-10-25'),
     startTime: new Date('2024-10-25T09:30:00'),
     endTime: new Date('2024-10-25T10:30:00'),
     status: 'Completed',
     note: 'Follow-up visit',
-    patientId: 'pat_1',
-    doctorId: 'doc_2',
+    patientId: 'pat_01',
+    doctorId: 'doc_02',
   },
   {
-    appointmentId: 'app_3',
+    appointmentId: 'app_03',
     scheduleDate: new Date('2024-10-30'),
     startTime: new Date('2024-10-30T14:00:00'),
     endTime: new Date('2024-10-30T15:00:00'),
     status: 'Canceled',
     note: 'Initial consultation',
-    patientId: 'pat_1',
-    doctorId: 'doc_3',
+    patientId: 'pat_01',
+    doctorId: 'doc_03',
   },
   {
-    appointmentId: 'app_4',
+    appointmentId: 'app_04',
     scheduleDate: new Date('2024-11-02'),
     startTime: new Date('2024-11-02T11:00:00'),
     endTime: new Date('2024-11-02T12:00:00'),
     status: 'Upcoming',
     note: 'Annual check-up',
-    patientId: 'pat_1',
-    doctorId: 'doc_4',
+    patientId: 'pat_01',
+    doctorId: 'doc_04',
   },
   {
-    appointmentId: 'app_5',
+    appointmentId: 'app_05',
     scheduleDate: new Date('2024-11-05'),
     startTime: new Date('2024-11-05T10:30:00'),
     endTime: new Date('2024-11-05T11:30:00'),
     status: 'Completed',
     note: 'Lab results review',
-    patientId: 'pat_1',
-    doctorId: 'doc_5',
+    patientId: 'pat_01',
+    doctorId: 'doc_05',
   },
 
   // Bệnh nhân 2
   {
-    appointmentId: 'app_6',
+    appointmentId: 'app_06',
     scheduleDate: new Date('2024-10-21'),
     startTime: new Date('2024-10-21T09:00:00'),
     endTime: new Date('2024-10-21T10:00:00'),
     status: 'Upcoming',
     note: 'Follow-up visit',
-    patientId: 'pat_2',
-    doctorId: 'doc_1',
+    patientId: 'pat_02',
+    doctorId: 'doc_01',
   },
   {
-    appointmentId: 'app_7',
+    appointmentId: 'app_07',
     scheduleDate: new Date('2024-10-28'),
     startTime: new Date('2024-10-28T09:30:00'),
     endTime: new Date('2024-10-28T10:30:00'),
     status: 'Completed',
     note: 'Routine check-up',
-    patientId: 'pat_2',
-    doctorId: 'doc_2',
+    patientId: 'pat_02',
+    doctorId: 'doc_02',
   },
   {
-    appointmentId: 'app_8',
+    appointmentId: 'app_08',
     scheduleDate: new Date('2024-11-01'),
     startTime: new Date('2024-11-01T14:00:00'),
     endTime: new Date('2024-11-01T15:00:00'),
     status: 'Canceled',
     note: 'Special consultation',
-    patientId: 'pat_2',
-    doctorId: 'doc_3',
+    patientId: 'pat_02',
+    doctorId: 'doc_03',
   },
   {
-    appointmentId: 'app_9',
+    appointmentId: 'app_09',
     scheduleDate: new Date('2024-11-03'),
     startTime: new Date('2024-11-03T11:00:00'),
     endTime: new Date('2024-11-03T12:00:00'),
     status: 'Upcoming',
     note: 'Health check-up',
-    patientId: 'pat_2',
-    doctorId: 'doc_4',
+    patientId: 'pat_02',
+    doctorId: 'doc_04',
   },
   {
     appointmentId: 'app_10',
@@ -101,8 +101,8 @@ export const appointments: Appointment[] = [
     endTime: new Date('2024-11-06T11:30:00'),
     status: 'Completed',
     note: 'Medication review',
-    patientId: 'pat_2',
-    doctorId: 'doc_5',
+    patientId: 'pat_02',
+    doctorId: 'doc_05',
   },
 
   // Bệnh nhân 3
@@ -113,8 +113,8 @@ export const appointments: Appointment[] = [
     endTime: new Date('2024-10-22T10:00:00'),
     status: 'Upcoming',
     note: 'Initial consultation',
-    patientId: 'pat_3',
-    doctorId: 'doc_1',
+    patientId: 'pat_03',
+    doctorId: 'doc_01',
   },
   {
     appointmentId: 'app_12',
@@ -123,8 +123,8 @@ export const appointments: Appointment[] = [
     endTime: new Date('2024-10-27T10:30:00'),
     status: 'Completed',
     note: 'Follow-up visit',
-    patientId: 'pat_3',
-    doctorId: 'doc_2',
+    patientId: 'pat_03',
+    doctorId: 'doc_02',
   },
   {
     appointmentId: 'app_13',
@@ -133,8 +133,8 @@ export const appointments: Appointment[] = [
     endTime: new Date('2024-11-02T15:00:00'),
     status: 'Canceled',
     note: 'Routine check-up',
-    patientId: 'pat_3',
-    doctorId: 'doc_3',
+    patientId: 'pat_03',
+    doctorId: 'doc_03',
   },
   {
     appointmentId: 'app_14',
@@ -143,8 +143,8 @@ export const appointments: Appointment[] = [
     endTime: new Date('2024-11-05T12:00:00'),
     status: 'Upcoming',
     note: 'Annual check-up',
-    patientId: 'pat_3',
-    doctorId: 'doc_4',
+    patientId: 'pat_03',
+    doctorId: 'doc_04',
   },
   {
     appointmentId: 'app_15',
@@ -153,8 +153,8 @@ export const appointments: Appointment[] = [
     endTime: new Date('2024-11-07T11:30:00'),
     status: 'Completed',
     note: 'Lab results review',
-    patientId: 'pat_3',
-    doctorId: 'doc_5',
+    patientId: 'pat_03',
+    doctorId: 'doc_05',
   },
 
   // Bệnh nhân 4
@@ -165,8 +165,8 @@ export const appointments: Appointment[] = [
     endTime: new Date('2024-10-23T10:00:00'),
     status: 'Upcoming',
     note: 'Follow-up visit',
-    patientId: 'pat_4',
-    doctorId: 'doc_1',
+    patientId: 'pat_04',
+    doctorId: 'doc_01',
   },
   {
     appointmentId: 'app_17',
@@ -175,8 +175,8 @@ export const appointments: Appointment[] = [
     endTime: new Date('2024-10-29T10:30:00'),
     status: 'Completed',
     note: 'Routine check-up',
-    patientId: 'pat_4',
-    doctorId: 'doc_2',
+    patientId: 'pat_04',
+    doctorId: 'doc_02',
   },
   {
     appointmentId: 'app_18',
@@ -185,8 +185,8 @@ export const appointments: Appointment[] = [
     endTime: new Date('2024-11-03T15:00:00'),
     status: 'Canceled',
     note: 'Initial consultation',
-    patientId: 'pat_4',
-    doctorId: 'doc_3',
+    patientId: 'pat_04',
+    doctorId: 'doc_03',
   },
   {
     appointmentId: 'app_19',
@@ -195,8 +195,8 @@ export const appointments: Appointment[] = [
     endTime: new Date('2024-11-06T12:00:00'),
     status: 'Upcoming',
     note: 'Health check-up',
-    patientId: 'pat_4',
-    doctorId: 'doc_4',
+    patientId: 'pat_04',
+    doctorId: 'doc_04',
   },
   {
     appointmentId: 'app_20',
@@ -205,8 +205,8 @@ export const appointments: Appointment[] = [
     endTime: new Date('2024-11-10T11:30:00'),
     status: 'Completed',
     note: 'Medication review',
-    patientId: 'pat_4',
-    doctorId: 'doc_5',
+    patientId: 'pat_04',
+    doctorId: 'doc_05',
   },
 
   // Bệnh nhân 5
@@ -217,8 +217,8 @@ export const appointments: Appointment[] = [
     endTime: new Date('2024-10-24T10:00:00'),
     status: 'Upcoming',
     note: 'Initial consultation',
-    patientId: 'pat_5',
-    doctorId: 'doc_1',
+    patientId: 'pat_05',
+    doctorId: 'doc_01',
   },
   {
     appointmentId: 'app_22',
@@ -227,8 +227,8 @@ export const appointments: Appointment[] = [
     endTime: new Date('2024-10-26T10:30:00'),
     status: 'Completed',
     note: 'Follow-up visit',
-    patientId: 'pat_5',
-    doctorId: 'doc_2',
+    patientId: 'pat_05',
+    doctorId: 'doc_02',
   },
   {
     appointmentId: 'app_23',
@@ -237,8 +237,8 @@ export const appointments: Appointment[] = [
     endTime: new Date('2024-10-29T15:00:00'),
     status: 'Canceled',
     note: 'Routine check-up',
-    patientId: 'pat_5',
-    doctorId: 'doc_3',
+    patientId: 'pat_05',
+    doctorId: 'doc_03',
   },
   {
     appointmentId: 'app_24',
@@ -247,8 +247,8 @@ export const appointments: Appointment[] = [
     endTime: new Date('2024-11-01T12:00:00'),
     status: 'Upcoming',
     note: 'Annual check-up',
-    patientId: 'pat_5',
-    doctorId: 'doc_4',
+    patientId: 'pat_05',
+    doctorId: 'doc_04',
   },
   {
     appointmentId: 'app_25',
@@ -257,8 +257,8 @@ export const appointments: Appointment[] = [
     endTime: new Date('2024-11-05T11:30:00'),
     status: 'Completed',
     note: 'Lab results review',
-    patientId: 'pat_5',
-    doctorId: 'doc_5',
+    patientId: 'pat_05',
+    doctorId: 'doc_05',
   },
 
   // Bệnh nhân 6
@@ -269,8 +269,8 @@ export const appointments: Appointment[] = [
     endTime: new Date('2024-10-25T10:00:00'),
     status: 'Upcoming',
     note: 'Follow-up visit',
-    patientId: 'pat_6',
-    doctorId: 'doc_1',
+    patientId: 'pat_06',
+    doctorId: 'doc_01',
   },
   {
     appointmentId: 'app_27',
@@ -279,8 +279,8 @@ export const appointments: Appointment[] = [
     endTime: new Date('2024-10-28T10:30:00'),
     status: 'Completed',
     note: 'Routine check-up',
-    patientId: 'pat_6',
-    doctorId: 'doc_2',
+    patientId: 'pat_06',
+    doctorId: 'doc_02',
   },
   {
     appointmentId: 'app_28',
@@ -289,8 +289,8 @@ export const appointments: Appointment[] = [
     endTime: new Date('2024-11-02T15:00:00'),
     status: 'Canceled',
     note: 'Special consultation',
-    patientId: 'pat_6',
-    doctorId: 'doc_3',
+    patientId: 'pat_06',
+    doctorId: 'doc_03',
   },
   {
     appointmentId: 'app_29',
@@ -299,8 +299,8 @@ export const appointments: Appointment[] = [
     endTime: new Date('2024-11-04T12:00:00'),
     status: 'Upcoming',
     note: 'Health check-up',
-    patientId: 'pat_6',
-    doctorId: 'doc_4',
+    patientId: 'pat_06',
+    doctorId: 'doc_04',
   },
   {
     appointmentId: 'app_30',
@@ -309,8 +309,8 @@ export const appointments: Appointment[] = [
     endTime: new Date('2024-11-07T11:30:00'),
     status: 'Completed',
     note: 'Medication review',
-    patientId: 'pat_6',
-    doctorId: 'doc_5',
+    patientId: 'pat_06',
+    doctorId: 'doc_05',
   },
 
   // Bệnh nhân 7
@@ -321,8 +321,8 @@ export const appointments: Appointment[] = [
     endTime: new Date('2024-10-26T10:00:00'),
     status: 'Upcoming',
     note: 'Initial consultation',
-    patientId: 'pat_7',
-    doctorId: 'doc_1',
+    patientId: 'pat_07',
+    doctorId: 'doc_01',
   },
   {
     appointmentId: 'app_32',
@@ -331,8 +331,8 @@ export const appointments: Appointment[] = [
     endTime: new Date('2024-10-27T10:30:00'),
     status: 'Completed',
     note: 'Follow-up visit',
-    patientId: 'pat_7',
-    doctorId: 'doc_2',
+    patientId: 'pat_07',
+    doctorId: 'doc_02',
   },
   {
     appointmentId: 'app_33',
@@ -341,8 +341,8 @@ export const appointments: Appointment[] = [
     endTime: new Date('2024-10-30T15:00:00'),
     status: 'Canceled',
     note: 'Initial consultation',
-    patientId: 'pat_7',
-    doctorId: 'doc_3',
+    patientId: 'pat_07',
+    doctorId: 'doc_03',
   },
   {
     appointmentId: 'app_34',
@@ -351,8 +351,8 @@ export const appointments: Appointment[] = [
     endTime: new Date('2024-11-01T12:00:00'),
     status: 'Upcoming',
     note: 'Annual check-up',
-    patientId: 'pat_7',
-    doctorId: 'doc_4',
+    patientId: 'pat_07',
+    doctorId: 'doc_04',
   },
   {
     appointmentId: 'app_35',
@@ -361,8 +361,8 @@ export const appointments: Appointment[] = [
     endTime: new Date('2024-11-05T11:30:00'),
     status: 'Completed',
     note: 'Lab results review',
-    patientId: 'pat_7',
-    doctorId: 'doc_5',
+    patientId: 'pat_07',
+    doctorId: 'doc_05',
   },
 
   // Bệnh nhân 8
@@ -373,8 +373,8 @@ export const appointments: Appointment[] = [
     endTime: new Date('2024-10-23T10:00:00'),
     status: 'Upcoming',
     note: 'Initial consultation',
-    patientId: 'pat_8',
-    doctorId: 'doc_1',
+    patientId: 'pat_08',
+    doctorId: 'doc_01',
   },
   {
     appointmentId: 'app_37',
@@ -383,8 +383,8 @@ export const appointments: Appointment[] = [
     endTime: new Date('2024-10-25T10:30:00'),
     status: 'Completed',
     note: 'Follow-up visit',
-    patientId: 'pat_8',
-    doctorId: 'doc_2',
+    patientId: 'pat_08',
+    doctorId: 'doc_02',
   },
   {
     appointmentId: 'app_38',
@@ -393,8 +393,8 @@ export const appointments: Appointment[] = [
     endTime: new Date('2024-10-28T15:00:00'),
     status: 'Canceled',
     note: 'Routine check-up',
-    patientId: 'pat_8',
-    doctorId: 'doc_3',
+    patientId: 'pat_08',
+    doctorId: 'doc_03',
   },
   {
     appointmentId: 'app_39',
@@ -403,8 +403,8 @@ export const appointments: Appointment[] = [
     endTime: new Date('2024-11-02T12:00:00'),
     status: 'Upcoming',
     note: 'Annual check-up',
-    patientId: 'pat_8',
-    doctorId: 'doc_4',
+    patientId: 'pat_08',
+    doctorId: 'doc_04',
   },
   {
     appointmentId: 'app_40',
@@ -413,8 +413,8 @@ export const appointments: Appointment[] = [
     endTime: new Date('2024-11-05T11:30:00'),
     status: 'Completed',
     note: 'Medication review',
-    patientId: 'pat_8',
-    doctorId: 'doc_5',
+    patientId: 'pat_08',
+    doctorId: 'doc_05',
   },
 
   // Bệnh nhân 9
@@ -425,8 +425,8 @@ export const appointments: Appointment[] = [
     endTime: new Date('2024-10-26T10:00:00'),
     status: 'Upcoming',
     note: 'Initial consultation',
-    patientId: 'pat_9',
-    doctorId: 'doc_1',
+    patientId: 'pat_09',
+    doctorId: 'doc_01',
   },
   {
     appointmentId: 'app_42',
@@ -435,8 +435,8 @@ export const appointments: Appointment[] = [
     endTime: new Date('2024-10-27T10:30:00'),
     status: 'Completed',
     note: 'Follow-up visit',
-    patientId: 'pat_9',
-    doctorId: 'doc_2',
+    patientId: 'pat_09',
+    doctorId: 'doc_02',
   },
   {
     appointmentId: 'app_43',
@@ -445,8 +445,8 @@ export const appointments: Appointment[] = [
     endTime: new Date('2024-10-30T15:00:00'),
     status: 'Canceled',
     note: 'Initial consultation',
-    patientId: 'pat_9',
-    doctorId: 'doc_3',
+    patientId: 'pat_09',
+    doctorId: 'doc_03',
   },
   {
     appointmentId: 'app_44',
@@ -455,8 +455,8 @@ export const appointments: Appointment[] = [
     endTime: new Date('2024-11-01T12:00:00'),
     status: 'Upcoming',
     note: 'Annual check-up',
-    patientId: 'pat_9',
-    doctorId: 'doc_4',
+    patientId: 'pat_09',
+    doctorId: 'doc_04',
   },
   {
     appointmentId: 'app_45',
@@ -465,8 +465,8 @@ export const appointments: Appointment[] = [
     endTime: new Date('2024-11-05T11:30:00'),
     status: 'Completed',
     note: 'Lab results review',
-    patientId: 'pat_9',
-    doctorId: 'doc_5',
+    patientId: 'pat_09',
+    doctorId: 'doc_05',
   },
 
   // Bệnh nhân 10
@@ -478,7 +478,7 @@ export const appointments: Appointment[] = [
     status: 'Upcoming',
     note: 'Initial consultation',
     patientId: 'pat_10',
-    doctorId: 'doc_1',
+    doctorId: 'doc_01',
   },
   {
     appointmentId: 'app_47',
@@ -488,7 +488,7 @@ export const appointments: Appointment[] = [
     status: 'Completed',
     note: 'Follow-up visit',
     patientId: 'pat_10',
-    doctorId: 'doc_2',
+    doctorId: 'doc_02',
   },
   {
     appointmentId: 'app_48',
@@ -498,7 +498,7 @@ export const appointments: Appointment[] = [
     status: 'Canceled',
     note: 'Routine check-up',
     patientId: 'pat_10',
-    doctorId: 'doc_3',
+    doctorId: 'doc_03',
   },
   {
     appointmentId: 'app_49',
@@ -508,7 +508,7 @@ export const appointments: Appointment[] = [
     status: 'Upcoming',
     note: 'Annual check-up',
     patientId: 'pat_10',
-    doctorId: 'doc_4',
+    doctorId: 'doc_04',
   },
   {
     appointmentId: 'app_50',
@@ -518,7 +518,7 @@ export const appointments: Appointment[] = [
     status: 'Completed',
     note: 'Medication review',
     patientId: 'pat_10',
-    doctorId: 'doc_5',
+    doctorId: 'doc_05',
   },
   // Bệnh nhân 11
   // Thông tin cuộc hẹn cho bệnh nhân 11
@@ -530,7 +530,7 @@ export const appointments: Appointment[] = [
     status: 'Upcoming',
     note: 'Initial consultation',
     patientId: 'pat_11',
-    doctorId: 'doc_1',
+    doctorId: 'doc_01',
   },
   {
     appointmentId: 'app_52',
@@ -540,7 +540,7 @@ export const appointments: Appointment[] = [
     status: 'Completed',
     note: 'Follow-up visit',
     patientId: 'pat_11',
-    doctorId: 'doc_2',
+    doctorId: 'doc_02',
   },
   {
     appointmentId: 'app_53',
@@ -550,7 +550,7 @@ export const appointments: Appointment[] = [
     status: 'Canceled',
     note: 'Routine check-up',
     patientId: 'pat_11',
-    doctorId: 'doc_3',
+    doctorId: 'doc_03',
   },
   {
     appointmentId: 'app_54',
@@ -560,7 +560,7 @@ export const appointments: Appointment[] = [
     status: 'Upcoming',
     note: 'Annual check-up',
     patientId: 'pat_11',
-    doctorId: 'doc_4',
+    doctorId: 'doc_04',
   },
   {
     appointmentId: 'app_55',
@@ -570,7 +570,7 @@ export const appointments: Appointment[] = [
     status: 'Completed',
     note: 'Lab results review',
     patientId: 'pat_11',
-    doctorId: 'doc_5',
+    doctorId: 'doc_05',
   },
 
   // Bệnh nhân 12
@@ -583,7 +583,7 @@ export const appointments: Appointment[] = [
     status: 'Upcoming',
     note: 'Initial consultation',
     patientId: 'pat_12',
-    doctorId: 'doc_1',
+    doctorId: 'doc_01',
   },
   {
     appointmentId: 'app_57',
@@ -593,7 +593,7 @@ export const appointments: Appointment[] = [
     status: 'Completed',
     note: 'Follow-up visit',
     patientId: 'pat_12',
-    doctorId: 'doc_2',
+    doctorId: 'doc_02',
   },
   {
     appointmentId: 'app_58',
@@ -603,7 +603,7 @@ export const appointments: Appointment[] = [
     status: 'Canceled',
     note: 'Routine check-up',
     patientId: 'pat_12',
-    doctorId: 'doc_3',
+    doctorId: 'doc_03',
   },
   {
     appointmentId: 'app_59',
@@ -613,7 +613,7 @@ export const appointments: Appointment[] = [
     status: 'Upcoming',
     note: 'Annual check-up',
     patientId: 'pat_12',
-    doctorId: 'doc_4',
+    doctorId: 'doc_04',
   },
   {
     appointmentId: 'app_60',
@@ -623,7 +623,7 @@ export const appointments: Appointment[] = [
     status: 'Completed',
     note: 'Medication review',
     patientId: 'pat_12',
-    doctorId: 'doc_5',
+    doctorId: 'doc_05',
   },
 
   // Bệnh nhân 13
@@ -636,7 +636,7 @@ export const appointments: Appointment[] = [
     status: 'Upcoming',
     note: 'Initial consultation',
     patientId: 'pat_13',
-    doctorId: 'doc_1',
+    doctorId: 'doc_01',
   },
   {
     appointmentId: 'app_62',
@@ -646,7 +646,7 @@ export const appointments: Appointment[] = [
     status: 'Completed',
     note: 'Follow-up visit',
     patientId: 'pat_13',
-    doctorId: 'doc_2',
+    doctorId: 'doc_02',
   },
   {
     appointmentId: 'app_63',
@@ -656,7 +656,7 @@ export const appointments: Appointment[] = [
     status: 'Canceled',
     note: 'Routine check-up',
     patientId: 'pat_13',
-    doctorId: 'doc_3',
+    doctorId: 'doc_03',
   },
   {
     appointmentId: 'app_64',
@@ -666,7 +666,7 @@ export const appointments: Appointment[] = [
     status: 'Upcoming',
     note: 'Annual check-up',
     patientId: 'pat_13',
-    doctorId: 'doc_4',
+    doctorId: 'doc_04',
   },
   {
     appointmentId: 'app_65',
@@ -676,7 +676,7 @@ export const appointments: Appointment[] = [
     status: 'Completed',
     note: 'Lab results review',
     patientId: 'pat_13',
-    doctorId: 'doc_5',
+    doctorId: 'doc_05',
   },
 
   // Bệnh nhân 14
@@ -689,7 +689,7 @@ export const appointments: Appointment[] = [
     status: 'Upcoming',
     note: 'Initial consultation',
     patientId: 'pat_14',
-    doctorId: 'doc_1',
+    doctorId: 'doc_01',
   },
   {
     appointmentId: 'app_67',
@@ -699,7 +699,7 @@ export const appointments: Appointment[] = [
     status: 'Completed',
     note: 'Follow-up visit',
     patientId: 'pat_14',
-    doctorId: 'doc_2',
+    doctorId: 'doc_02',
   },
   {
     appointmentId: 'app_68',
@@ -709,7 +709,7 @@ export const appointments: Appointment[] = [
     status: 'Canceled',
     note: 'Routine check-up',
     patientId: 'pat_14',
-    doctorId: 'doc_3',
+    doctorId: 'doc_03',
   },
   {
     appointmentId: 'app_69',
@@ -719,7 +719,7 @@ export const appointments: Appointment[] = [
     status: 'Upcoming',
     note: 'Annual check-up',
     patientId: 'pat_14',
-    doctorId: 'doc_4',
+    doctorId: 'doc_04',
   },
   {
     appointmentId: 'app_70',
@@ -729,7 +729,7 @@ export const appointments: Appointment[] = [
     status: 'Completed',
     note: 'Medication review',
     patientId: 'pat_14',
-    doctorId: 'doc_5',
+    doctorId: 'doc_05',
   },
   // Bệnh nhân 15
   // Thông tin cuộc hẹn cho bệnh nhân 15
@@ -741,7 +741,7 @@ export const appointments: Appointment[] = [
     status: 'Upcoming',
     note: 'Initial consultation',
     patientId: 'pat_15',
-    doctorId: 'doc_1',
+    doctorId: 'doc_01',
   },
   {
     appointmentId: 'app_72',
@@ -751,7 +751,7 @@ export const appointments: Appointment[] = [
     status: 'Completed',
     note: 'Follow-up visit',
     patientId: 'pat_15',
-    doctorId: 'doc_2',
+    doctorId: 'doc_02',
   },
   {
     appointmentId: 'app_73',
@@ -761,7 +761,7 @@ export const appointments: Appointment[] = [
     status: 'Canceled',
     note: 'Routine check-up',
     patientId: 'pat_15',
-    doctorId: 'doc_3',
+    doctorId: 'doc_03',
   },
   {
     appointmentId: 'app_74',
@@ -771,7 +771,7 @@ export const appointments: Appointment[] = [
     status: 'Upcoming',
     note: 'Annual check-up',
     patientId: 'pat_15',
-    doctorId: 'doc_4',
+    doctorId: 'doc_04',
   },
   {
     appointmentId: 'app_75',
@@ -781,7 +781,7 @@ export const appointments: Appointment[] = [
     status: 'Completed',
     note: 'Lab results review',
     patientId: 'pat_15',
-    doctorId: 'doc_5',
+    doctorId: 'doc_05',
   },
 
   // Bệnh nhân 16
@@ -794,7 +794,7 @@ export const appointments: Appointment[] = [
     status: 'Upcoming',
     note: 'Initial consultation',
     patientId: 'pat_16',
-    doctorId: 'doc_1',
+    doctorId: 'doc_01',
   },
   {
     appointmentId: 'app_77',
@@ -804,7 +804,7 @@ export const appointments: Appointment[] = [
     status: 'Completed',
     note: 'Follow-up visit',
     patientId: 'pat_16',
-    doctorId: 'doc_2',
+    doctorId: 'doc_02',
   },
   {
     appointmentId: 'app_78',
@@ -814,7 +814,7 @@ export const appointments: Appointment[] = [
     status: 'Canceled',
     note: 'Routine check-up',
     patientId: 'pat_16',
-    doctorId: 'doc_3',
+    doctorId: 'doc_03',
   },
   {
     appointmentId: 'app_79',
@@ -824,7 +824,7 @@ export const appointments: Appointment[] = [
     status: 'Upcoming',
     note: 'Annual check-up',
     patientId: 'pat_16',
-    doctorId: 'doc_4',
+    doctorId: 'doc_04',
   },
   {
     appointmentId: 'app_80',
@@ -834,7 +834,7 @@ export const appointments: Appointment[] = [
     status: 'Completed',
     note: 'Medication review',
     patientId: 'pat_16',
-    doctorId: 'doc_5',
+    doctorId: 'doc_05',
   },
 
   // Bệnh nhân 17
@@ -847,7 +847,7 @@ export const appointments: Appointment[] = [
     status: 'Upcoming',
     note: 'Initial consultation',
     patientId: 'pat_17',
-    doctorId: 'doc_1',
+    doctorId: 'doc_01',
   },
   {
     appointmentId: 'app_82',
@@ -857,7 +857,7 @@ export const appointments: Appointment[] = [
     status: 'Completed',
     note: 'Follow-up visit',
     patientId: 'pat_17',
-    doctorId: 'doc_2',
+    doctorId: 'doc_02',
   },
   {
     appointmentId: 'app_83',
@@ -867,7 +867,7 @@ export const appointments: Appointment[] = [
     status: 'Canceled',
     note: 'Routine check-up',
     patientId: 'pat_17',
-    doctorId: 'doc_3',
+    doctorId: 'doc_03',
   },
   {
     appointmentId: 'app_84',
@@ -877,7 +877,7 @@ export const appointments: Appointment[] = [
     status: 'Upcoming',
     note: 'Annual check-up',
     patientId: 'pat_17',
-    doctorId: 'doc_4',
+    doctorId: 'doc_04',
   },
   {
     appointmentId: 'app_85',
@@ -887,7 +887,7 @@ export const appointments: Appointment[] = [
     status: 'Completed',
     note: 'Lab results review',
     patientId: 'pat_17',
-    doctorId: 'doc_5',
+    doctorId: 'doc_05',
   },
 
   // Bệnh nhân 18
@@ -900,7 +900,7 @@ export const appointments: Appointment[] = [
     status: 'Upcoming',
     note: 'Initial consultation',
     patientId: 'pat_18',
-    doctorId: 'doc_1',
+    doctorId: 'doc_01',
   },
   {
     appointmentId: 'app_87',
@@ -910,7 +910,7 @@ export const appointments: Appointment[] = [
     status: 'Completed',
     note: 'Follow-up visit',
     patientId: 'pat_18',
-    doctorId: 'doc_2',
+    doctorId: 'doc_02',
   },
   {
     appointmentId: 'app_88',
@@ -920,7 +920,7 @@ export const appointments: Appointment[] = [
     status: 'Canceled',
     note: 'Routine check-up',
     patientId: 'pat_18',
-    doctorId: 'doc_3',
+    doctorId: 'doc_03',
   },
   {
     appointmentId: 'app_89',
@@ -930,7 +930,7 @@ export const appointments: Appointment[] = [
     status: 'Upcoming',
     note: 'Annual check-up',
     patientId: 'pat_18',
-    doctorId: 'doc_4',
+    doctorId: 'doc_04',
   },
   {
     appointmentId: 'app_90',
@@ -940,7 +940,7 @@ export const appointments: Appointment[] = [
     status: 'Completed',
     note: 'Medication review',
     patientId: 'pat_18',
-    doctorId: 'doc_5',
+    doctorId: 'doc_05',
   },
   // Bệnh nhân 19
   // Thông tin cuộc hẹn cho bệnh nhân 19
@@ -952,7 +952,7 @@ export const appointments: Appointment[] = [
     status: 'Upcoming',
     note: 'Initial consultation',
     patientId: 'pat_19',
-    doctorId: 'doc_1',
+    doctorId: 'doc_01',
   },
   {
     appointmentId: 'app_92',
@@ -962,7 +962,7 @@ export const appointments: Appointment[] = [
     status: 'Completed',
     note: 'Follow-up visit',
     patientId: 'pat_19',
-    doctorId: 'doc_2',
+    doctorId: 'doc_02',
   },
   {
     appointmentId: 'app_93',
@@ -972,7 +972,7 @@ export const appointments: Appointment[] = [
     status: 'Canceled',
     note: 'Routine check-up',
     patientId: 'pat_19',
-    doctorId: 'doc_3',
+    doctorId: 'doc_03',
   },
   {
     appointmentId: 'app_94',
@@ -982,7 +982,7 @@ export const appointments: Appointment[] = [
     status: 'Upcoming',
     note: 'Annual check-up',
     patientId: 'pat_19',
-    doctorId: 'doc_4',
+    doctorId: 'doc_04',
   },
   {
     appointmentId: 'app_95',
@@ -992,7 +992,7 @@ export const appointments: Appointment[] = [
     status: 'Completed',
     note: 'Lab results review',
     patientId: 'pat_19',
-    doctorId: 'doc_5',
+    doctorId: 'doc_05',
   },
 
   // Bệnh nhân 20
@@ -1005,7 +1005,7 @@ export const appointments: Appointment[] = [
     status: 'Upcoming',
     note: 'Initial consultation',
     patientId: 'pat_20',
-    doctorId: 'doc_1',
+    doctorId: 'doc_01',
   },
   {
     appointmentId: 'app_97',
@@ -1015,7 +1015,7 @@ export const appointments: Appointment[] = [
     status: 'Completed',
     note: 'Follow-up visit',
     patientId: 'pat_20',
-    doctorId: 'doc_2',
+    doctorId: 'doc_02',
   },
   {
     appointmentId: 'app_98',
@@ -1025,7 +1025,7 @@ export const appointments: Appointment[] = [
     status: 'Canceled',
     note: 'Routine check-up',
     patientId: 'pat_20',
-    doctorId: 'doc_3',
+    doctorId: 'doc_03',
   },
   {
     appointmentId: 'app_99',
@@ -1035,7 +1035,7 @@ export const appointments: Appointment[] = [
     status: 'Upcoming',
     note: 'Annual check-up',
     patientId: 'pat_20',
-    doctorId: 'doc_4',
+    doctorId: 'doc_04',
   },
   {
     appointmentId: 'app_100',
@@ -1045,7 +1045,7 @@ export const appointments: Appointment[] = [
     status: 'Completed',
     note: 'Medication review',
     patientId: 'pat_20',
-    doctorId: 'doc_5',
+    doctorId: 'doc_05',
   },
 ];
 

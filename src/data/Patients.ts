@@ -2,7 +2,7 @@ import {Patient} from '../models/Patient';
 
 export const patients: Patient[] = [
   {
-    patientId: 'pat_1',
+    patientId: 'pat_01',
     name: 'John Doe',
     gender: 'male',
     email: 'john.doe@example.com',
@@ -10,7 +10,7 @@ export const patients: Patient[] = [
     image: '/img/patients/johndoe.jpg',
   },
   {
-    patientId: 'pat_2',
+    patientId: 'pat_02',
     name: 'Jane Smith',
     gender: 'female',
     email: 'jane.smith@example.com',
@@ -18,7 +18,7 @@ export const patients: Patient[] = [
     image: '/img/patients/janesmith.jpg',
   },
   {
-    patientId: 'pat_3',
+    patientId: 'pat_03',
     name: 'Michael Johnson',
     gender: 'male',
     email: 'michael.johnson@example.com',
@@ -26,7 +26,7 @@ export const patients: Patient[] = [
     image: '/img/patients/michaeljohnson.jpg',
   },
   {
-    patientId: 'pat_4',
+    patientId: 'pat_04',
     name: 'Emily Davis',
     gender: 'female',
     email: 'emily.davis@example.com',
@@ -34,7 +34,7 @@ export const patients: Patient[] = [
     image: '/img/patients/emilydavis.jpg',
   },
   {
-    patientId: 'pat_5',
+    patientId: 'pat_05',
     name: 'Daniel Brown',
     gender: 'male',
     email: 'daniel.brown@example.com',
@@ -42,7 +42,7 @@ export const patients: Patient[] = [
     image: '/img/patients/danielbrown.jpg',
   },
   {
-    patientId: 'pat_6',
+    patientId: 'pat_06',
     name: 'Sarah Wilson',
     gender: 'female',
     email: 'sarah.wilson@example.com',
@@ -50,7 +50,7 @@ export const patients: Patient[] = [
     image: '/img/patients/sarahwilson.jpg',
   },
   {
-    patientId: 'pat_7',
+    patientId: 'pat_07',
     name: 'David Taylor',
     gender: 'male',
     email: 'david.taylor@example.com',
@@ -58,7 +58,7 @@ export const patients: Patient[] = [
     image: '/img/patients/davidtaylor.jpg',
   },
   {
-    patientId: 'pat_8',
+    patientId: 'pat_08',
     name: 'Laura Moore',
     gender: 'female',
     email: 'laura.moore@example.com',
@@ -66,7 +66,7 @@ export const patients: Patient[] = [
     image: '/img/patients/lauramoore.jpg',
   },
   {
-    patientId: 'pat_9',
+    patientId: 'pat_09',
     name: 'James Anderson',
     gender: 'male',
     email: 'james.anderson@example.com',

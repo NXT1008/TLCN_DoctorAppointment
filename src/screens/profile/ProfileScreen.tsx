@@ -217,7 +217,9 @@ const ProfileScreen = (props: any) => {
         <ProfileComponent
           text="Settings"
           icon={<DocumentText color="#0B8FAC" />}
-          onPress={() => {}}
+          onPress={() => {
+            props.navigation.navigate('SettingScreen');
+          }}
         />
         <ProfileComponent
           text="FAQs"

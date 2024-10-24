@@ -27,7 +27,7 @@ import {Message, Messages1, Messages3} from 'iconsax-react-native';
 import firestore from '@react-native-firebase/firestore';
 import {Specialization} from '../../models/Specialization';
 import {Doctor} from '../../models/Doctor';
-import { Patient } from '../../models/Patient';
+import {Patient} from '../../models/Patient';
 
 const HomeScreen = (props: any) => {
   const user = auth().currentUser;
@@ -113,7 +113,7 @@ const HomeScreen = (props: any) => {
 
   return (
     <>
-      <ContainerComponent isScroll>
+      <ContainerComponent isScroll style={{marginTop: -16}}>
         <View>
           <Row
             styles={{
@@ -135,7 +135,13 @@ const HomeScreen = (props: any) => {
                   color="#00000066"
                 />
                 <TextComponent
-                  text={`${patient ? patient.nickname ? patient.nickname : patient.name : ''}`}
+                  text={`${
+                    patient
+                      ? patient.nickname
+                        ? patient.nickname
+                        : patient.name
+                      : ''
+                  }`}
                   font={fontFamilies.semiBold}
                 />
               </View>
@@ -197,7 +203,7 @@ const HomeScreen = (props: any) => {
                 key={index}
                 data={item}
                 onPress={() => {
-                  props.navigation.navigate('DoctorDetailScreen');
+                  props.navigation.navigate('DoctorDetail', {doctor: item});
                 }}
               />
             ))}
