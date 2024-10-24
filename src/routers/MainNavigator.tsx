@@ -13,7 +13,6 @@ import BookingScreen from '../screens/booking/BookingScreen';
 import DoctorDetail from '../screens/doctor/DoctorDetail';
 import { NotificationScreen } from '../screens';
 import PaymentScreen from '../screens/payment/PaymentScreen';
-import BookingScreen from '../screens/booking/BookingScreen';
 
 const MainNavigator = () => {
   const Stack = createNativeStackNavigator();
@@ -34,7 +33,6 @@ const MainNavigator = () => {
       <Stack.Screen name="MyfavoritesDoctor" component={MyFavoritesDoctor} />
       <Stack.Screen name="SettingScreen" component={SettingScreen} />
       <Stack.Screen name="ReviewAllDoctors" component={ReviewAllDoctors} />
-      <Stack.Screen name="BookingScreen" component={BookingScreen} />
     </Stack.Navigator>
   );
 };
