@@ -11,12 +11,18 @@ import SettingScreen from '../screens/profile/screens/SettingScreen';
 import ReviewAllDoctors from '../screens/doctor/ReviewAllDoctors';
 import BookingScreen from '../screens/booking/BookingScreen';
 import DoctorDetail from '../screens/doctor/DoctorDetail';
+import { NotificationScreen } from '../screens';
+import PaymentScreen from '../screens/payment/PaymentScreen';
+import BookingScreen from '../screens/booking/BookingScreen';
 
 const MainNavigator = () => {
   const Stack = createNativeStackNavigator();
   return (
     <Stack.Navigator screenOptions={{headerShown: false}}>
       <Stack.Screen name="Main" component={TabNavigator} />
+      <Stack.Screen name="BookingScreen" component={BookingScreen}/>
+      <Stack.Screen name="Notification" component={NotificationScreen}/>
+      <Stack.Screen name="Payment" component={PaymentScreen}/>
       <Stack.Screen name="DoctorDetail" component={DoctorDetail} />
       <Stack.Screen name="FAQsScreen" component={FAQsScreen} />
       <Stack.Screen name="ReportScreen" component={ReportScreen} />

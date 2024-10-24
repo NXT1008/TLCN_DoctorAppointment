@@ -68,12 +68,14 @@ const styles = StyleSheet.create({
     letterSpacing: 0,
     left: 0,
     top: 0,
+    fontFamily: 'Poppins-Medium'
   },
   specialty: {
     fontSize: 14,
     color: '#27403e',
     fontWeight: '400',
     marginTop: 6,
+    fontFamily: 'Poppins-Regular'
   },
   appointmentInfo: {
     flexDirection: 'row',
@@ -107,7 +109,7 @@ const styles = StyleSheet.create({
     color: '#fff',
     textAlign: 'center',
     fontSize: 14,
-    fontWeight: 'bold',
+    fontFamily: 'Poppins-Medium'
   },
   checkButton: {
     backgroundColor: '#fff',

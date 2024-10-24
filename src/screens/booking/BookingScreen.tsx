@@ -7,7 +7,7 @@ import { fontFamilies } from '../../constants/fontFamilies';
 import { Picker } from '@react-native-picker/picker';
 import DateTime from '../../components/DateTimePicker';
 
-const BookingScreen = () => {
+const BookingScreen = (props: any) => {
     const navigation = useNavigation()
     const [selectedTime, setSelectedTime] = useState<string>('12:30 PM')
     const [fullName, setFullName] = useState<string>('')
@@ -125,8 +125,10 @@ const BookingScreen = () => {
                 />
             </Section>
 
-            {/* Set Appointment Button */}
-            <TouchableOpacity style={styles.setAppointmentButton}>
+
+            <TouchableOpacity 
+            style={styles.setAppointmentButton} 
+            onPress={() => props.navigation.navigate('Payment')}>
                 <Text style={styles.setAppointmentButtonText}>Set Appointment</Text>
             </TouchableOpacity>
         </ContainerComponent >
@@ -195,6 +197,7 @@ const styles = StyleSheet.create({
     timeText: {
         fontSize: 16,
         color: '#000',
+        fontFamily: 'Poppins-Regular'
     },
     patientDetails: {
         marginBottom: 20,
@@ -206,6 +209,7 @@ const styles = StyleSheet.create({
         padding: 10,
         marginBottom: 10,
         backgroundColor: '#f5f5f5',
+        fontFamily: 'Poppins-Regular'
     },
     pickerContainer: {
         marginBottom: 10,

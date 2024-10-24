@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -7,10 +7,12 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from 'react-native';
-import {Doctor} from '../../models/Doctor';
-import {Patient} from '../../models/Patient';
-import {Review} from '../../models/Review';
+import { Doctor } from '../../models/Doctor';
+import { Patient } from '../../models/Patient';
+import { Review } from '../../models/Review';
 import { useNavigation } from '@react-navigation/native';
+import { Row, Section } from '../../components';
+import { ArrowLeft2 } from 'iconsax-react-native';
 
 const mockDoctor: Doctor = {
   doctorId: 'doctor01',
@@ -54,18 +56,12 @@ const ReviewScreen = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.topNavigator}>
-        <TouchableOpacity
-          onPress={() => navigation.goBack()}
-          style={styles.backButton}>
-          <Image
-            source={require('../../assets/images/back_arrow.png')}
-            style={styles.backImage}
-          />
-        </TouchableOpacity>
-      </View>
-
-      <Text style={styles.title}>Review</Text>
+      <Section styles={styles.header}>
+        <Row justifyContent='space-around'>
+          <ArrowLeft2 color="#000" onPress={() => navigation.goBack()} />
+          <Text style={styles.headerText}>Review</Text>
+        </Row>
+      </Section>
       <Text style={styles.description}>
         It is very important to take care of the patient, the patient will be
         followed by the patient, but this time it will happen that there is a
@@ -125,43 +121,27 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: '#fff',
   },
-  topNavigator: {
+  header: {
     flexDirection: 'row',
-    top: 0,
+    alignItems: 'center',
+    marginBottom: 20,
   },
-  backButton: {
-    height: 46,
-    width: 46,
-    left: 0,
-    top: 0,
-    marginLeft: 30,
-  },
-
-  backImage: {
-    height: 25,
-    width: 25,
-    top: 10,
-    left: 10,
-    position: 'absolute',
-  },
-
-  title: {
-    color: '#21a691',
+  headerText: {
+    flex: 1,
     textAlign: 'center',
-    fontFamily: 'Poppins-Medium',
-    fontSize: 24,
-    fontWeight: '700',
-    position: 'relative',
-    top: 0,
+    fontSize: 18,
+    color: '#21a691',
+    alignContent: 'center',
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 25,
+    fontFamily: 'Poppins-Bold'
   },
   description: {
     fontSize: 14,
     color: '#A3B1B4',
     marginVertical: 10,
     justifyContent: 'center',
+    fontFamily: 'Poppins-Regular'
   },
   image: {
     width: 100,
@@ -172,15 +152,16 @@ const styles = StyleSheet.create({
   },
   doctorName: {
     fontSize: 18,
-    fontWeight: 'bold',
     textAlign: 'center',
     color: '#21a691',
+    fontFamily: 'Poppins-Medium'
   },
   doctorSpecialty: {
     fontSize: 14,
     textAlign: 'center',
     color: '#BDBDBD',
     marginBottom: 20,
+    fontFamily: 'Poppins-Regular'
   },
   ratingContainer: {
     flexDirection: 'row',
@@ -224,6 +205,7 @@ const styles = StyleSheet.create({
     textAlignVertical: 'top',
     height: 100,
     marginVertical: 20,
+    fontFamily: 'Poppins-Regular'
   },
   addButton: {
     backgroundColor: '#21a691',
@@ -234,7 +216,7 @@ const styles = StyleSheet.create({
   addButtonText: {
     color: '#fff',
     fontSize: 16,
-    fontWeight: 'bold',
+    fontFamily: 'Poppins-Medium'
   },
 });
 

@@ -1,6 +1,8 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, TextInput, StyleSheet, ScrollView, Image } from 'react-native';
+import { Row, Section } from '../../components';
+import { ArrowLeft2 } from 'iconsax-react-native';
 interface CancellationData {
     id: string;
     appointmentId: string;
@@ -40,12 +42,12 @@ const CancelAppointment = () => {
 
     return (
         <View style={styles.container}>
-            <View style={styles.topNavigator}>
-                <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-                    <Image source={require('../../assets/images/back_arrow.png')} style={styles.backImage} />
-                </TouchableOpacity>
-            </View>
-            <Text style={styles.header}>Cancel Appointment</Text>
+            <Section styles={styles.header}>
+                <Row justifyContent='space-around'>
+                    <ArrowLeft2 color="#000" onPress={() => navigation.goBack()} />
+                    <Text style={styles.headerText}>Cancel Appointment</Text>
+                </Row>
+            </Section>
             <Text style={styles.subHeader}>
                 It is very important to take care of the patient, the patient will be followed by the patient, but this time it will happen that there is a lot of work and pain.
             </Text>
@@ -96,38 +98,27 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         top: 0,
     },
-    backButton: {
-        height: 46,
-        width: 46,
-        left: 0,
-        top: 0,
-        marginLeft: 30,
-
-    },
-
-    backImage: {
-        height: 25,
-        width: 25,
-        top: 10,
-        left: 10,
-        position: 'absolute',
-    },
     header: {
-        color: '#21a691',
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 20,
+    },
+    headerText: {
+        flex: 1,
         textAlign: 'center',
-        fontFamily: "Poppins-Medium",
-        fontSize: 24,
-        fontWeight: "700",
-        position: 'relative',
-        top: 0,
+        fontSize: 18,
+        color: '#21a691',
+        alignContent: 'center',
         justifyContent: 'center',
         alignItems: 'center',
-        marginBottom: 25,
+        fontFamily: 'Poppins-Bold'
     },
+    
     subHeader: {
         fontSize: 14,
         color: '#A3B1B4',
         marginVertical: 10,
+        fontFamily: 'Poppins-Regular'
     },
     reasonList: {
         maxHeight: 150,
@@ -146,11 +137,13 @@ const styles = StyleSheet.create({
     reasonText: {
         fontSize: 16,
         color: '#27403e',
+        fontFamily: 'Poppins-Regular'
     },
     placeholderText: {
         fontSize: 14,
         color: '#A3B1B4',
         marginBottom: 10,
+        fontFamily: 'Poppins-Regular'
     },
     textInput: {
         height: 166,
@@ -161,6 +154,7 @@ const styles = StyleSheet.create({
         marginBottom: 20,
         backgroundColor: '#E8F5E9',
         width: 'auto',
+        fontFamily: 'Poppins-Regular'
     },
     cancelButton: {
         backgroundColor: '#21a691',
@@ -171,6 +165,6 @@ const styles = StyleSheet.create({
     cancelButtonText: {
         color: '#fff',
         fontSize: 16,
-        fontWeight: 'bold',
+        fontFamily: 'Poppins-Medium'
     },
 });

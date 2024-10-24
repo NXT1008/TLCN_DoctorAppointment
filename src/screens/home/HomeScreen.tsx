@@ -183,7 +183,6 @@ const HomeScreen = (props: any) => {
               </ScrollView>
             </Row>
           </Section>
-
           <Section>
             <Row justifyContent="space-between">
               <TextComponent

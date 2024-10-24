@@ -87,25 +87,30 @@ const styles = StyleSheet.create({
     letterSpacing: 0,
     left: 0,
     top: 0,
+    fontFamily: 'Poppins-Medium'
   },
   specialty: {
     fontSize: 14,
     color: '#27403e',
     fontWeight: '400',
     marginTop: 6,
+    fontFamily: 'Poppins-Regular'
   },
   appointmentInfo: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     marginTop: 15,
     alignItems: 'center',
+    fontFamily: 'Poppins-Medium'
   },
   appointmentDate: {
     marginRight: 10,
     color: '#333',
+    fontFamily: 'Poppins-Medium'
   },
   appointmentTime: {
     color: '#333',
+    fontFamily: 'Poppins-Medium'
   },
   buttonContainer: {
     flexDirection: 'row',
@@ -127,7 +132,7 @@ const styles = StyleSheet.create({
     color: '#fff',
     textAlign: 'center',
     fontSize: 14,
-    fontWeight: 'bold',
+    fontFamily: 'Poppins-Medium'
   },
   checkButton: {
     backgroundColor: '#fff',
