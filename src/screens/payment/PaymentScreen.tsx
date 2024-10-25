@@ -1,20 +1,24 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faCreditCard, faBuilding, faWallet, faMoneyBillWaveAlt } from '@fortawesome/free-solid-svg-icons';
+import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
 import CreditCardComponent from './components/CreditCard';
 import BankTransferComponent from './components/TransferBanking';
-import { ArrowLeft2, Card } from 'iconsax-react-native';
+import { ArrowLeft2 } from 'iconsax-react-native';
 import { Col, ContainerComponent, Row, Section, TextComponent } from '../../components';
 
+const screenWidth = Dimensions.get('window').width;
+const screenHeight = Dimensions.get('window').height;
 type PaymentMethod = 'Credit Card' | 'Bank Transfer' | null;
 
 const PaymentMethodComponent = (prop: any) => {
     const { navigation } = prop
     const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<PaymentMethod | null>(null);
+    const [isCreditCardSelected, setIsCreditCardSelected] = useState<boolean>(false);
+    const [isBankTransferSelected, setIsBankTransferSelected] = useState<boolean>(false);
 
     const handlePaymentMethodSelect = (method: PaymentMethod) => {
         setSelectedPaymentMethod(method);
+        setIsCreditCardSelected(method === 'Credit Card');
+        setIsBankTransferSelected(method === 'Bank Transfer')
     };
 
     return (
@@ -26,25 +30,31 @@ const PaymentMethodComponent = (prop: any) => {
                 </Row>
             </Section>
             <ContainerComponent isScroll>
-                <CreditCardComponent onSelectPaymentMethod={handlePaymentMethodSelect} />
+                <CreditCardComponent
+                    onSelectPaymentMethod={handlePaymentMethodSelect}
+                    isDisabled={isBankTransferSelected}
+                />
 
-                <BankTransferComponent onSelectPaymentMethod={handlePaymentMethodSelect} />
+                <BankTransferComponent
+                    onSelectPaymentMethod={handlePaymentMethodSelect}
+                    isDisabled={isCreditCardSelected}
+                />
             </ContainerComponent>
 
             <View style={styles.footer}>
                 <Col>
-                    <View style={{flexDirection: 'row'}}>
+                    <View style={{ flexDirection: 'row' }}>
                         <Text style={styles.footerText}>Payment Medthod: </Text>
                         <Text style={styles.text}>{selectedPaymentMethod}</Text>
                     </View>
-                    <View style={{flexDirection: 'row'}}>
+                    <View style={{ flexDirection: 'row' }}>
                         <Text style={styles.footerText}>Amount: </Text>
                         {/* Thay amount vô nha */}
                         <Text style={styles.text}>$100</Text>
                     </View>
                 </Col>
 
-                <TouchableOpacity style={styles.payButton}>
+                <TouchableOpacity style={styles.payButton} onPress={() => prop.navigation.navigate('AddNewCard')}>
                     <Text style={styles.payButtonText}>Pay Now</Text>
                 </TouchableOpacity>
             </View>
@@ -59,11 +69,11 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: 20,
         backgroundColor: "#fff",
+        width: screenWidth
     },
     header: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginBottom: 10,
     },
     headerText: {
         flex: 1,
@@ -100,18 +110,20 @@ const styles = StyleSheet.create({
         textAlign: 'left',
         fontFamily: 'Poppins-Regular'
     },
-    text:{
+    text: {
         fontSize: 14,
         fontFamily: 'Poppins-Bold',
         color: '#0B8FAC'
     },
     payButton: {
         backgroundColor: '#21a691',
-        paddingVertical: 15,
-        paddingHorizontal: 30,
         borderRadius: 10,
         alignItems: 'center',
-        marginLeft: 30,
+        justifyContent: 'center',
+        marginLeft: 50,
+        marginRight: 5,
+        height: screenHeight * 0.08,
+        width: screenWidth * 0.25
     },
     payButtonText: {
         color: '#fff',

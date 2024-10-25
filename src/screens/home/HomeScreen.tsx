@@ -6,7 +6,7 @@ import {
   ScrollView,
   Dimensions,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Card,
   Col,
@@ -18,20 +18,20 @@ import {
   TextComponent,
 } from '../../components';
 import auth from '@react-native-firebase/auth';
-import {fontFamilies} from '../../constants/fontFamilies';
+import { fontFamilies } from '../../constants/fontFamilies';
 import DoctorCard from './components/DoctorCard';
 import Swiper from 'react-native-swiper';
 import SwiperOne from './components/SwiperOne';
 import SpecializationComponent from './components/SpecializationComponent';
-import {Message, Messages1, Messages3} from 'iconsax-react-native';
+import { Message, Messages1, Messages3 } from 'iconsax-react-native';
 import firestore from '@react-native-firebase/firestore';
-import {Specialization} from '../../models/Specialization';
-import {Doctor} from '../../models/Doctor';
-import {Patient} from '../../models/Patient';
+import { Specialization } from '../../models/Specialization';
+import { Doctor } from '../../models/Doctor';
+import { Patient } from '../../models/Patient';
 
 const HomeScreen = (props: any) => {
   const user = auth().currentUser;
-  const {width, height} = Dimensions.get('window');
+  const { width, height } = Dimensions.get('window');
   const [listSpecialization, setListSpecialization] = useState<
     Specialization[]
   >([]);
@@ -113,7 +113,7 @@ const HomeScreen = (props: any) => {
 
   return (
     <>
-      <ContainerComponent isScroll style={{marginTop: -16}}>
+      <ContainerComponent isScroll style={{ marginTop: -16 }}>
         <View>
           <Row
             styles={{
@@ -125,7 +125,7 @@ const HomeScreen = (props: any) => {
             <Row>
               <Image
                 source={require('../../assets/IconTab/profile.png')}
-                style={{width: 50, height: 50}}
+                style={{ width: 50, height: 50 }}
               />
               <Space width={15} />
               <View>
@@ -135,13 +135,12 @@ const HomeScreen = (props: any) => {
                   color="#00000066"
                 />
                 <TextComponent
-                  text={`${
-                    patient
+                  text={`${patient
                       ? patient.nickname
                         ? patient.nickname
                         : patient.name
                       : ''
-                  }`}
+                    }`}
                   font={fontFamilies.semiBold}
                 />
               </View>
@@ -149,12 +148,12 @@ const HomeScreen = (props: any) => {
             <TouchableOpacity>
               <Image
                 source={require('../../assets/IconTab/notification.png')}
-                style={{width: 25, height: 25}}
+                style={{ width: 25, height: 25 }}
               />
             </TouchableOpacity>
           </Row>
 
-          <Swiper height={270} style={{marginTop: 20}} activeDotColor="#1399ba">
+          <Swiper height={270} style={{ marginTop: 20 }} activeDotColor="#1399ba">
             <SwiperOne />
             <SwiperOne />
             <SwiperOne />
@@ -202,7 +201,7 @@ const HomeScreen = (props: any) => {
                 key={index}
                 data={item}
                 onPress={() => {
-                  props.navigation.navigate('DoctorDetail', {doctor: item});
+                  props.navigation.navigate('DoctorDetail', { doctor: item });
                 }}
               />
             ))}
@@ -211,6 +210,7 @@ const HomeScreen = (props: any) => {
       </ContainerComponent>
       {/* {Chat box} */}
       <TouchableOpacity
+        onPress={() => props.navigation.navigate('ScheduleScreen')}
         style={{
           position: 'absolute',
           backgroundColor: '#3baae3',

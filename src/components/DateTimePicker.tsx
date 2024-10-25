@@ -44,6 +44,7 @@ const DateTime = () => {
                         is24Hour={false}
                         display='default'
                         onChange={handleDateChange}
+                        minimumDate={new Date()}
                     />
                 )}
             </Section>
