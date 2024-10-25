@@ -210,7 +210,7 @@ const HomeScreen = (props: any) => {
       </ContainerComponent>
       {/* {Chat box} */}
       <TouchableOpacity
-        onPress={() => props.navigation.navigate('ScheduleScreen')}
+        onPress={() => props.navigation.navigate('ChatScreen')}
         style={{
           position: 'absolute',
           backgroundColor: '#3baae3',
