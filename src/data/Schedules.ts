@@ -3,368 +3,368 @@ import {Schedule} from '../models/Schedule';
 export const schedules: Schedule[] = [
   // Bác sĩ 1 - Dr. Bowen Chan
   {
-    scheduleId: 'sche_01',
+    scheduleId: 'sche_001',
     availableDate: new Date('2024-10-20'),
     startTime: new Date('2024-10-20T09:00:00'), // 9:00 AM
     endTime: new Date('2024-10-20T10:00:00'), // 10:00 AM
-    doctorId: 'doc_01',
+    doctorId: 'doc_001',
   },
   {
-    scheduleId: 'sche_02',
+    scheduleId: 'sche_002',
     availableDate: new Date('2024-10-20'),
     startTime: new Date('2024-10-20T11:00:00'),
     endTime: new Date('2024-10-20T12:00:00'),
-    doctorId: 'doc_01',
+    doctorId: 'doc_001',
   },
   {
-    scheduleId: 'sche_03',
+    scheduleId: 'sche_003',
     availableDate: new Date('2024-10-21'),
     startTime: new Date('2024-10-21T14:00:00'),
     endTime: new Date('2024-10-21T15:00:00'),
-    doctorId: 'doc_01',
+    doctorId: 'doc_001',
   },
   {
-    scheduleId: 'sche_04',
+    scheduleId: 'sche_004',
     availableDate: new Date('2024-10-22'),
     startTime: new Date('2024-10-22T13:00:00'),
     endTime: new Date('2024-10-22T14:00:00'),
-    doctorId: 'doc_01',
+    doctorId: 'doc_001',
   },
   {
-    scheduleId: 'sche_05',
+    scheduleId: 'sche_005',
     availableDate: new Date('2024-10-23'),
     startTime: new Date('2024-10-23T15:00:00'),
     endTime: new Date('2024-10-23T16:00:00'),
-    doctorId: 'doc_01',
+    doctorId: 'doc_001',
   },
 
   // Bác sĩ 2 - Dr. Sharon Hind
   {
-    scheduleId: 'sche_06',
+    scheduleId: 'sche_006',
     availableDate: new Date('2024-10-20'),
     startTime: new Date('2024-10-20T10:00:00'), // 10:00 AM
     endTime: new Date('2024-10-20T11:00:00'), // 11:00 AM
-    doctorId: 'doc_02',
+    doctorId: 'doc_002',
   },
   {
-    scheduleId: 'sche_07',
+    scheduleId: 'sche_007',
     availableDate: new Date('2024-10-20'),
     startTime: new Date('2024-10-20T12:00:00'),
     endTime: new Date('2024-10-20T13:00:00'),
-    doctorId: 'doc_02',
+    doctorId: 'doc_002',
   },
   {
-    scheduleId: 'sche_08',
+    scheduleId: 'sche_008',
     availableDate: new Date('2024-10-21'),
     startTime: new Date('2024-10-21T14:30:00'),
     endTime: new Date('2024-10-21T15:30:00'),
-    doctorId: 'doc_02',
+    doctorId: 'doc_002',
   },
   {
-    scheduleId: 'sche_09',
+    scheduleId: 'sche_009',
     availableDate: new Date('2024-10-22'),
     startTime: new Date('2024-10-22T09:30:00'),
     endTime: new Date('2024-10-22T10:30:00'),
-    doctorId: 'doc_02',
+    doctorId: 'doc_002',
   },
   {
-    scheduleId: 'sche_10',
+    scheduleId: 'sche_010',
     availableDate: new Date('2024-10-23'),
     startTime: new Date('2024-10-23T16:00:00'),
     endTime: new Date('2024-10-23T17:00:00'),
-    doctorId: 'doc_02',
+    doctorId: 'doc_002',
   },
 
   // Bác sĩ 3 - Dr. Alex Johnson
   {
-    scheduleId: 'sche_11',
+    scheduleId: 'sche_011',
     availableDate: new Date('2024-10-21'),
     startTime: new Date('2024-10-21T08:30:00'), // 8:30 AM
     endTime: new Date('2024-10-21T09:30:00'), // 9:30 AM
-    doctorId: 'doc_03',
+    doctorId: 'doc_003',
   },
   {
-    scheduleId: 'sche_12',
+    scheduleId: 'sche_012',
     availableDate: new Date('2024-10-21'),
     startTime: new Date('2024-10-21T11:00:00'),
     endTime: new Date('2024-10-21T12:00:00'),
-    doctorId: 'doc_03',
+    doctorId: 'doc_003',
   },
   {
-    scheduleId: 'sche_13',
+    scheduleId: 'sche_013',
     availableDate: new Date('2024-10-22'),
     startTime: new Date('2024-10-22T14:00:00'),
     endTime: new Date('2024-10-22T15:00:00'),
-    doctorId: 'doc_03',
+    doctorId: 'doc_003',
   },
   {
-    scheduleId: 'sche_14',
+    scheduleId: 'sche_014',
     availableDate: new Date('2024-10-23'),
     startTime: new Date('2024-10-23T10:00:00'),
     endTime: new Date('2024-10-23T11:00:00'),
-    doctorId: 'doc_03',
+    doctorId: 'doc_003',
   },
   {
-    scheduleId: 'sche_15',
+    scheduleId: 'sche_015',
     availableDate: new Date('2024-10-23'),
     startTime: new Date('2024-10-23T15:30:00'),
     endTime: new Date('2024-10-23T16:30:00'),
-    doctorId: 'doc_03',
+    doctorId: 'doc_003',
   },
 
   // Bác sĩ 4 - Dr. Maria White
   {
-    scheduleId: 'sche_16',
+    scheduleId: 'sche_016',
     availableDate: new Date('2024-10-21'),
     startTime: new Date('2024-10-21T09:00:00'), // 9:00 AM
     endTime: new Date('2024-10-21T10:00:00'), // 10:00 AM
-    doctorId: 'doc_04',
+    doctorId: 'doc_004',
   },
   {
-    scheduleId: 'sche_17',
+    scheduleId: 'sche_017',
     availableDate: new Date('2024-10-22'),
     startTime: new Date('2024-10-22T10:30:00'),
     endTime: new Date('2024-10-22T11:30:00'),
-    doctorId: 'doc_04',
+    doctorId: 'doc_004',
   },
   {
-    scheduleId: 'sche_18',
+    scheduleId: 'sche_018',
     availableDate: new Date('2024-10-23'),
     startTime: new Date('2024-10-23T09:30:00'),
     endTime: new Date('2024-10-23T10:30:00'),
-    doctorId: 'doc_04',
+    doctorId: 'doc_004',
   },
   {
-    scheduleId: 'sche_19',
+    scheduleId: 'sche_019',
     availableDate: new Date('2024-10-24'),
     startTime: new Date('2024-10-24T11:00:00'),
     endTime: new Date('2024-10-24T12:00:00'),
-    doctorId: 'doc_04',
+    doctorId: 'doc_004',
   },
   {
-    scheduleId: 'sche_20',
+    scheduleId: 'sche_020',
     availableDate: new Date('2024-10-24'),
     startTime: new Date('2024-10-24T14:00:00'),
     endTime: new Date('2024-10-24T15:00:00'),
-    doctorId: 'doc_04',
+    doctorId: 'doc_004',
   },
 
   // Bác sĩ 5 - Dr. Emily Brown
   {
-    scheduleId: 'sche_21',
+    scheduleId: 'sche_021',
     availableDate: new Date('2024-10-20'),
     startTime: new Date('2024-10-20T09:30:00'), // 9:30 AM
     endTime: new Date('2024-10-20T10:30:00'), // 10:30 AM
-    doctorId: 'doc_05',
+    doctorId: 'doc_005',
   },
   {
-    scheduleId: 'sche_22',
+    scheduleId: 'sche_022',
     availableDate: new Date('2024-10-20'),
     startTime: new Date('2024-10-20T12:00:00'),
     endTime: new Date('2024-10-20T13:00:00'),
-    doctorId: 'doc_05',
+    doctorId: 'doc_005',
   },
   {
-    scheduleId: 'sche_23',
+    scheduleId: 'sche_023',
     availableDate: new Date('2024-10-21'),
     startTime: new Date('2024-10-21T11:00:00'),
     endTime: new Date('2024-10-21T12:00:00'),
-    doctorId: 'doc_05',
+    doctorId: 'doc_005',
   },
   {
-    scheduleId: 'sche_24',
+    scheduleId: 'sche_024',
     availableDate: new Date('2024-10-22'),
     startTime: new Date('2024-10-22T15:00:00'),
     endTime: new Date('2024-10-22T16:00:00'),
-    doctorId: 'doc_05',
+    doctorId: 'doc_005',
   },
   {
-    scheduleId: 'sche_25',
+    scheduleId: 'sche_025',
     availableDate: new Date('2024-10-23'),
     startTime: new Date('2024-10-23T09:00:00'),
     endTime: new Date('2024-10-23T10:00:00'),
-    doctorId: 'doc_05',
+    doctorId: 'doc_005',
   },
   // Bác sĩ 6 - Dr. Ava Lee
   {
-    scheduleId: 'sche_26',
+    scheduleId: 'sche_026',
     availableDate: new Date('2024-10-20'),
     startTime: new Date('2024-10-20T08:00:00'), // 8:00 AM
     endTime: new Date('2024-10-20T09:00:00'), // 9:00 AM
-    doctorId: 'doc_06',
+    doctorId: 'doc_006',
   },
   {
-    scheduleId: 'sche_27',
+    scheduleId: 'sche_027',
     availableDate: new Date('2024-10-21'),
     startTime: new Date('2024-10-21T10:00:00'), // 10:00 AM
     endTime: new Date('2024-10-21T11:00:00'), // 11:00 AM
-    doctorId: 'doc_06',
+    doctorId: 'doc_006',
   },
   {
-    scheduleId: 'sche_28',
+    scheduleId: 'sche_028',
     availableDate: new Date('2024-10-22'),
     startTime: new Date('2024-10-22T13:00:00'), // 1:00 PM
     endTime: new Date('2024-10-22T14:00:00'), // 2:00 PM
-    doctorId: 'doc_06',
+    doctorId: 'doc_006',
   },
   {
-    scheduleId: 'sche_29',
+    scheduleId: 'sche_029',
     availableDate: new Date('2024-10-23'),
     startTime: new Date('2024-10-23T15:00:00'), // 3:00 PM
     endTime: new Date('2024-10-23T16:00:00'), // 4:00 PM
-    doctorId: 'doc_06',
+    doctorId: 'doc_006',
   },
   {
-    scheduleId: 'sche_30',
+    scheduleId: 'sche_030',
     availableDate: new Date('2024-10-24'),
     startTime: new Date('2024-10-24T09:30:00'), // 9:30 AM
     endTime: new Date('2024-10-24T10:30:00'), // 10:30 AM
-    doctorId: 'doc_06',
+    doctorId: 'doc_006',
   },
   // Bác sĩ 7 - Dr. Sophia Kim
   {
-    scheduleId: 'sche_31',
+    scheduleId: 'sche_031',
     availableDate: new Date('2024-10-20'),
     startTime: new Date('2024-10-20T08:30:00'), // 8:30 AM
     endTime: new Date('2024-10-20T09:30:00'), // 9:30 AM
-    doctorId: 'doc_07',
+    doctorId: 'doc_007',
   },
   {
-    scheduleId: 'sche_32',
+    scheduleId: 'sche_032',
     availableDate: new Date('2024-10-21'),
     startTime: new Date('2024-10-21T10:00:00'), // 10:00 AM
     endTime: new Date('2024-10-21T11:00:00'), // 11:00 AM
-    doctorId: 'doc_07',
+    doctorId: 'doc_007',
   },
   {
-    scheduleId: 'sche_33',
+    scheduleId: 'sche_033',
     availableDate: new Date('2024-10-22'),
     startTime: new Date('2024-10-22T14:00:00'), // 2:00 PM
     endTime: new Date('2024-10-22T15:00:00'), // 3:00 PM
-    doctorId: 'doc_07',
+    doctorId: 'doc_007',
   },
   {
-    scheduleId: 'sche_34',
+    scheduleId: 'sche_034',
     availableDate: new Date('2024-10-23'),
     startTime: new Date('2024-10-23T09:00:00'), // 9:00 AM
     endTime: new Date('2024-10-23T10:00:00'), // 10:00 AM
-    doctorId: 'doc_07',
+    doctorId: 'doc_007',
   },
   {
-    scheduleId: 'sche_35',
+    scheduleId: 'sche_035',
     availableDate: new Date('2024-10-24'),
     startTime: new Date('2024-10-24T13:00:00'), // 1:00 PM
     endTime: new Date('2024-10-24T14:00:00'), // 2:00 PM
-    doctorId: 'doc_07',
+    doctorId: 'doc_007',
   },
   // Bác sĩ 8 - Dr. Emma Lee
   {
-    scheduleId: 'sche_36',
+    scheduleId: 'sche_036',
     availableDate: new Date('2024-10-22'),
     startTime: new Date('2024-10-22T08:00:00'), // 8:00 AM
     endTime: new Date('2024-10-22T09:00:00'), // 9:00 AM
-    doctorId: 'doc_08',
+    doctorId: 'doc_008',
   },
   {
-    scheduleId: 'sche_37',
+    scheduleId: 'sche_037',
     availableDate: new Date('2024-10-23'),
     startTime: new Date('2024-10-23T11:00:00'), // 11:00 AM
     endTime: new Date('2024-10-23T12:00:00'), // 12:00 PM
-    doctorId: 'doc_08',
+    doctorId: 'doc_008',
   },
   {
-    scheduleId: 'sche_38',
+    scheduleId: 'sche_038',
     availableDate: new Date('2024-10-24'),
     startTime: new Date('2024-10-24T13:00:00'), // 1:00 PM
     endTime: new Date('2024-10-24T14:00:00'), // 2:00 PM
-    doctorId: 'doc_08',
+    doctorId: 'doc_008',
   },
   {
-    scheduleId: 'sche_39',
+    scheduleId: 'sche_039',
     availableDate: new Date('2024-10-25'),
     startTime: new Date('2024-10-25T15:00:00'), // 3:00 PM
     endTime: new Date('2024-10-25T16:00:00'), // 4:00 PM
-    doctorId: 'doc_08',
+    doctorId: 'doc_008',
   },
   {
-    scheduleId: 'sche_40',
+    scheduleId: 'sche_040',
     availableDate: new Date('2024-10-26'),
     startTime: new Date('2024-10-26T10:00:00'), // 10:00 AM
     endTime: new Date('2024-10-26T11:00:00'), // 11:00 AM
-    doctorId: 'doc_08',
+    doctorId: 'doc_008',
   },
 
   // Bác sĩ 9 - Dr. Daniel Garcia
   {
-    scheduleId: 'sche_41',
+    scheduleId: 'sche_041',
     availableDate: new Date('2024-10-22'),
     startTime: new Date('2024-10-22T09:30:00'), // 9:30 AM
     endTime: new Date('2024-10-22T10:30:00'), // 10:30 AM
-    doctorId: 'doc_09',
+    doctorId: 'doc_009',
   },
   {
-    scheduleId: 'sche_42',
+    scheduleId: 'sche_042',
     availableDate: new Date('2024-10-23'),
     startTime: new Date('2024-10-23T14:00:00'), // 2:00 PM
     endTime: new Date('2024-10-23T15:00:00'), // 3:00 PM
-    doctorId: 'doc_09',
+    doctorId: 'doc_009',
   },
   {
-    scheduleId: 'sche_43',
+    scheduleId: 'sche_043',
     availableDate: new Date('2024-10-24'),
     startTime: new Date('2024-10-24T11:00:00'), // 11:00 AM
     endTime: new Date('2024-10-24T12:00:00'), // 12:00 PM
-    doctorId: 'doc_09',
+    doctorId: 'doc_009',
   },
   {
-    scheduleId: 'sche_44',
+    scheduleId: 'sche_044',
     availableDate: new Date('2024-10-25'),
     startTime: new Date('2024-10-25T16:00:00'), // 4:00 PM
     endTime: new Date('2024-10-25T17:00:00'), // 5:00 PM
-    doctorId: 'doc_09',
+    doctorId: 'doc_009',
   },
   {
-    scheduleId: 'sche_45',
+    scheduleId: 'sche_045',
     availableDate: new Date('2024-10-26'),
     startTime: new Date('2024-10-26T08:30:00'), // 8:30 AM
     endTime: new Date('2024-10-26T09:30:00'), // 9:30 AM
-    doctorId: 'doc_09',
+    doctorId: 'doc_009',
   },
 
   // Bác sĩ 10 - Dr. Lily Nguyen
   {
-    scheduleId: 'sche_46',
+    scheduleId: 'sche_046',
     availableDate: new Date('2024-10-22'),
     startTime: new Date('2024-10-22T10:00:00'), // 10:00 AM
     endTime: new Date('2024-10-22T11:00:00'), // 11:00 AM
-    doctorId: 'doc_10',
+    doctorId: 'doc_010',
   },
   {
-    scheduleId: 'sche_47',
+    scheduleId: 'sche_047',
     availableDate: new Date('2024-10-23'),
     startTime: new Date('2024-10-23T13:00:00'), // 1:00 PM
     endTime: new Date('2024-10-23T14:00:00'), // 2:00 PM
-    doctorId: 'doc_10',
+    doctorId: 'doc_010',
   },
   {
-    scheduleId: 'sche_48',
+    scheduleId: 'sche_048',
     availableDate: new Date('2024-10-24'),
     startTime: new Date('2024-10-24T14:30:00'), // 2:30 PM
     endTime: new Date('2024-10-24T15:30:00'), // 3:30 PM
-    doctorId: 'doc_10',
+    doctorId: 'doc_010',
   },
   {
-    scheduleId: 'sche_49',
+    scheduleId: 'sche_049',
     availableDate: new Date('2024-10-25'),
     startTime: new Date('2024-10-25T09:00:00'), // 9:00 AM
     endTime: new Date('2024-10-25T10:00:00'), // 10:00 AM
-    doctorId: 'doc_10',
+    doctorId: 'doc_010',
   },
   {
-    scheduleId: 'sche_50',
+    scheduleId: 'sche_050',
     availableDate: new Date('2024-10-26'),
     startTime: new Date('2024-10-26T15:00:00'), // 3:00 PM
     endTime: new Date('2024-10-26T16:00:00'), // 4:00 PM
-    doctorId: 'doc_10',
+    doctorId: 'doc_010',
   },
 ];
