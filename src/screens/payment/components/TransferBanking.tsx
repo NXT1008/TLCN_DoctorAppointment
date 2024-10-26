@@ -1,17 +1,21 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, LayoutAnimation, Platform, UIManager } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, LayoutAnimation, Platform, UIManager, Dimensions } from 'react-native';
 import { Card, ContainerComponent } from '../../../components';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faBuilding } from '@fortawesome/free-solid-svg-icons';
 import Container from '../../../components/ContainerComponent';
 
+const screenWidth = Dimensions.get('window').width;
+const screenHeight = Dimensions.get('window').height;
+
 type PaymentMethod = 'Bank Transfer' | null;
 
 interface props{
     onSelectPaymentMethod: (method: PaymentMethod) => void;
+    isDisabled: boolean;
 }
 
-const BankTransferComponent = ({onSelectPaymentMethod} :props) => {
+const BankTransferComponent = ({onSelectPaymentMethod, isDisabled} :props) => {
     const [isExpanded, setIsExpanded] = useState(false);
     const [accountNumber, setAccountNumber] = useState('');
     const [bankName, setBankName] = useState('');
@@ -20,6 +24,9 @@ const BankTransferComponent = ({onSelectPaymentMethod} :props) => {
 
     const handleToggleDropdown = () => {
         LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+        if (!isDisabled) {
+            onSelectPaymentMethod('Bank Transfer');
+        }
         setIsExpanded(!isExpanded);
         if (!isExpanded) {
             // Chọn phương thức thanh toán khi mở rộng
@@ -40,7 +47,7 @@ const BankTransferComponent = ({onSelectPaymentMethod} :props) => {
 
     return (
         <View style={styles.container} >
-            <TouchableOpacity onPress={handleToggleDropdown} style={styles.dropdownHeader}>
+            <TouchableOpacity onPress={handleToggleDropdown} style={styles.dropdownHeader} >
                 <View style={styles.iconAndText}>
                     <FontAwesomeIcon icon={faBuilding} size={20} style={styles.icon} />
                     <Text style={styles.title}>Bank Transfer</Text>
@@ -87,69 +94,72 @@ const BankTransferComponent = ({onSelectPaymentMethod} :props) => {
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: '#fff',
-        shadowColor: '#333',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.25,
-        shadowRadius: 20,
-        elevation: 5,
-        padding: 5,
-        borderRadius: 20,
+      flex: 1,
+      backgroundColor: '#fff',
+      shadowColor: '#333',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.25,
+      shadowRadius: 20,
+      elevation: 5,
+      borderRadius: 20,
+      padding: 10, 
     },
     dropdownHeader: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        paddingVertical: 10,
-        borderBottomWidth: 1,
-        borderBottomColor: '#ccc',
-        height: 61
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      paddingVertical: 10,
+      borderBottomWidth: 1,
+      borderBottomColor: '#333',
+      height: screenHeight*0.08
     },
     iconAndText: {
-        flexDirection: 'row',
-        alignItems: 'center',
+      flexDirection: 'row',
+      alignItems: 'center',
     },
     icon: {
-        marginRight: 10,
-        marginLeft: 5
+      marginRight: 10,
+      marginLeft: 5,
     },
     title: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        fontFamily: 'Poppins-Medium',
-        textAlign: 'left',
-        padding: 10,
-        color: '#21a691',
+      fontSize: 18,
+      fontWeight: 'bold',
+      fontFamily: 'Poppins-Medium',
+      textAlign: 'left',
+      padding: 10,
+      color: '#21a691',
     },
     toggleText: {
-        fontSize: 24,
-        color: '#21a691',
+      fontSize: 24,
+      color: '#21a691',
     },
     formContainer: {
-        marginTop: 10,
+      flex: 1, // Make the form container take up available space
+      marginTop: 10,
     },
     input: {
-        height: 50,
-        borderColor: '#ccc',
-        borderWidth: 1,
-        borderRadius: 10,
-        marginBottom: 15,
-        paddingHorizontal: 15,
-        fontSize: 16,
-        backgroundColor: '#f9f9f9',
+      flex: 1, // Make inputs take up available space
+      height: 50,
+      borderColor: '#ccc',
+      borderWidth: 1,
+      borderRadius: 10,
+      marginBottom: 15,
+      paddingHorizontal: 15,
+      fontSize: 16,
+      backgroundColor: '#f9f9f9',
     },
     button: {
-        backgroundColor: '#21a691',
-        paddingVertical: 15,
-        borderRadius: 10,
-        alignItems: 'center',
-        marginTop: 20,
+      backgroundColor: '#21a691',
+      paddingVertical: 15,
+      borderRadius: 10,
+      alignItems: 'center',
+      marginTop: 20,
     },
     buttonText: {
-        color: '#fff',
-        fontSize: 18,
-        fontWeight: 'bold',
+      color: '#fff',
+      fontSize: 18,
+      fontWeight: 'bold',
     },
-});
+  });
 
 export default BankTransferComponent;

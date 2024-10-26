@@ -3,14 +3,19 @@ import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Dimensions, Image
 import { Card, Col, Row, TextComponent } from '../../../components';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faCreditCard } from '@fortawesome/free-solid-svg-icons';
+import { useNavigation } from '@react-navigation/native';
 
 type PaymentMethod = 'Credit Card' | null;
 
 interface props{
     onSelectPaymentMethod: (method: PaymentMethod) => void;
+    isDisabled : boolean
 }
 
+
 const screenWidth = Dimensions.get('window').width;
+const screenHeight = Dimensions.get('window').height;
+
 const cards = [
     {
         number: '1234 1234 1234 1234',
@@ -32,9 +37,9 @@ const cards = [
     },
 ];
 
-const CreditCardComponent = ({onSelectPaymentMethod} :props) => {
+const CreditCardComponent = ({onSelectPaymentMethod, isDisabled} :props) => {
+    const navigation = useNavigation()
     const [selectedCardIndex, setSelectedCardIndex] = useState<number | null>(null);
-
     const getCardBackground = (type: string) => {
         switch (type) {
             case 'Visa':
@@ -49,10 +54,13 @@ const CreditCardComponent = ({onSelectPaymentMethod} :props) => {
     };
 
     const maskCardNumber = (cardNumber: string) => {
-        return '**** **** **** ' + cardNumber.slice(-4);  // Giữ 4 số cuối
+        return '**** **** **** ' + cardNumber.slice(-4); 
     };
 
     const handleCardSelect = (index: number) => {
+        if (!isDisabled) {
+            onSelectPaymentMethod('Credit Card');
+        }
         // Kiểm tra xem thẻ đang được chọn hay không
         setSelectedCardIndex(prevIndex => {
             const newIndex = prevIndex === index ? null : index;
@@ -74,7 +82,7 @@ const CreditCardComponent = ({onSelectPaymentMethod} :props) => {
                     <FontAwesomeIcon icon={faCreditCard} size={20} style={styles.icon} />
                     <Text style={styles.title}>Credit Cards</Text>
                 </View>
-                <TouchableOpacity onPress={() => Alert.alert('Add new card')}>
+                <TouchableOpacity onPress={() =>{}}>
                     <Image source={require('../../../assets/images/add.png')}
                         style={styles.icon} />
                 </TouchableOpacity>
@@ -85,11 +93,15 @@ const CreditCardComponent = ({onSelectPaymentMethod} :props) => {
                     {cards.map((card, index) => (
                         <TouchableOpacity
                             key={index}
-                            style={styles.cardWrapper}
-                            onPress={() =>handleCardSelect(index)}>
+                            style={[
+                                styles.cardWrapper,
+                                selectedCardIndex === index && styles.selectedCard 
+                            ]}
+                            onPress={() =>handleCardSelect(index)}
+                            disabled={isDisabled}>
                             <Image
                                 source={getCardBackground(card.type)}
-                                style={styles.card_background} />
+                                style={styles.cardBackground} />
                             <Text style={styles.cardType}>{card.type}</Text>
                             <Text style={styles.cardNumber}>{maskCardNumber(card.number)}</Text>
                             <Text style={styles.cardHolder}>{card.holder}</Text>
@@ -103,20 +115,6 @@ const CreditCardComponent = ({onSelectPaymentMethod} :props) => {
 
 
             </View>
-            {selectedCardIndex !== null && (
-                <Row>
-                    <TextComponent 
-                    text='You are choosing'
-                    font='Poppins-Regular'
-                    styles={styles.selectedCardText}/>
-                        
-                    <TextComponent
-                        text={maskCardNumber(cards[selectedCardIndex].number)}
-                        color='#0B8FAC'
-                        font='Poppins-Medium'/>
-                </Row>
-
-            )}
 
         </View>
     );
@@ -124,93 +122,101 @@ const CreditCardComponent = ({onSelectPaymentMethod} :props) => {
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: '#fff',
-        shadowColor: '#333',
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.25,
-        shadowRadius: 20,
-        elevation: 5,
-        padding: 5,
-        borderRadius: 20,
-        marginBottom: 20
+      backgroundColor: '#fff',
+      shadowColor: '#333',
+      shadowOffset: { width: 0, height: 1 },
+      shadowOpacity: 0.25,
+      shadowRadius: 10,
+      elevation: 5,
+      padding: 10,
+      borderRadius: 20,
+      marginBottom: 20,
+    },
+    header: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginBottom: 10,
     },
     iconAndText: {
-        flexDirection: 'row',
-        alignItems: 'center',
+      flexDirection: 'row',
+      alignItems: 'center',
     },
     icon: {
-        marginRight: 10,
-        marginLeft: 5
+      marginRight: 10,
+      marginLeft: 5,
     },
     scrollViewContainer: {
-        height: 150,
-        marginBottom: 20,
+      height: screenHeight * 0.2,
+      marginBottom: 10,
     },
     title: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        fontFamily: 'Poppins-Medium',
-        textAlign: 'left',
-        padding: 10,
-        color: '#21a691',
-
-        justifyContent: 'space-around'
+      fontSize: 18,
+      fontWeight: 'bold',
+      fontFamily: 'Poppins-Medium',
+      textAlign: 'left',
+      padding: 10,
+      color: '#21a691',
+      justifyContent: 'space-around',
     },
     scrollContainer: {
-        paddingHorizontal: 5,
+      paddingHorizontal: 5,
     },
     cardWrapper: {
-        marginHorizontal: 10,
-        justifyContent: 'center',
+      marginHorizontal: 10,
+      justifyContent: 'center',
+      borderWidth: 0,
+      borderColor: 'transparent',
+      overflow: 'hidden',
+      width: screenWidth * 0.75, 
     },
-    card_background: {
-        width: screenWidth * 0.75,
-        height: 150,
-        borderRadius: 10,
-        resizeMode: 'cover',
+    selectedCard: {
+      borderWidth: 2,
+      borderColor: '#0B8FAC',
+      borderRadius: 10,
+    },
+    cardBackground: {
+      width: '100%', 
+      height: '100%',
+      borderRadius: 10,
+      resizeMode: 'cover',
     },
     cardType: {
-        position: 'absolute',
-        top: 20,
-        left: 30,
-        color: '#fff',
-        fontSize: 16,
-        fontWeight: 'bold',
-        fontFamily: 'Poppins-Regular',
+      position: 'absolute',
+      top: '20%',
+      left: '10%',
+      color: '#fff',
+      fontSize: 16,
+      fontWeight: 'bold',
+      fontFamily: 'Poppins-Regular',
     },
     cardNumber: {
-        position: 'absolute',
-        top: 60,
-        left: 55,
-        color: '#fff',
-        fontSize: 22,
-        fontWeight: 'bold',
-        fontFamily: 'Poppins-Regular',
+      position: 'absolute',
+      top: '40%',
+      left: '10%',
+      color: '#fff',
+      fontSize: 18,
+      fontWeight: 'bold',
+      fontFamily: 'Poppins-Regular',
     },
     cardHolder: {
-        position: 'absolute',
-        top: 110,
-        left: 30,
-        color: '#fff',
-        fontSize: 14,
-        fontWeight: 'bold',
-        fontFamily: 'Poppins-Regular',
+      position: 'absolute',
+      bottom: '15%',
+      left: '10%',
+      color: '#fff',
+      fontSize: 14,
+      fontWeight: 'bold',
+      fontFamily: 'Poppins-Regular',
     },
     cardExpiry: {
-        position: 'absolute',
-        top: 110,
-        right: 30,
-        color: '#fff',
-        fontSize: 12,
-        fontWeight: 'bold',
-        fontFamily: 'Poppins-Regular',
+      position: 'absolute',
+      bottom: '15%',
+      right: '10%',
+      color: '#fff',
+      fontSize: 12,
+      fontWeight: 'bold',
+      fontFamily: 'Poppins-Regular',
     },
-    selectedCardText: {
-        textAlign: 'left',
-        fontSize: 16,
-        color: '#333',
-        marginRight: 5
-    },
-});
+  });
 
 export default CreditCardComponent;
