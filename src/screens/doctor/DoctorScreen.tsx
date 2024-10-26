@@ -1,4 +1,10 @@
-import {View, Text, Image, TouchableOpacity} from 'react-native';
+import {
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  ActivityIndicator,
+} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {
   ContainerComponent,
@@ -22,6 +28,7 @@ import {Specialization} from '../../models/Specialization';
 
 const DoctorScreen = (props: any) => {
   const [doctorList, setDoctorList] = useState<Doctor[]>([]);
+  const [loadingDoctors, setLoadingDoctors] = useState(false);
 
   useEffect(() => {
     getAllDoctors();
@@ -40,26 +47,30 @@ const DoctorScreen = (props: any) => {
   ];
 
   const getAllDoctors = async () => {
+    setLoadingDoctors(true);
     await firestore()
       .collection('doctors')
-      .get()
-      .then(snap => {
+      .onSnapshot(snap => {
         if (snap.empty) {
           console.log('Không có bác sĩ');
           return;
-        }
-        const items: Doctor[] = [];
-        snap.forEach((item: any) => {
-          items.push({
-            id: item.id,
-            ...item.data(),
+        } else {
+          const items: Doctor[] = [];
+          snap.forEach((item: any) => {
+            items.push({
+              id: item.id,
+              ...item.data(),
+            });
           });
-        });
-        setDoctorList(items);
-      })
-      .catch(error => {
-        console.error('Error fetching doctor:', error); // Log lỗi
-      });
+          setDoctorList(items);
+          setLoadingDoctors(false)
+        }
+      },
+        error => {
+          console.log(error)
+          setLoadingDoctors(false)
+        }
+      );
   };
 
   const handleMenuClick = (key: string | number) => {
@@ -128,15 +139,19 @@ const DoctorScreen = (props: any) => {
       </Section>
 
       <Section>
-        {doctorList.map((item, index) => (
-          <DoctorComponent
-            key={index}
-            data={item}
-            onPress={() => {
-              props.navigation.navigate('DoctorDetail', {doctor: item});
-            }}
-          />
-        ))}
+        {loadingDoctors ? (
+          <ActivityIndicator color={'#000'} />
+        ) : (
+          doctorList.map((item, index) => (
+            <DoctorComponent
+              key={index}
+              data={item}
+              onPress={() => {
+                props.navigation.navigate('DoctorDetail', {doctor: item});
+              }}
+            />
+          ))
+        )}
       </Section>
     </ContainerComponent>
   );

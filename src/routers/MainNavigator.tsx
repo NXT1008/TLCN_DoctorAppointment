@@ -41,6 +41,7 @@ const MainNavigator = () => {
       <Stack.Screen name="ChatScreen" component={ChatScreen} />
       <Stack.Screen name="MainChatScreen" component={MainChatScreen} />
       <Stack.Screen name="ScheduleScreen" component={ScheduleScreen} />
+
     </Stack.Navigator>
   );
 };
