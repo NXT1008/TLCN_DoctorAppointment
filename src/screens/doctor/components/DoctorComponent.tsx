@@ -33,22 +33,6 @@ const DoctorComponent = (props: Props) => {
   }, []);
 
   const getSpectializationByDoctorID = async () => {
-    // console.log(doctor)
-    // try {
-    //   const specializationDoc = await firestore()
-    //     .collection('specializations')
-    //     .doc(doctor.specializationId)
-    //     .get();
-
-    //   if (specializationDoc.exists) {
-    //     const specializationData = specializationDoc.data() as Specialization;
-    //     setSpec(specializationData);
-    //   } else {
-    //     console.error('Specialization document not found');
-    //   }
-    // } catch (error) {
-    //   console.error('Error fetching specialization:', error);
-    // }
     const subscriber = await firestore()
       .collection('specializations')
       .doc(doctor.specializationId)

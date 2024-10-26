@@ -1,19 +1,61 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {View, Text, StyleSheet, TouchableOpacity, Image} from 'react-native';
 import {Appointment} from '../../../models/Appointment';
 import {Review} from '../../../models/Review';
-import { Card } from '../../../components';
-import { NavigationProp, useNavigation } from '@react-navigation/native';
-import { AppointmentStackParamList } from '../../../routers/Navigator/AppointmentNavigator';
+import {Card} from '../../../components';
+import {NavigationProp, useNavigation} from '@react-navigation/native';
+import {AppointmentStackParamList} from '../../../routers/Navigator/AppointmentNavigator';
+import {Doctor} from '../../../models/Doctor';
+import {Specialization} from '../../../models/Specialization';
+import firestore, { doc } from '@react-native-firebase/firestore';
 
 interface Props {
   appointment: Appointment;
   review?: Review;
-  onPress() : void
+  onPressRebook: () => void;
+  onPressAddReview: () => void;
 }
 const CompletedAppointmentCard = (prop: Props) => {
-  const navigation = useNavigation<NavigationProp<AppointmentStackParamList>>();
-  const {appointment, review, onPress} = prop
+  const {appointment, review, onPressAddReview, onPressRebook} = prop;
+  const [doctor, setDoctor] = useState<Doctor>();
+  const [specialization, setspecialization] = useState<Specialization>();
+
+  useEffect(() => {
+    getDoctorByAppointmentID();
+  }, []);
+
+  useEffect(() => {
+    if (doctor) {
+      getSpecializationByDoctorID();
+    }
+  }, [doctor]);
+
+  const getDoctorByAppointmentID = () => {
+    firestore()
+      .collection('doctors')
+      .doc(appointment.doctorId)
+      .onSnapshot(snap => {
+        if (snap.exists) {
+          setDoctor(snap.data() as Doctor);
+        } else {
+          console.error('CommpleteCard.tsx!');
+        }
+      });
+  };
+
+  const getSpecializationByDoctorID = () => {
+    firestore()
+      .collection('specializations')
+      .doc(doctor?.specializationId)
+      .onSnapshot(snap => {
+        if (snap.exists) {
+          setspecialization(snap.data() as Specialization);
+        } else {
+          console.error('CommpleteCard.tsx!');
+        }
+      });
+  };
+
   return (
     <Card styles={styles.appointmentContainer} shadowed>
       <View style={styles.profileInfo}>
@@ -22,22 +64,26 @@ const CompletedAppointmentCard = (prop: Props) => {
           style={styles.profileImage}
         />
         <View>
-          <Text style={styles.doctorName}>{appointment.doctorId}</Text>
-          <Text style={styles.specialty}>specializationId...</Text>
+          <Text style={styles.doctorName}>{doctor?.name}</Text>
+          <Text style={styles.specialty}>{specialization?.name}</Text>
           <View style={styles.ratingContainer}>
-            <Text style={styles.ratingText}>{review?.rating}</Text>
             <Image
               source={require('../../../assets/images/fill-star.png')}
               style={styles.ratingIcon}
             />
+            <Text style={styles.ratingText}>
+              {review ? review.rating : 'stars'}
+            </Text>
           </View>
         </View>
       </View>
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.rebookButton} onPress={onPress}>
+        <TouchableOpacity style={styles.rebookButton} onPress={onPressRebook}>
           <Text style={styles.buttonText}>Re-Book</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.addReviewButton} onPress={() => navigation.navigate('ReviewScreen', {appointment})}>
+        <TouchableOpacity
+          style={styles.addReviewButton}
+          onPress={onPressAddReview}>
           <Text style={styles.buttonText}>Add Review</Text>
         </TouchableOpacity>
       </View>
@@ -70,13 +116,13 @@ const styles = StyleSheet.create({
     letterSpacing: 0,
     left: 0,
     top: 0,
-    fontFamily: 'Poppins-Medium'
+    fontFamily: 'Poppins-Medium',
   },
   specialty: {
     fontSize: 14,
     color: '#27403e',
     marginTop: 6,
-    fontFamily: 'Poppins-Regular'
+    fontFamily: 'Poppins-Regular',
   },
   ratingContainer: {
     flexDirection: 'row',
@@ -126,7 +172,7 @@ const styles = StyleSheet.create({
     color: '#fff',
     textAlign: 'center',
     fontSize: 14,
-    fontFamily: 'Poppins-Medium'
+    fontFamily: 'Poppins-Medium',
   },
 });
 

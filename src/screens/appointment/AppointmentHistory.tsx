@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Image,
   FlatList,
+  Alert,
 } from 'react-native';
 
 import {
@@ -23,100 +24,6 @@ import {Appointment} from '../../models/Appointment';
 import firestore from '@react-native-firebase/firestore';
 import {fontFamilies} from '../../constants/fontFamilies';
 
-const appointments: Appointment[] = [
-  {
-    appointmentId: '1',
-    patientId: 'p001',
-    doctorId: 'd001',
-    scheduleDate: new Date('2024-10-19'),
-    startTime: new Date('2024-10-19T15:30:00'),
-    endTime: new Date('2024-10-19T15:30:00'),
-    status: 'completed',
-    note: 'Hẹn gặp để kiểm tra sức khỏe tổng quát.',
-  },
-  {
-    appointmentId: '2',
-    patientId: 'p002',
-    doctorId: 'd002',
-    scheduleDate: new Date('2024-06-13'),
-    startTime: new Date('2024-06-13T10:00:00'),
-    endTime: new Date('2024-06-13T10:30:00'),
-    status: 'booked',
-    note: 'Hẹn gặp bác sĩ để kiểm tra da liễu.',
-  },
-  {
-    appointmentId: '3',
-    patientId: 'p003',
-    doctorId: 'd001',
-    scheduleDate: new Date('2024-06-14'),
-    startTime: new Date('2024-06-14T11:00:00'),
-    endTime: new Date('2024-06-14T11:30:00'),
-    status: 'canceled',
-    note: 'Hủy hẹn do lý do cá nhân.',
-  },
-  {
-    appointmentId: '4',
-    patientId: 'p004',
-    doctorId: 'd003',
-    scheduleDate: new Date('2024-06-15'),
-    startTime: new Date('2024-06-15T14:00:00'),
-    endTime: new Date('2024-06-15T14:30:00'),
-    status: 'completed',
-    note: 'Kiểm tra định kỳ sức khỏe cho bệnh nhân.',
-  },
-  {
-    appointmentId: '5',
-    patientId: 'p005',
-    doctorId: 'd004',
-    scheduleDate: new Date('2024-06-16'),
-    startTime: new Date('2024-06-16T15:00:00'),
-    endTime: new Date('2024-06-16T15:30:00'),
-    status: 'booked',
-    note: 'Khám sức khỏe tổng quát.',
-  },
-  {
-    appointmentId: '6',
-    patientId: 'p006',
-    doctorId: 'd001',
-    scheduleDate: new Date('2024-06-17'),
-    startTime: new Date('2024-06-17T10:00:00'),
-    endTime: new Date('2024-06-17T10:30:00'),
-    status: 'completed',
-    note: 'Hẹn gặp để kiểm tra tình trạng sức khỏe.',
-  },
-];
-const doctors: Doctor[] = [
-  {
-    doctorId: 'doctor01',
-    name: 'Dr. Olivia Turner, M.D.',
-    gender: 'Male',
-    email: 'olivia@example.com',
-    phone: '123-456-7890',
-    image: 'https://via.placeholder.com/150',
-    specializationId: 'Dermato-Endocrinology',
-    hospitalId: 'hosp001',
-  },
-  {
-    doctorId: 'doctor02',
-    name: 'Dr. Olivia Turner, M.D.',
-    gender: 'Male',
-    email: 'olivia@example.com',
-    phone: '123-456-7890',
-    image: 'https://via.placeholder.com/150',
-    specializationId: 'Dermato-Endocrinology',
-    hospitalId: 'hosp001',
-  },
-  {
-    doctorId: 'doctor03',
-    name: 'Dr. Alexander Bennett, Ph.D.',
-    gender: 'Male',
-    email: 'olivia@example.com',
-    phone: '123-456-7890',
-    image: 'https://via.placeholder.com/150',
-    specializationId: 'Dermato-Endocrinology',
-    hospitalId: 'hosp001',
-  },
-];
 
 const AppointmentScreen = (props: any) => {
   const {navigation} = props;
@@ -158,10 +65,14 @@ const AppointmentScreen = (props: any) => {
               const appointmentData = {
                 id: item.id,
                 ...item.data(),
+                scheduleDate: item.data().scheduleDate.toDate(), // Chuyển đổi sang Date
+                startTime: item.data().startTime.toDate(), // Chuyển đổi sang Date
+                endTime: item.data().endTime.toDate(), // Chuyển đổi sang Date
               };
               items.push(appointmentData);
             });
             setAppointmentList(items);
+            console.log(appointmentList)
           }
         },
         error => {
@@ -249,7 +160,8 @@ const AppointmentScreen = (props: any) => {
             <CompletedCard
               appointment={item}
               review={undefined}
-              onPress={() => navigation.navigate('BookingScreen')}
+              onPressRebook={() => navigation.navigate('BookingScreen')}
+              onPressAddReview={() => navigation.navigate('ReviewScreen')}
             />
           )}
           keyExtractor={item => item.appointmentId}
@@ -259,11 +171,15 @@ const AppointmentScreen = (props: any) => {
 
       {showUpcoming && (
         <FlatList
-          data={appointments}
+          data={appointmentList}
           renderItem={({item}) => (
             <UpcomingCard
               appointment={item}
-              onPress={() => navigation.navigate('DoctorDetailScreen')}
+              onPressDetail={() => Alert.alert('Cập nhật Detail Appointment')}
+              onPressOK={() => {Alert.alert('Hiển thị popup xác nhận hoàn thành cuộc hẹn')}}
+              onPressCancel={() => {
+                navigation.navigate('CancelAppointment');
+              }}
             />
           )}
           keyExtractor={item => item.appointmentId}
@@ -273,10 +189,10 @@ const AppointmentScreen = (props: any) => {
 
       {showCancel && (
         <FlatList
-          data={doctors}
+          data={appointmentList}
           renderItem={({item}) => (
             <CancelCard
-              doctor={item}
+              appointment={item}
               onPress={() => {
                 navigation.navigate('ReviewScreen');
               }}
