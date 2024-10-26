@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   ScrollView,
   Dimensions,
+  ActivityIndicator,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {
@@ -30,35 +31,16 @@ import {Doctor} from '../../models/Doctor';
 import {Patient} from '../../models/Patient';
 
 const HomeScreen = (props: any) => {
-  const user = auth().currentUser;
+  const [user, setUser] = useState(auth().currentUser);
+
   const {width, height} = Dimensions.get('window');
   const [listSpecialization, setListSpecialization] = useState<
     Specialization[]
   >([]);
   const [listDoctor, setListDoctor] = useState<Doctor[]>([]);
-
   const [patient, setPatient] = useState<Patient>();
-
-  useEffect(() => {
-    const getCurrentPatient = async () => {
-      await firestore()
-        .collection('patients')
-        .doc(user?.uid)
-        .get()
-        .then(snap => {
-          if (!snap.exists) {
-            console.log('No such document!');
-          } else {
-            const patient = snap.data() as Patient;
-            setPatient(patient);
-          }
-        })
-        .catch(e => {
-          console.log(e);
-        });
-    };
-    getCurrentPatient();
-  }, [patient]);
+  const [loadingSpecialization, setLoadingSpecialization] = useState(false);
+  const [loadingDoctors, setLoadingDoctors] = useState(false);
 
   useEffect(() => {
     getAllSpecializations();
@@ -66,6 +48,7 @@ const HomeScreen = (props: any) => {
   }, []);
 
   const getAllSpecializations = async () => {
+    setLoadingSpecialization(true);
     await firestore()
       .collection('specializations')
       .get()
@@ -81,14 +64,17 @@ const HomeScreen = (props: any) => {
             ...item.data(),
           });
         });
+        setLoadingSpecialization(false);
         setListSpecialization(items);
       })
       .catch(error => {
         console.error('Error fetching specializations:', error); // Log lỗi
+        setLoadingSpecialization(false);
       });
   };
 
   const getAllDoctors = async () => {
+    setLoadingDoctors(true);
     await firestore()
       .collection('doctors')
       .get()
@@ -104,10 +90,12 @@ const HomeScreen = (props: any) => {
             ...item.data(),
           });
         });
+        setLoadingDoctors(false);
         setListDoctor(items);
       })
       .catch(error => {
         console.error('Error fetching doctor:', error); // Log lỗi
+        setLoadingDoctors(false);
       });
   };
 
@@ -130,17 +118,13 @@ const HomeScreen = (props: any) => {
               <Space width={15} />
               <View>
                 <TextComponent
-                  text="Hi, welcome back!"
+                  text="Hi, how are you today?"
                   font={fontFamilies.regular}
                   color="#00000066"
                 />
                 <TextComponent
                   text={`${
-                    patient
-                      ? patient.nickname
-                        ? patient.nickname
-                        : patient.name
-                      : ''
+                    user?.email
                   }`}
                   font={fontFamilies.semiBold}
                 />
@@ -177,9 +161,15 @@ const HomeScreen = (props: any) => {
           <Section>
             <Row>
               <ScrollView horizontal>
-                {listSpecialization.slice(0, 5).map((item, index) => (
-                  <SpecializationComponent key={index} data={item} />
-                ))}
+                {loadingSpecialization ? (
+                  <ActivityIndicator color={'#000'} />
+                ) : (
+                  listSpecialization
+                    .slice(0, 5)
+                    .map((item, index) => (
+                      <SpecializationComponent key={index} data={item} />
+                    ))
+                )}
               </ScrollView>
             </Row>
           </Section>
@@ -197,15 +187,19 @@ const HomeScreen = (props: any) => {
               />
             </Row>
             <Space height={10} />
-            {listDoctor.slice(0, 5).map((item, index) => (
-              <DoctorCard
-                key={index}
-                data={item}
-                onPress={() => {
-                  props.navigation.navigate('DoctorDetail', {doctor: item});
-                }}
-              />
-            ))}
+            {loadingDoctors ? (
+              <ActivityIndicator color={'#000'} />
+            ) : (
+              listDoctor.slice(0, 5).map((item, index) => (
+                <DoctorCard
+                  key={index}
+                  data={item}
+                  onPress={() => {
+                    props.navigation.navigate('DoctorDetail', {doctor: item});
+                  }}
+                />
+              ))
+            )}
           </Section>
         </View>
       </ContainerComponent>
