@@ -104,6 +104,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between'
     },
     footerText: {
+        color: '#000',
         fontSize: 14,
         justifyContent: 'center',
         alignItems: 'center',

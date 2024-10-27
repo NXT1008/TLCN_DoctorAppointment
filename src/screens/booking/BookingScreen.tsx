@@ -82,6 +82,7 @@ const BookingScreen = (props: any) => {
                         <Picker
                             selectedValue={age}
                             style={styles.picker}
+                            itemStyle={{color:'#000'}}
                             onValueChange={(itemValue) => setAge(itemValue)}
                         >
                             {ageRanges.map((range, index) => (

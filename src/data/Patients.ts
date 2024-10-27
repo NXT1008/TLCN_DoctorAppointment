@@ -8,6 +8,7 @@ export const patients: Patient[] = [
     email: 'john.doe@example.com',
     phone: '647-555-1234',
     image: '/img/patients/johndoe.jpg',
+    favoriteDoctor: [],
   },
   {
     patientId: 'pat_002',
@@ -16,6 +17,7 @@ export const patients: Patient[] = [
     email: 'jane.smith@example.com',
     phone: '647-555-5678',
     image: '/img/patients/janesmith.jpg',
+    favoriteDoctor: [],
   },
   {
     patientId: 'pat_003',
@@ -24,6 +26,7 @@ export const patients: Patient[] = [
     email: 'michael.johnson@example.com',
     phone: '647-555-8765',
     image: '/img/patients/michaeljohnson.jpg',
+    favoriteDoctor: [],
   },
   {
     patientId: 'pat_004',
@@ -32,6 +35,7 @@ export const patients: Patient[] = [
     email: 'emily.davis@example.com',
     phone: '647-555-4321',
     image: '/img/patients/emilydavis.jpg',
+    favoriteDoctor: [],
   },
   {
     patientId: 'pat_005',
@@ -40,6 +44,7 @@ export const patients: Patient[] = [
     email: 'daniel.brown@example.com',
     phone: '647-555-2468',
     image: '/img/patients/danielbrown.jpg',
+    favoriteDoctor: [],
   },
   {
     patientId: 'pat_006',
@@ -48,6 +53,7 @@ export const patients: Patient[] = [
     email: 'sarah.wilson@example.com',
     phone: '647-555-1357',
     image: '/img/patients/sarahwilson.jpg',
+    favoriteDoctor: [],
   },
   {
     patientId: 'pat_007',
@@ -56,6 +62,7 @@ export const patients: Patient[] = [
     email: 'david.taylor@example.com',
     phone: '647-555-3579',
     image: '/img/patients/davidtaylor.jpg',
+    favoriteDoctor: [],
   },
   {
     patientId: 'pat_008',
@@ -64,6 +71,7 @@ export const patients: Patient[] = [
     email: 'laura.moore@example.com',
     phone: '647-555-8642',
     image: '/img/patients/lauramoore.jpg',
+    favoriteDoctor: [],
   },
   {
     patientId: 'pat_009',
@@ -72,6 +80,7 @@ export const patients: Patient[] = [
     email: 'james.anderson@example.com',
     phone: '647-555-9513',
     image: '/img/patients/jamesanderson.jpg',
+    favoriteDoctor: [],
   },
   {
     patientId: 'pat_010',
@@ -80,6 +89,7 @@ export const patients: Patient[] = [
     email: 'jessica.white@example.com',
     phone: '647-555-7531',
     image: '/img/patients/jessicawhite.jpg',
+    favoriteDoctor: [],
   },
   {
     patientId: 'pat_011',
@@ -88,6 +98,7 @@ export const patients: Patient[] = [
     email: 'matthew.harris@example.com',
     phone: '647-555-1593',
     image: '/img/patients/matthewharris.jpg',
+    favoriteDoctor: [],
   },
   {
     patientId: 'pat_012',
@@ -96,6 +107,7 @@ export const patients: Patient[] = [
     email: 'olivia.lewis@example.com',
     phone: '647-555-9512',
     image: '/img/patients/olivialewis.jpg',
+    favoriteDoctor: [],
   },
   {
     patientId: 'pat_013',
@@ -104,6 +116,7 @@ export const patients: Patient[] = [
     email: 'ryan.clark@example.com',
     phone: '647-555-7539',
     image: '/img/patients/ryanclark.jpg',
+    favoriteDoctor: [],
   },
   {
     patientId: 'pat_014',
@@ -112,6 +125,7 @@ export const patients: Patient[] = [
     email: 'sophia.walker@example.com',
     phone: '647-555-2584',
     image: '/img/patients/sophiawalker.jpg',
+    favoriteDoctor: [],
   },
   {
     patientId: 'pat_015',
@@ -120,6 +134,7 @@ export const patients: Patient[] = [
     email: 'ethan.hall@example.com',
     phone: '647-555-9638',
     image: '/img/patients/ethanhall.jpg',
+    favoriteDoctor: [],
   },
   {
     patientId: 'pat_016',
@@ -128,6 +143,7 @@ export const patients: Patient[] = [
     email: 'ava.young@example.com',
     phone: '647-555-3210',
     image: '/img/patients/avayoung.jpg',
+    favoriteDoctor: [],
   },
   {
     patientId: 'pat_017',
@@ -136,6 +152,7 @@ export const patients: Patient[] = [
     email: 'william.king@example.com',
     phone: '647-555-6789',
     image: '/img/patients/williamking.jpg',
+    favoriteDoctor: [],
   },
   {
     patientId: 'pat_018',
@@ -144,6 +161,7 @@ export const patients: Patient[] = [
     email: 'mia.wright@example.com',
     phone: '647-555-9876',
     image: '/img/patients/miawright.jpg',
+    favoriteDoctor: [],
   },
   {
     patientId: 'pat_019',
@@ -152,6 +170,7 @@ export const patients: Patient[] = [
     email: 'lucas.scott@example.com',
     phone: '647-555-4327',
     image: '/img/patients/lucasscott.jpg',
+    favoriteDoctor: [],
   },
   {
     patientId: 'pat_020',
@@ -160,5 +179,6 @@ export const patients: Patient[] = [
     email: 'isabella.green@example.com',
     phone: '647-555-1358',
     image: '/img/patients/isabellagreen.jpg',
+    favoriteDoctor: [],
   },
 ];

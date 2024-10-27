@@ -29,10 +29,25 @@ import {Specialization} from '../../models/Specialization';
 const DoctorScreen = (props: any) => {
   const [doctorList, setDoctorList] = useState<Doctor[]>([]);
   const [loadingDoctors, setLoadingDoctors] = useState(false);
+  const [search, setsearch] = useState('');
+  const [filterDoctors, setFilterDoctors] = useState<Doctor[]>([]);
+  const [ratingFilter, setRatingFilter] = useState<number | null>(null);
 
   useEffect(() => {
     getAllDoctors();
   }, []);
+
+  useEffect(() => {
+    if (search) {
+      const filtered = doctorList.filter((doctor) => (
+        doctor.name.toLowerCase().includes(search.toLowerCase())
+      ));
+      setFilterDoctors(filtered);
+    }
+    else {
+      setFilterDoctors(doctorList) 
+    }
+  }, [search, doctorList]);
 
   /// Dropdown menu
   const [selected, setSelected] = useState<MenuItem>();
@@ -63,6 +78,7 @@ const DoctorScreen = (props: any) => {
             });
           });
           setDoctorList(items);
+          setFilterDoctors(items);
           setLoadingDoctors(false)
         }
       },
@@ -95,9 +111,12 @@ const DoctorScreen = (props: any) => {
         />
         <Space height={10} />
         <Input
-          value=""
-          placeholder="Search"
-          onChange={() => {}}
+          value={search}
+          placeholder="Enter doctor name"
+          onChange={val => {
+            setsearch(val);
+          }}
+          inputStyles={{fontFamily: fontFamilies.regular}}
           prefix
           affix={
             <TouchableOpacity>
@@ -136,13 +155,17 @@ const DoctorScreen = (props: any) => {
             )}
           </Dropdown>
         </Row>
+        {/* Bộ lọc đánh giá */}
+        
       </Section>
 
       <Section>
         {loadingDoctors ? (
           <ActivityIndicator color={'#000'} />
+        ) : filterDoctors.length === 0 ? (
+          <TextComponent text="No doctor" />
         ) : (
-          doctorList.map((item, index) => (
+          filterDoctors.map((item, index) => (
             <DoctorComponent
               key={index}
               data={item}

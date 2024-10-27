@@ -26,11 +26,41 @@ import {fontFamilies} from '../../constants/fontFamilies';
 import firestore from '@react-native-firebase/firestore';
 import {Specialization} from '../../models/Specialization';
 import DoctorReviewComponent from './components/DoctorReviewComponent';
+import {Review} from '../../models/Review';
+import {Doctor} from '../../models/Doctor';
 
 const DoctorDetailScreen = (props: any) => {
   const {width, height} = Dimensions.get('window');
   const {doctor} = props.route.params;
+  const doctorData = doctor as Doctor;
+
   const [spec, setSpec] = useState<Specialization>();
+  const [reviewList, setReviewList] = useState<Review[]>([]);
+
+  useEffect(() => {
+    getReviewsByDoctorID()
+  }, []);
+
+  const getReviewsByDoctorID = () => {
+    firestore()
+      .collection('reviews')
+      .where('doctorId', '==', doctorData.doctorId)
+      .onSnapshot(snap => {
+        if (snap.empty) {
+          console.log('DoctorDetail.tsx : Reviews no found');
+        }
+        else {
+          const items: Review[] = []
+          snap.forEach((item : any) => {
+            items.push({
+              id: item.id,
+              ...item.data()
+            })
+          })
+          setReviewList(items)
+        }
+      });
+  };
 
   useEffect(() => {
     getSpectializationByDoctorID();
@@ -181,7 +211,7 @@ const DoctorDetailScreen = (props: any) => {
                   }}>
                   <Star1 color="#ffa936" />
                 </View>
-                <TextComponent text="4.5" font={fontFamilies.semiBold} />
+                <TextComponent text={`${doctorData.ratingAverage?.toFixed(1)}`} font={fontFamilies.semiBold} />
                 <TextComponent
                   text="Ratings"
                   font={fontFamilies.regular}
@@ -306,7 +336,10 @@ const DoctorDetailScreen = (props: any) => {
               size={18}
               font={fontFamilies.bold}
             />
-            <TouchableOpacity onPress={() => {props.navigation.navigate('ReviewAllDoctors');}}>
+            <TouchableOpacity
+              onPress={() => {
+                props.navigation.navigate('ReviewAllDoctors', {data: reviewList});
+              }}>
               <TextComponent
                 text="See All"
                 color="#000"
@@ -316,24 +349,24 @@ const DoctorDetailScreen = (props: any) => {
             </TouchableOpacity>
           </Row>
           <View>
-            <DoctorReviewComponent />
-            <DoctorReviewComponent />
-            <DoctorReviewComponent />
-            <DoctorReviewComponent />
-            <DoctorReviewComponent />
+            {reviewList.slice(0,3).map((item, index) => (
+              <DoctorReviewComponent key={index} data={item}/>
+            )) }
           </View>
         </Section>
       </ContainerComponent>
       <Button
         title="Book Appointment"
-        onPress={() => {props.navigation.navigate('BookingScreen'); }}
-        color='#0B8FAC'
+        onPress={() => {
+          props.navigation.navigate('BookingScreen');
+        }}
+        color="#0B8FAC"
         textStyleProps={{fontFamily: fontFamilies.semiBold, color: '#fff'}}
         styles={{
           position: 'absolute',
           top: height * 0.92,
-          left: width*0.1,
-          width: width*0.8,
+          left: width * 0.1,
+          width: width * 0.8,
         }}
       />
     </View>

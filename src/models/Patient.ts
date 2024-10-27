@@ -6,4 +6,5 @@ export interface Patient {
   email: string;
   phone: string;
   image: string;
+  favoriteDoctors?: string[]
 }

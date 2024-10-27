@@ -35,8 +35,8 @@ import {
 import {fontFamilies} from '../../constants/fontFamilies';
 import ProfileComponent from './components/ProfileComponent';
 import ModalComponent from './components/ModalComponent';
-import deleteAllData from '../../data/zResetData';
-import uploadDataToFirestore from '../../data/UploadDataToFirebase';
+import deleteAllData from '../../data/functions/zResetData';
+import uploadDataToFirestore from '../../data/functions/UploadDataToFirebase';
 import firestore from '@react-native-firebase/firestore';
 import {Patient} from '../../models/Patient';
 
@@ -52,7 +52,7 @@ const ProfileScreen = (props: any) => {
     // Hủy đăng ký listener khi component unmount
     return unsubscribeAuth;
   }, []);
-  
+
   const [patient, setPatient] = useState<Patient>();
 
   useEffect(() => {
