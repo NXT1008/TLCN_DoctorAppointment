@@ -29,8 +29,6 @@ import firestore from '@react-native-firebase/firestore';
 import {Specialization} from '../../models/Specialization';
 import {Doctor} from '../../models/Doctor';
 import {Patient} from '../../models/Patient';
-import updateDoctorRating from '../../data/functions/UpdateRating';
-import addFavoriteDoctors from '../../data/functions/AddFavoriteDoctors';
 
 const HomeScreen = (props: any) => {
   const user = auth().currentUser;
@@ -44,6 +42,10 @@ const HomeScreen = (props: any) => {
   useEffect(() => {
     getAllSpecializations();
     getAllDoctors();
+
+    return () => {
+      
+    }
   }, []);
 
   const getAllSpecializations = async () => {

@@ -21,4 +21,4 @@ async function addFavoriteDoctors() {
 }
 
 // Gọi hàm để thêm field
-export default addFavoriteDoctors();
+export default addFavoriteDoctors;

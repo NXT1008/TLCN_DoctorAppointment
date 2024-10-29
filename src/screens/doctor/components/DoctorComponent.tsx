@@ -44,7 +44,7 @@ const DoctorComponent = (props: Props) => {
       });
 
     return () => fetchFavoriteStatus();
-  }, [doctor.doctorId, patientId]);
+  }, []);
 
   useEffect(() => {
     getSpectializationByDoctorID();

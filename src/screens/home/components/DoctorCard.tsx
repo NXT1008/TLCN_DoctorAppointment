@@ -37,7 +37,7 @@ const DoctorCard = (props: Props) => {
       });
 
     return () => fetchFavoriteStatus();
-  }, [doctor.doctorId, patientId]);
+  }, []);
 
   const handleUpdateFavorite = async () => {
     try {

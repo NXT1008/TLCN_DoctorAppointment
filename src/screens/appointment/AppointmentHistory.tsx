@@ -23,11 +23,11 @@ import {Doctor} from '../../models/Doctor';
 import {Appointment} from '../../models/Appointment';
 import firestore from '@react-native-firebase/firestore';
 import {fontFamilies} from '../../constants/fontFamilies';
-
+import auth from '@react-native-firebase/auth';
 
 const AppointmentScreen = (props: any) => {
   const {navigation} = props;
-
+  const patientId = auth().currentUser?.uid;
   const [appointmentList, setAppointmentList] = useState<Appointment[]>([]);
   const [filteredAppointments, setFilteredAppointments] = useState<
     Appointment[]
@@ -35,7 +35,11 @@ const AppointmentScreen = (props: any) => {
   const [statusFilter, setStatusFilter] = useState(''); // Trạng thái hiện tại
 
   useEffect(() => {
-    getAllAppointmentByPatientID();
+    const unsubcribe = getAllAppointmentByPatientID();
+
+    return () => {
+      if (unsubcribe) unsubcribe();
+    };
   }, []);
 
   const [showComplete, setShowComplete] = useState<boolean>(true);
@@ -51,10 +55,10 @@ const AppointmentScreen = (props: any) => {
     setFilteredAppointments(filtered);
   };
 
-  const getAllAppointmentByPatientID = async () => {
-    await firestore()
+  const getAllAppointmentByPatientID = () => {
+    return firestore()
       .collection('appointments')
-      .where('patientId', '==', 'pat_001')
+      .where('patientId', '==', patientId)
       .onSnapshot(
         docSnapShot => {
           if (docSnapShot.empty) {
@@ -72,7 +76,7 @@ const AppointmentScreen = (props: any) => {
               items.push(appointmentData);
             });
             setAppointmentList(items);
-            console.log(appointmentList)
+            console.log(appointmentList);
           }
         },
         error => {
@@ -176,7 +180,9 @@ const AppointmentScreen = (props: any) => {
             <UpcomingCard
               appointment={item}
               onPressDetail={() => Alert.alert('Cập nhật Detail Appointment')}
-              onPressOK={() => {Alert.alert('Hiển thị popup xác nhận hoàn thành cuộc hẹn')}}
+              onPressOK={() => {
+                Alert.alert('Hiển thị popup xác nhận hoàn thành cuộc hẹn');
+              }}
               onPressCancel={() => {
                 navigation.navigate('CancelAppointment');
               }}

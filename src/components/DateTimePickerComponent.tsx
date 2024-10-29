@@ -1,4 +1,4 @@
-import {View, Text, Modal, Button, Dimensions} from 'react-native';
+import {View, Text, Modal, Dimensions} from 'react-native';
 import React, {useState} from 'react';
 import TextComponent from './TextComponent';
 import {colors} from '../constants/colors';
@@ -7,6 +7,8 @@ import {globalStyles} from '../styles/globalStyles';
 import DatePicker from 'react-native-date-picker';
 import Row from './Row';
 import Space from './Space';
+import {fontFamilies} from '../constants/fontFamilies';
+import Button from './Button';
 
 interface Props {
   type?: 'date' | 'time' | 'datetime';
@@ -24,11 +26,21 @@ const DateTimePickerComponent = (props: Props) => {
   return (
     <>
       <View style={{marginBottom: 16}}>
-        {title && <TextComponent text={title} />}
+        {title && (
+          <TextComponent text={title} font={fontFamilies.semiBold} size={18} />
+        )}
         <Row
+          justifyContent="space-between"
           onPress={() => setIsVisibleModalDateTime(true)}
           styles={[
-            {marginTop: title ? 8 : 0, paddingVertical: 16},
+            {
+              marginTop: title ? 8 : 0,
+              paddingVertical: 10,
+              borderWidth: 1,
+              borderColor: 'gray',
+              borderRadius: 10,
+              paddingHorizontal: 20,
+            },
           ]}>
           <TextComponent
             flex={1}
@@ -43,7 +55,9 @@ const DateTimePickerComponent = (props: Props) => {
                 ? placeholder
                 : ''
             }
-            color={selected ? colors.text : '#676767'}
+            color={selected ? '#000' : '#676767'}
+            font={fontFamilies.regular}
+            size={16}
           />
           <ArrowDown2 size={20} color={colors.text} />
         </Row>
@@ -61,31 +75,52 @@ const DateTimePickerComponent = (props: Props) => {
             style={{
               margin: 20,
               width: '90%',
-              backgroundColor: colors.white,
               padding: 20,
               borderRadius: 20,
+              backgroundColor: '#DEE3E7',
             }}>
-            <TextComponent text="Date time picker" color={'blue'} />
+            {/* <TextComponent text="Date time picker" color={'#000'} /> */}
             <View>
               <DatePicker
                 mode={type ? type : 'datetime'}
                 date={date}
-                onDateChange={val => setDate(val)}
+                onDateChange={val => {
+                  // Thêm 7 giờ vào thời gian được chọn để chuyển sang GMT+7
+                  const vietnamTime = new Date(
+                    val.getTime() + 7 * 60 * 60 * 1000,
+                  );
+                  setDate(vietnamTime); // Cập nhật thời gian với múi giờ Việt Nam
+                }}
                 locale="vi"
+                theme="light"
               />
             </View>
             <Space height={20} />
-            <Button
-              title="Comfirm"
-              onPress={() => {
-                onSelect(date);
-                setIsVisibleModalDateTime(false);
-              }}
-            />
-            <Button
-              title="Close"
-              onPress={() => setIsVisibleModalDateTime(false)}
-            />
+            <Row justifyContent="space-between">
+              <Button
+                textStyleProps={{
+                  fontFamily: fontFamilies.semiBold,
+                  fontSize: 14,
+                  color: '#fff',
+                }}
+                styles={{backgroundColor: '#a82700', width: '40%'}}
+                title="Close"
+                onPress={() => setIsVisibleModalDateTime(false)}
+              />
+              <Button
+                textStyleProps={{
+                  fontFamily: fontFamilies.semiBold,
+                  fontSize: 14,
+                  color: '#fff',
+                }}
+                styles={{backgroundColor: '#089e7b', width: '40%'}}
+                title="Comfirm"
+                onPress={() => {
+                  onSelect(date);
+                  setIsVisibleModalDateTime(false);
+                }}
+              />
+            </Row>
           </View>
         </View>
       </Modal>

@@ -34,18 +34,20 @@ const DoctorScreen = (props: any) => {
   const [ratingFilter, setRatingFilter] = useState<number | null>(null);
 
   useEffect(() => {
-    getAllDoctors();
+    const unsubcribe = getAllDoctors();
+    return () => {
+      if (unsubcribe) unsubcribe();
+    };
   }, []);
 
   useEffect(() => {
     if (search) {
-      const filtered = doctorList.filter((doctor) => (
-        doctor.name.toLowerCase().includes(search.toLowerCase())
-      ));
+      const filtered = doctorList.filter(doctor =>
+        doctor.name.toLowerCase().includes(search.toLowerCase()),
+      );
       setFilterDoctors(filtered);
-    }
-    else {
-      setFilterDoctors(doctorList) 
+    } else {
+      setFilterDoctors(doctorList);
     }
   }, [search, doctorList]);
 
@@ -61,31 +63,32 @@ const DoctorScreen = (props: any) => {
     {key: '7', label: 'Item 3', icon: <User color="black" />, disable: false},
   ];
 
-  const getAllDoctors = async () => {
+  const getAllDoctors = () => {
     setLoadingDoctors(true);
-    await firestore()
+    return firestore()
       .collection('doctors')
-      .onSnapshot(snap => {
-        if (snap.empty) {
-          console.log('Không có bác sĩ');
-          return;
-        } else {
-          const items: Doctor[] = [];
-          snap.forEach((item: any) => {
-            items.push({
-              id: item.id,
-              ...item.data(),
+      .onSnapshot(
+        snap => {
+          if (snap.empty) {
+            console.log('Không có bác sĩ');
+            return;
+          } else {
+            const items: Doctor[] = [];
+            snap.forEach((item: any) => {
+              items.push({
+                id: item.id,
+                ...item.data(),
+              });
             });
-          });
-          setDoctorList(items);
-          setFilterDoctors(items);
-          setLoadingDoctors(false)
-        }
-      },
+            setDoctorList(items);
+            setFilterDoctors(items);
+            setLoadingDoctors(false);
+          }
+        },
         error => {
-          console.log(error)
-          setLoadingDoctors(false)
-        }
+          console.log(error);
+          setLoadingDoctors(false);
+        },
       );
   };
 
@@ -156,7 +159,6 @@ const DoctorScreen = (props: any) => {
           </Dropdown>
         </Row>
         {/* Bộ lọc đánh giá */}
-        
       </Section>
 
       <Section>
