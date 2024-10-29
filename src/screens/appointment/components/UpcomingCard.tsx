@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -10,18 +10,59 @@ import {
 import {Appointment} from '../../../models/Appointment';
 import DateDisplay from './DateDisplay';
 import TimeDisplay from './TimeDisplay';
-import {Card} from '../../../components';
+import {Card, TextComponent} from '../../../components';
 import {NavigationProp, useNavigation} from '@react-navigation/native';
 import {AppointmentStackParamList} from '../../../routers/Navigator/AppointmentNavigator';
 import {Doctor} from '../../../models/Doctor';
+import {Specialization} from '../../../models/Specialization';
+import firestore from '@react-native-firebase/firestore';
+import { specializations } from '../../../data';
 
 interface Props {
   appointment: Appointment;
-  onPress: () => void;
+  onPressDetail: () => void;
+  onPressOK: () => void;
+  onPressCancel: () => void;
 }
 const UpcomingAppointmentCard = (props: Props) => {
-  const navigation = useNavigation<NavigationProp<AppointmentStackParamList>>();
-  const {appointment, onPress} = props;
+  const {appointment, onPressDetail, onPressOK, onPressCancel} = props;
+  const [doctor, setDoctor] = useState<Doctor>();
+  const [specialization, setSpectialization] = useState<Specialization>();
+
+  // Lấy doctor ra trước
+  useEffect(() => {
+    getDoctorByAppointmentID();
+  }, [])
+
+  // có doctor thì lấy spec
+  useEffect(() => {
+    if (doctor) {
+      getSpecializationByDoctorID();
+    }
+  }, [doctor]);
+
+  const getDoctorByAppointmentID = async () => {
+    await firestore().collection('doctors').doc(appointment.doctorId)
+      .onSnapshot(snap => {
+        if (snap.exists) {
+          setDoctor(snap.data() as Doctor);
+        } else {
+          console.error('Doctor document not found');
+        }
+      })
+  };
+
+  const getSpecializationByDoctorID = () => {
+    firestore().collection('specializations').doc(doctor?.specializationId).onSnapshot(snap => {
+      if (snap.exists) {
+        setSpectialization(snap.data() as Specialization);
+      }
+      else {
+        console.error('Specialization document not found');
+      }
+    })
+  };
+
   return (
     <Card styles={styles.cardContainer} shadowed>
       <View style={styles.profileContainer}>
@@ -30,8 +71,8 @@ const UpcomingAppointmentCard = (props: Props) => {
           style={styles.profileImage}
         />
         <View style={styles.doctorInfo}>
-          <Text style={styles.doctorName}>{appointment.doctorId}</Text>
-          <Text style={styles.specialty}>SpecializationId...</Text>
+          <Text style={styles.doctorName}>{doctor?.name}</Text>
+          <Text style={styles.specialty}>{specialization?.name }</Text>
         </View>
       </View>
       <View style={styles.appointmentInfo}>
@@ -44,17 +85,13 @@ const UpcomingAppointmentCard = (props: Props) => {
         </>
       </View>
       <View style={styles.buttonContainer}>
-        <TouchableOpacity
-          style={styles.detailsButton}
-          onPress={() => {
-            Alert.alert('Cập nhật Upcoming Component');
-          }}>
+        <TouchableOpacity style={styles.detailsButton} onPress={onPressDetail}>
           <Text style={styles.buttonText}>Details</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.checkButton} onPress={() => {}}>
+        <TouchableOpacity style={styles.checkButton} onPress={onPressOK}>
           <Text style={styles.checkIcon}>✓</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.cancelButton} onPress={() => {}}>
+        <TouchableOpacity style={styles.cancelButton} onPress={onPressCancel}>
           <Text style={styles.cancelIcon}>✗</Text>
         </TouchableOpacity>
       </View>

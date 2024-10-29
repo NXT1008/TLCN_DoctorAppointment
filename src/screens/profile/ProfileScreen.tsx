@@ -35,33 +35,29 @@ import {
 import {fontFamilies} from '../../constants/fontFamilies';
 import ProfileComponent from './components/ProfileComponent';
 import ModalComponent from './components/ModalComponent';
-import deleteAllData from '../../data/zResetData';
-import uploadDataToFirestore from '../../data/UploadDataToFirebase';
+import deleteAllData from '../../data/functions/zResetData';
+import uploadDataToFirestore from '../../data/functions/UploadDataToFirebase';
 import firestore from '@react-native-firebase/firestore';
 import {Patient} from '../../models/Patient';
 
 const ProfileScreen = (props: any) => {
-  const [user, setUser] = useState(auth().currentUser);
+  const patientId = auth().currentUser?.uid;
 
-  useEffect(() => {
-    // Lắng nghe sự thay đổi của trạng thái người dùng
-    const unsubscribeAuth = auth().onAuthStateChanged(currentUser => {
-      setUser(currentUser);
-    });
-
-    // Hủy đăng ký listener khi component unmount
-    return unsubscribeAuth;
-  }, []);
-  
   const [patient, setPatient] = useState<Patient>();
 
   useEffect(() => {
-    if (!user?.uid) return; // Kiểm tra nếu user ID tồn tại trước khi gọi snapshot
+    const unsubscribe = getInfoPatient();
 
-    // Sử dụng onSnapshot để lắng nghe thay đổi thời gian thực
-    const unsubscribe = firestore()
+    // Hủy đăng ký listener khi component unmount
+    return () => unsubscribe();
+  }, []);
+
+  const [isAlertVisible, setAlertVisible] = useState(false);
+
+  const getInfoPatient = () => {
+    return firestore()
       .collection('patients')
-      .doc(user.uid)
+      .doc(patientId)
       .onSnapshot(
         docSnapshot => {
           if (docSnapshot.exists) {
@@ -75,12 +71,7 @@ const ProfileScreen = (props: any) => {
           console.error('Error fetching patient:', error);
         },
       );
-
-    // Hủy đăng ký listener khi component unmount
-    return () => unsubscribe();
-  }, [user?.uid]);
-
-  const [isAlertVisible, setAlertVisible] = useState(false);
+  };
 
   const showAlert = () => {
     setAlertVisible(true);

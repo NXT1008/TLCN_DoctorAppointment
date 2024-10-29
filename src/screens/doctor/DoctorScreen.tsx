@@ -29,10 +29,27 @@ import {Specialization} from '../../models/Specialization';
 const DoctorScreen = (props: any) => {
   const [doctorList, setDoctorList] = useState<Doctor[]>([]);
   const [loadingDoctors, setLoadingDoctors] = useState(false);
+  const [search, setsearch] = useState('');
+  const [filterDoctors, setFilterDoctors] = useState<Doctor[]>([]);
+  const [ratingFilter, setRatingFilter] = useState<number | null>(null);
 
   useEffect(() => {
-    getAllDoctors();
+    const unsubcribe = getAllDoctors();
+    return () => {
+      if (unsubcribe) unsubcribe();
+    };
   }, []);
+
+  useEffect(() => {
+    if (search) {
+      const filtered = doctorList.filter(doctor =>
+        doctor.name.toLowerCase().includes(search.toLowerCase()),
+      );
+      setFilterDoctors(filtered);
+    } else {
+      setFilterDoctors(doctorList);
+    }
+  }, [search, doctorList]);
 
   /// Dropdown menu
   const [selected, setSelected] = useState<MenuItem>();
@@ -46,30 +63,32 @@ const DoctorScreen = (props: any) => {
     {key: '7', label: 'Item 3', icon: <User color="black" />, disable: false},
   ];
 
-  const getAllDoctors = async () => {
+  const getAllDoctors = () => {
     setLoadingDoctors(true);
-    await firestore()
+    return firestore()
       .collection('doctors')
-      .onSnapshot(snap => {
-        if (snap.empty) {
-          console.log('Không có bác sĩ');
-          return;
-        } else {
-          const items: Doctor[] = [];
-          snap.forEach((item: any) => {
-            items.push({
-              id: item.id,
-              ...item.data(),
+      .onSnapshot(
+        snap => {
+          if (snap.empty) {
+            console.log('Không có bác sĩ');
+            return;
+          } else {
+            const items: Doctor[] = [];
+            snap.forEach((item: any) => {
+              items.push({
+                id: item.id,
+                ...item.data(),
+              });
             });
-          });
-          setDoctorList(items);
-          setLoadingDoctors(false)
-        }
-      },
+            setDoctorList(items);
+            setFilterDoctors(items);
+            setLoadingDoctors(false);
+          }
+        },
         error => {
-          console.log(error)
-          setLoadingDoctors(false)
-        }
+          console.log(error);
+          setLoadingDoctors(false);
+        },
       );
   };
 
@@ -95,9 +114,12 @@ const DoctorScreen = (props: any) => {
         />
         <Space height={10} />
         <Input
-          value=""
-          placeholder="Search"
-          onChange={() => {}}
+          value={search}
+          placeholder="Enter doctor name"
+          onChange={val => {
+            setsearch(val);
+          }}
+          inputStyles={{fontFamily: fontFamilies.regular}}
           prefix
           affix={
             <TouchableOpacity>
@@ -136,13 +158,16 @@ const DoctorScreen = (props: any) => {
             )}
           </Dropdown>
         </Row>
+        {/* Bộ lọc đánh giá */}
       </Section>
 
       <Section>
         {loadingDoctors ? (
           <ActivityIndicator color={'#000'} />
+        ) : filterDoctors.length === 0 ? (
+          <TextComponent text="No doctor" />
         ) : (
-          doctorList.map((item, index) => (
+          filterDoctors.map((item, index) => (
             <DoctorComponent
               key={index}
               data={item}

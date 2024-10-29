@@ -7,7 +7,7 @@ import {
   Dimensions,
   ActivityIndicator,
 } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   Card,
   Col,
@@ -19,23 +19,21 @@ import {
   TextComponent,
 } from '../../components';
 import auth from '@react-native-firebase/auth';
-import { fontFamilies } from '../../constants/fontFamilies';
+import {fontFamilies} from '../../constants/fontFamilies';
 import DoctorCard from './components/DoctorCard';
 import Swiper from 'react-native-swiper';
 import SwiperOne from './components/SwiperOne';
 import SpecializationComponent from './components/SpecializationComponent';
-import { Message, Messages1, Messages3 } from 'iconsax-react-native';
+import {Message, Messages1, Messages3} from 'iconsax-react-native';
 import firestore from '@react-native-firebase/firestore';
-import { Specialization } from '../../models/Specialization';
-import { Doctor } from '../../models/Doctor';
-import { Patient } from '../../models/Patient';
+import {Specialization} from '../../models/Specialization';
+import {Doctor} from '../../models/Doctor';
+import {Patient} from '../../models/Patient';
 
 const HomeScreen = (props: any) => {
   const user = auth().currentUser;
-  const { width, height } = Dimensions.get('window');
-  const [listSpecialization, setListSpecialization] = useState<
-    Specialization[]
-  >([]);
+  const {width, height} = Dimensions.get('window');
+  const [listSpec, setListSpecialization] = useState<Specialization[]>([]);
   const [listDoctor, setListDoctor] = useState<Doctor[]>([]);
   const [patient, setPatient] = useState<Patient>();
   const [loadingSpecialization, setLoadingSpecialization] = useState(false);
@@ -44,6 +42,10 @@ const HomeScreen = (props: any) => {
   useEffect(() => {
     getAllSpecializations();
     getAllDoctors();
+
+    return () => {
+      
+    }
   }, []);
 
   const getAllSpecializations = async () => {
@@ -76,6 +78,7 @@ const HomeScreen = (props: any) => {
     setLoadingDoctors(true);
     await firestore()
       .collection('doctors')
+      .orderBy('ratingAverage', 'desc')
       .get()
       .then(snap => {
         if (snap.empty) {
@@ -100,7 +103,7 @@ const HomeScreen = (props: any) => {
 
   return (
     <>
-      <ContainerComponent isScroll style={{ marginTop: -16 }}>
+      <ContainerComponent isScroll style={{marginTop: -16}}>
         <View>
           <Row
             styles={{
@@ -112,7 +115,7 @@ const HomeScreen = (props: any) => {
             <Row>
               <Image
                 source={require('../../assets/IconTab/profile.png')}
-                style={{ width: 50, height: 50 }}
+                style={{width: 50, height: 50}}
               />
               <Space width={15} />
               <View>
@@ -122,9 +125,7 @@ const HomeScreen = (props: any) => {
                   color="#00000066"
                 />
                 <TextComponent
-                  text={`${
-                    user?.email
-                  }`}
+                  text={`${user?.email}`}
                   font={fontFamilies.semiBold}
                 />
               </View>
@@ -132,12 +133,12 @@ const HomeScreen = (props: any) => {
             <TouchableOpacity>
               <Image
                 source={require('../../assets/IconTab/notification.png')}
-                style={{ width: 25, height: 25 }}
+                style={{width: 25, height: 25}}
               />
             </TouchableOpacity>
           </Row>
 
-          <Swiper height={270} style={{ marginTop: 20 }} activeDotColor="#1399ba">
+          <Swiper height={270} style={{marginTop: 20}} activeDotColor="#1399ba">
             <SwiperOne />
             <SwiperOne />
             <SwiperOne />
@@ -163,7 +164,7 @@ const HomeScreen = (props: any) => {
                 {loadingSpecialization ? (
                   <ActivityIndicator color={'#000'} />
                 ) : (
-                  listSpecialization
+                  listSpec
                     .slice(0, 5)
                     .map((item, index) => (
                       <SpecializationComponent key={index} data={item} />

@@ -8,4 +8,6 @@ export interface Doctor {
   hospitalId: string; // Tham chiếu đến mã ID của bệnh viện nơi bác sĩ làm việc
   specializationId: string; // Tham chiếu đến mã ID của chuyên khoa mà bác sĩ thuộc về
   isLogin?: boolean;
+  ratingAverage?: number; // Điểm đánh giá trung bình của bác sĩ
+  numberOfReviews?: number; // Số lượng đánh giá của bác sĩ
 }

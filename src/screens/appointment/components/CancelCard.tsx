@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -10,14 +10,57 @@ import {
 } from 'react-native';
 import { Doctor } from '../../../models/Doctor';
 import { Card } from '../../../components';
+import { Appointment } from '../../../models/Appointment';
+import { Specialization } from '../../../models/Specialization';
+import firestore from '@react-native-firebase/firestore'
 
 interface Props {
-  doctor: Doctor,
+  appointment: Appointment,
   onPress: () => void
 }
 
 const DoctorCard = (props: Props) => {
-  const { doctor, onPress } = props
+  const { appointment, onPress } = props;
+  const [doctor, setDoctor] = useState<Doctor>();
+  const [specialization, setSpectialization] = useState<Specialization>();
+
+  // Lấy doctor ra trước
+  useEffect(() => {
+    getDoctorByAppointmentID();
+  }, []);
+
+  // có doctor thì lấy spec
+  useEffect(() => {
+    if (doctor) {
+      getSpecializationByDoctorID();
+    }
+  }, [doctor]);
+
+  const getDoctorByAppointmentID = async () => {
+    await firestore()
+      .collection('doctors')
+      .doc(appointment.doctorId)
+      .onSnapshot(snap => {
+        if (snap.exists) {
+          setDoctor(snap.data() as Doctor);
+        } else {
+          console.error('Doctor document not found');
+        }
+      });
+  };
+
+  const getSpecializationByDoctorID = () => {
+    firestore()
+      .collection('specializations')
+      .doc(doctor?.specializationId)
+      .onSnapshot(snap => {
+        if (snap.exists) {
+          setSpectialization(snap.data() as Specialization);
+        } else {
+          console.error('Specialization document not found');
+        }
+      });
+  };
   return (
     <Card styles={styles.cardContainer} shadowed>
       <View style={styles.profileContainer}>
@@ -26,8 +69,8 @@ const DoctorCard = (props: Props) => {
           style={styles.profileImage}
         />
         <View style={styles.doctorInfo}>
-          <Text style={styles.doctorName}>{doctor.name}</Text>
-          <Text style={styles.specialty}>{doctor.specializationId}</Text>
+          <Text style={styles.doctorName}>{doctor?.name}</Text>
+          <Text style={styles.specialty}>{specialization?.name}</Text>
         </View>
       </View>
       <View style={styles.buttonContainer}>
