@@ -29,52 +29,44 @@ const DoctorComponent = (props: Props) => {
 
   useEffect(() => {
     getSpectializationByDoctorID();
-    getHospitalByDoctorID();
+    getHospitalByDoctorID()
   }, []);
 
   const getSpectializationByDoctorID = async () => {
-    // console.log(doctor)
-    // try {
-    //   const specializationDoc = await firestore()
-    //     .collection('specializations')
-    //     .doc(doctor.specializationId)
-    //     .get();
+    try {
+      const specializationDoc = await firestore()
+        .collection('specializations')
+        .doc(doctor.specializationId)
+        .get();
 
-    //   if (specializationDoc.exists) {
-    //     const specializationData = specializationDoc.data() as Specialization;
-    //     setSpec(specializationData);
-    //   } else {
-    //     console.error('Specialization document not found');
-    //   }
-    // } catch (error) {
-    //   console.error('Error fetching specialization:', error);
-    // }
-    const subscriber = await firestore()
-      .collection('specializations')
-      .doc(doctor.specializationId)
-      .onSnapshot(docSnap => {
-        if (docSnap.exists) {
-          const specializationData = docSnap.data() as Specialization;
-          setSpec(specializationData);
-        } else {
-          console.error('Specialization document not found');
-        }
-      });
-    return () => subscriber;
+      if (specializationDoc.exists) {
+        const specializationData = specializationDoc.data() as Specialization;
+        setSpec(specializationData);
+      } else {
+        console.error('Specialization document not found');
+      }
+    } catch (error) {
+      console.error('Error fetching specialization:', error);
+    }
   };
 
   const getHospitalByDoctorID = async () => {
-    const subscriber = await firestore()
-      .collection('hospitals')
-      .doc(doctor.hospitalId).onSnapshot((docSnap) => {
-        if (docSnap.exists) {
-          const hospitalData = docSnap.data() as Hospital;
-          setHospital(hospitalData);
-        } else {
-          console.error('Hospital document not found');
-        }
-      })
-     return () => subscriber;
+    try {
+      const hospital = await firestore()
+        .collection('hospitals')
+        .doc(doctor.hospitalId)
+        .get();
+      
+      if (hospital.exists) {
+        const hospitalData = hospital.data() as Hospital;
+        setHospital(hospitalData)
+      }
+      else {
+        console.error('Hospital document not found');
+      }
+    } catch (error) {
+      console.error('Error fetching hospital:', error);
+    }
   };
 
   return (

@@ -66,7 +66,7 @@ const SignUpScreen = ({navigation}: any) => {
         .then(userCridential => {
           const user = userCridential.user;
           const patient: Patient = {
-            patientId: user?.uid,
+            patientId: user.uid,
             name: name,
             nickname: '',
             email: email,
@@ -74,7 +74,7 @@ const SignUpScreen = ({navigation}: any) => {
             phone: '',
             image: ''
           }
-          firestore().collection('patients').doc(patient.patientId).set(patient)
+          firestore().collection('patients').doc(user.uid).set(patient)
 
           // save user to firestore
           setIsLoading(false);

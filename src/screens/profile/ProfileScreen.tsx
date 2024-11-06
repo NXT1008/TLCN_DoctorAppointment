@@ -41,44 +41,29 @@ import firestore from '@react-native-firebase/firestore';
 import {Patient} from '../../models/Patient';
 
 const ProfileScreen = (props: any) => {
-  const [user, setUser] = useState(auth().currentUser);
-
-  useEffect(() => {
-    // Lắng nghe sự thay đổi của trạng thái người dùng
-    const unsubscribeAuth = auth().onAuthStateChanged(currentUser => {
-      setUser(currentUser);
-    });
-
-    // Hủy đăng ký listener khi component unmount
-    return unsubscribeAuth;
-  }, []);
-  
+  const user = auth().currentUser;
   const [patient, setPatient] = useState<Patient>();
 
   useEffect(() => {
-    if (!user?.uid) return; // Kiểm tra nếu user ID tồn tại trước khi gọi snapshot
-
-    // Sử dụng onSnapshot để lắng nghe thay đổi thời gian thực
-    const unsubscribe = firestore()
-      .collection('patients')
-      .doc(user.uid)
-      .onSnapshot(
-        docSnapshot => {
-          if (docSnapshot.exists) {
-            const patientData = docSnapshot.data() as Patient;
-            setPatient(patientData); // Cập nhật state patient với dữ liệu mới
-          } else {
+    const getCurrentPatient = async () => {
+      await firestore()
+        .collection('patients')
+        .doc(user?.uid)
+        .get()
+        .then(snap => {
+          if (!snap.exists) {
             console.log('No such document!');
+          } else {
+            const patient = snap.data() as Patient;
+            setPatient(patient);
           }
-        },
-        error => {
-          console.error('Error fetching patient:', error);
-        },
-      );
-
-    // Hủy đăng ký listener khi component unmount
-    return () => unsubscribe();
-  }, [user?.uid]);
+        })
+        .catch(e => {
+          console.log(e);
+        });
+    };
+    getCurrentPatient();
+  }, [patient]);
 
   const [isAlertVisible, setAlertVisible] = useState(false);
 

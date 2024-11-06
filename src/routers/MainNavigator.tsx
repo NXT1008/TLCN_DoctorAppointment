@@ -45,12 +45,10 @@ const MainNavigator = () => {
       <Stack.Screen name="ChatScreen" component={ChatScreen} />
       <Stack.Screen name="MainChatScreen" component={MainChatScreen} />
       <Stack.Screen name="ScheduleScreen" component={ScheduleScreen} />
-
       <Stack.Screen name="DoctorHome" component={DoctorHome} />
       <Stack.Screen name="DoctorNotification" component={DoctorNotificationScreen} />
       <Stack.Screen name="DoctorAppointment" component={DoctorAppointmentScreen} />
       <Stack.Screen name="DoctorReport" component={DoctorReportScreen} />
-
     </Stack.Navigator>
   );
 };

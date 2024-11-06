@@ -2,7 +2,7 @@ import {Patient} from '../models/Patient';
 
 export const patients: Patient[] = [
   {
-    patientId: 'pat_001',
+    patientId: 'pat_01',
     name: 'John Doe',
     gender: 'male',
     email: 'john.doe@example.com',
@@ -10,7 +10,7 @@ export const patients: Patient[] = [
     image: '/img/patients/johndoe.jpg',
   },
   {
-    patientId: 'pat_002',
+    patientId: 'pat_02',
     name: 'Jane Smith',
     gender: 'female',
     email: 'jane.smith@example.com',
@@ -18,7 +18,7 @@ export const patients: Patient[] = [
     image: '/img/patients/janesmith.jpg',
   },
   {
-    patientId: 'pat_003',
+    patientId: 'pat_03',
     name: 'Michael Johnson',
     gender: 'male',
     email: 'michael.johnson@example.com',
@@ -26,7 +26,7 @@ export const patients: Patient[] = [
     image: '/img/patients/michaeljohnson.jpg',
   },
   {
-    patientId: 'pat_004',
+    patientId: 'pat_04',
     name: 'Emily Davis',
     gender: 'female',
     email: 'emily.davis@example.com',
@@ -34,7 +34,7 @@ export const patients: Patient[] = [
     image: '/img/patients/emilydavis.jpg',
   },
   {
-    patientId: 'pat_005',
+    patientId: 'pat_05',
     name: 'Daniel Brown',
     gender: 'male',
     email: 'daniel.brown@example.com',
@@ -42,7 +42,7 @@ export const patients: Patient[] = [
     image: '/img/patients/danielbrown.jpg',
   },
   {
-    patientId: 'pat_006',
+    patientId: 'pat_06',
     name: 'Sarah Wilson',
     gender: 'female',
     email: 'sarah.wilson@example.com',
@@ -50,7 +50,7 @@ export const patients: Patient[] = [
     image: '/img/patients/sarahwilson.jpg',
   },
   {
-    patientId: 'pat_007',
+    patientId: 'pat_07',
     name: 'David Taylor',
     gender: 'male',
     email: 'david.taylor@example.com',
@@ -58,7 +58,7 @@ export const patients: Patient[] = [
     image: '/img/patients/davidtaylor.jpg',
   },
   {
-    patientId: 'pat_008',
+    patientId: 'pat_08',
     name: 'Laura Moore',
     gender: 'female',
     email: 'laura.moore@example.com',
@@ -66,7 +66,7 @@ export const patients: Patient[] = [
     image: '/img/patients/lauramoore.jpg',
   },
   {
-    patientId: 'pat_009',
+    patientId: 'pat_09',
     name: 'James Anderson',
     gender: 'male',
     email: 'james.anderson@example.com',
@@ -74,7 +74,7 @@ export const patients: Patient[] = [
     image: '/img/patients/jamesanderson.jpg',
   },
   {
-    patientId: 'pat_010',
+    patientId: 'pat_10',
     name: 'Jessica White',
     gender: 'female',
     email: 'jessica.white@example.com',
@@ -82,7 +82,7 @@ export const patients: Patient[] = [
     image: '/img/patients/jessicawhite.jpg',
   },
   {
-    patientId: 'pat_011',
+    patientId: 'pat_11',
     name: 'Matthew Harris',
     gender: 'male',
     email: 'matthew.harris@example.com',
@@ -90,7 +90,7 @@ export const patients: Patient[] = [
     image: '/img/patients/matthewharris.jpg',
   },
   {
-    patientId: 'pat_012',
+    patientId: 'pat_12',
     name: 'Olivia Lewis',
     gender: 'female',
     email: 'olivia.lewis@example.com',
@@ -98,7 +98,7 @@ export const patients: Patient[] = [
     image: '/img/patients/olivialewis.jpg',
   },
   {
-    patientId: 'pat_013',
+    patientId: 'pat_13',
     name: 'Ryan Clark',
     gender: 'male',
     email: 'ryan.clark@example.com',
@@ -106,7 +106,7 @@ export const patients: Patient[] = [
     image: '/img/patients/ryanclark.jpg',
   },
   {
-    patientId: 'pat_014',
+    patientId: 'pat_14',
     name: 'Sophia Walker',
     gender: 'female',
     email: 'sophia.walker@example.com',
@@ -114,7 +114,7 @@ export const patients: Patient[] = [
     image: '/img/patients/sophiawalker.jpg',
   },
   {
-    patientId: 'pat_015',
+    patientId: 'pat_15',
     name: 'Ethan Hall',
     gender: 'male',
     email: 'ethan.hall@example.com',
@@ -122,7 +122,7 @@ export const patients: Patient[] = [
     image: '/img/patients/ethanhall.jpg',
   },
   {
-    patientId: 'pat_016',
+    patientId: 'pat_16',
     name: 'Ava Young',
     gender: 'female',
     email: 'ava.young@example.com',
@@ -130,7 +130,7 @@ export const patients: Patient[] = [
     image: '/img/patients/avayoung.jpg',
   },
   {
-    patientId: 'pat_017',
+    patientId: 'pat_17',
     name: 'William King',
     gender: 'male',
     email: 'william.king@example.com',
@@ -138,7 +138,7 @@ export const patients: Patient[] = [
     image: '/img/patients/williamking.jpg',
   },
   {
-    patientId: 'pat_018',
+    patientId: 'pat_18',
     name: 'Mia Wright',
     gender: 'female',
     email: 'mia.wright@example.com',
@@ -146,7 +146,7 @@ export const patients: Patient[] = [
     image: '/img/patients/miawright.jpg',
   },
   {
-    patientId: 'pat_019',
+    patientId: 'pat_19',
     name: 'Lucas Scott',
     gender: 'male',
     email: 'lucas.scott@example.com',
@@ -154,7 +154,7 @@ export const patients: Patient[] = [
     image: '/img/patients/lucasscott.jpg',
   },
   {
-    patientId: 'pat_020',
+    patientId: 'pat_20',
     name: 'Isabella Green',
     gender: 'female',
     email: 'isabella.green@example.com',

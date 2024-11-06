@@ -18,8 +18,6 @@ import auth from '@react-native-firebase/auth';
 import ModalComponent from './components/ModalComponent';
 import firestore from '@react-native-firebase/firestore';
 import { Patient } from '../../models/Patient';
-import deleteAllData from '../../data/zResetData';
-import uploadDataToFirestore from '../../data/UploadDataToFirebase';
 
 const LoginScreen = ({navigation}: any) => {
   const [email, setEmail] = useState('');
@@ -186,11 +184,7 @@ const LoginScreen = ({navigation}: any) => {
           </TouchableOpacity>
 
           <TouchableOpacity
-            onPress={() => {
-              Alert.alert('Login with facebook') 
-              // deleteAllData()
-              uploadDataToFirestore()
-            }}
+            onPress={() => Alert.alert('Login with facebook')}
             style={styles.facebookButton}>
             <View style={styles.ortherView}>
               <Image
