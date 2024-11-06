@@ -46,11 +46,13 @@ const LoginScreen = ({navigation}: any) => {
       setIsLoading(true);
       setIsError(false);
       setErrorText('');
+
       // Login
       await auth()
         .signInWithEmailAndPassword(email, password)
         .then(userCredential => {
           const user = userCredential.user;
+          setIsLoading(false);
         })
         .catch(error => {
           setIsLoading(false);
@@ -73,7 +75,7 @@ const LoginScreen = ({navigation}: any) => {
         </TouchableOpacity>
 
         <TextComponent
-          text="Welcome Back!"
+          text="Welcome To App!"
           color="#21a691"
           size={30}
           font={fontFamilies.medium}
@@ -146,7 +148,9 @@ const LoginScreen = ({navigation}: any) => {
                   fontSize: 12,
                   fontFamily: 'Poppins-Regular',
                 }}
-                onPress={() => {}}
+                onPress={() => {
+                  navigation.navigate('ForgotPassword');
+                }}
               />
             </Row>
           </Row>
@@ -188,7 +192,7 @@ const LoginScreen = ({navigation}: any) => {
             onPress={() => {
               Alert.alert('Login with facebook');
               // deleteAllData()
-              uploadDataToFirestore();
+              //uploadDataToFirestore();
             }}
             style={styles.facebookButton}>
             <View style={styles.ortherView}>

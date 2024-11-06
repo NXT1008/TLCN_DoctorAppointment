@@ -21,7 +21,7 @@ import UpcomingCard from './components/UpcomingCard';
 import CancelCard from './components/CancelCard';
 import {Doctor} from '../../models/Doctor';
 import {Appointment} from '../../models/Appointment';
-import firestore from '@react-native-firebase/firestore';
+import firestore, {getDoc} from '@react-native-firebase/firestore';
 import {fontFamilies} from '../../constants/fontFamilies';
 import auth from '@react-native-firebase/auth';
 
@@ -32,7 +32,10 @@ const AppointmentScreen = (props: any) => {
   const [filteredAppointments, setFilteredAppointments] = useState<
     Appointment[]
   >([]);
-  const [statusFilter, setStatusFilter] = useState(''); // Trạng thái hiện tại
+  const [statusFilter, setStatusFilter] = useState('Upcoming'); // Trạng thái hiện tại
+  const [showComplete, setShowComplete] = useState<boolean>(false);
+  const [showUpcoming, setShowUpcoming] = useState<boolean>(true);
+  const [showCancel, setShowCancel] = useState<boolean>(false);
 
   useEffect(() => {
     const unsubcribe = getAllAppointmentByPatientID();
@@ -42,13 +45,12 @@ const AppointmentScreen = (props: any) => {
     };
   }, []);
 
-  const [showComplete, setShowComplete] = useState<boolean>(true);
-  const [showUpcoming, setShowUpcoming] = useState<boolean>(false);
-  const [showCancel, setShowCancel] = useState<boolean>(false);
+  useEffect(() => {
+    filterAppointments(statusFilter);
+  }, [statusFilter, appointmentList]);
 
   // Hàm lọc cuộc hẹn dựa trên trạng thái
   const filterAppointments = (status: string) => {
-    setStatusFilter(status);
     const filtered: Appointment[] = appointmentList.filter(
       appointment => appointment.status === status,
     );
@@ -76,13 +78,30 @@ const AppointmentScreen = (props: any) => {
               items.push(appointmentData);
             });
             setAppointmentList(items);
-            console.log(appointmentList);
           }
         },
         error => {
           console.log('Lỗi khi load dữ appointment:', error.message); // Log lỗi nếu có
         },
       );
+  };
+
+  const getDoctorByAppointmentID = async (appointment: Appointment) => {
+    const snap = await firestore()
+      .collection('doctors')
+      .doc(appointment.doctorId)
+      .get(); // Sử dụng get() để lấy dữ liệu 1 lần
+
+    if (snap.exists) {
+      const doctor = snap.data() as Doctor;
+      return doctor; // Trả về giá trị bác sĩ
+    } else {
+      console.error(
+        'Doctor not found for appointment ID:',
+        appointment.doctorId,
+      );
+      return null;
+    }
   };
 
   // Hủy đăng ký listener khi component unmount
@@ -98,14 +117,14 @@ const AppointmentScreen = (props: any) => {
     setShowUpcoming(true);
     setShowComplete(false);
     setShowCancel(false);
-    setStatusFilter('Upcomming');
+    setStatusFilter('Upcoming');
   };
 
   const handleCancelButtonClick = () => {
     setShowUpcoming(false);
     setShowComplete(false);
     setShowCancel(true);
-    setStatusFilter('Cancel');
+    setStatusFilter('Canceled');
   };
 
   // Hiện tại là lấy tất cả Appointment của Patient do chưa truyền pId
@@ -148,7 +167,7 @@ const AppointmentScreen = (props: any) => {
             style={[styles.filterButton, showCancel && styles.buttonActive]}
             onPress={handleCancelButtonClick}>
             <TextComponent
-              text="Cancelled"
+              text="Canceled"
               size={14}
               color="#ffffff"
               font="Poppins-Medium"
@@ -159,13 +178,30 @@ const AppointmentScreen = (props: any) => {
 
       {showComplete && (
         <FlatList
-          data={appointmentList}
+          data={filteredAppointments}
           renderItem={({item}) => (
             <CompletedCard
               appointment={item}
-              review={undefined}
-              onPressRebook={() => navigation.navigate('BookingScreen')}
-              onPressAddReview={() => navigation.navigate('ReviewScreen')}
+              onPressRebook={async () => {
+                const doctor = await getDoctorByAppointmentID(item);
+                if (doctor) {
+                  navigation.navigate('BookingScreen', {
+                    data: doctor, // Truyền giá trị bác sĩ vào params
+                  });
+                } else {
+                  console.error('Failed to get doctor data');
+                }
+              }}
+              onPressAddReview={() =>
+                navigation.navigate('ReviewScreen', {
+                  data: {
+                    ...item,
+                    endTime: item.endTime.getTime(), // hoặc endTime.toISOString()
+                    startTime: item.startTime.getTime(),
+                    scheduleDate: item.scheduleDate.getTime(),
+                  },
+                })
+              }
             />
           )}
           keyExtractor={item => item.appointmentId}
@@ -175,7 +211,7 @@ const AppointmentScreen = (props: any) => {
 
       {showUpcoming && (
         <FlatList
-          data={appointmentList}
+          data={filteredAppointments}
           renderItem={({item}) => (
             <UpcomingCard
               appointment={item}
@@ -184,7 +220,14 @@ const AppointmentScreen = (props: any) => {
                 Alert.alert('Hiển thị popup xác nhận hoàn thành cuộc hẹn');
               }}
               onPressCancel={() => {
-                navigation.navigate('CancelAppointment');
+                navigation.navigate('CancelAppointment', {
+                  data: {
+                    ...item,
+                    endTime: item.endTime.getTime(), // hoặc endTime.toISOString()
+                    startTime: item.startTime.getTime(),
+                    scheduleDate: item.scheduleDate.getTime(),
+                  },
+                });
               }}
             />
           )}
@@ -195,16 +238,23 @@ const AppointmentScreen = (props: any) => {
 
       {showCancel && (
         <FlatList
-          data={appointmentList}
+          data={filteredAppointments}
           renderItem={({item}) => (
             <CancelCard
               appointment={item}
               onPress={() => {
-                navigation.navigate('ReviewScreen');
+                navigation.navigate('ReviewScreen', {
+                  data: {
+                    ...item,
+                    endTime: item.endTime.getTime(), // hoặc endTime.toISOString()
+                    startTime: item.startTime.getTime(),
+                    scheduleDate: item.scheduleDate.getTime(),
+                  },
+                });
               }}
             />
           )}
-          keyExtractor={item => item.doctorId}
+          keyExtractor={item => item.appointmentId}
           showsVerticalScrollIndicator={false}
         />
       )}

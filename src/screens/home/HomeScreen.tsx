@@ -7,7 +7,7 @@ import {
   Dimensions,
   ActivityIndicator,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {
   Card,
   Col,
@@ -29,6 +29,7 @@ import firestore from '@react-native-firebase/firestore';
 import {Specialization} from '../../models/Specialization';
 import {Doctor} from '../../models/Doctor';
 import {Patient} from '../../models/Patient';
+import {useFocusEffect} from '@react-navigation/native';
 
 const HomeScreen = (props: any) => {
   const user = auth().currentUser;
@@ -39,14 +40,28 @@ const HomeScreen = (props: any) => {
   const [loadingSpecialization, setLoadingSpecialization] = useState(false);
   const [loadingDoctors, setLoadingDoctors] = useState(false);
 
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     getAllSpecializations();
+  //     getAllDoctors();
+  //     getPatientInfo();
+  //   }, []),
+  // );
   useEffect(() => {
     getAllSpecializations();
     getAllDoctors();
-
-    return () => {
-      
-    }
+    getPatientInfo();
   }, []);
+
+  const getPatientInfo = async () => {
+    await firestore()
+      .collection('patients')
+      .doc(user?.uid)
+      .get()
+      .then(snapshot => {
+        setPatient(snapshot.data() as Patient);
+      });
+  };
 
   const getAllSpecializations = async () => {
     setLoadingSpecialization(true);
@@ -79,6 +94,7 @@ const HomeScreen = (props: any) => {
     await firestore()
       .collection('doctors')
       .orderBy('ratingAverage', 'desc')
+      .limit(5)
       .get()
       .then(snap => {
         if (snap.empty) {
@@ -125,7 +141,7 @@ const HomeScreen = (props: any) => {
                   color="#00000066"
                 />
                 <TextComponent
-                  text={`${user?.email}`}
+                  text={`${patient?.name}`}
                   font={fontFamilies.semiBold}
                 />
               </View>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -7,82 +7,191 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from 'react-native';
-import { Doctor } from '../../models/Doctor';
-import { Patient } from '../../models/Patient';
-import { Review } from '../../models/Review';
-import { useNavigation } from '@react-navigation/native';
-import { Row, Section } from '../../components';
-import { ArrowLeft2 } from 'iconsax-react-native';
+import {Doctor} from '../../models/Doctor';
+import {Patient} from '../../models/Patient';
+import {Review} from '../../models/Review';
+import {useNavigation} from '@react-navigation/native';
+import {
+  Button,
+  ContainerComponent,
+  Input,
+  Row,
+  Section,
+  TextComponent,
+} from '../../components';
+import {ArrowLeft2} from 'iconsax-react-native';
+import {fontFamilies} from '../../constants/fontFamilies';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import {Appointment} from '../../models/Appointment';
+import firestore, {getDoc} from '@react-native-firebase/firestore';
+import {Specialization} from '../../models/Specialization';
+import {sub, subSeconds} from 'date-fns';
 
-const mockDoctor: Doctor = {
-  doctorId: 'doctor01',
-  name: 'Dr. Olivia Turner, M.D.',
-  email: 'olivia@example.com',
-  phone: '123-456-7890',
-  image: 'https://via.placeholder.com/150',
-  specializationId: 'Dermato-Endocrinology',
-  hospitalId: 'hosp001',
-};
+const ReviewScreen = ({navigation, route}: any) => {
+  const {data} = route.params;
+  const appointment = data as Appointment;
+  const [doctor, setDoctor] = useState<Doctor>();
+  const [specialization, setSpecialization] = useState<Specialization>();
 
-const mockPatient: Patient = {
-  patientId: 'patient1',
-  name: 'John Doe',
-  gender: 'male',
-  email: 'john@example.com',
-  phone: '123-456-7890',
-  image: '',
-};
-
-const ReviewScreen = () => {
-  const navigation = useNavigation();
   const [comment, setComment] = useState<string>('');
   const [rating, setRating] = useState<number>(0);
+  const [isLoading, setIsLoading] = useState(false);
+
   const handleRating = (rate: number) => {
     setRating(rate);
   };
 
-  const handleAddReview = () => {
-    const newReview: Review = {
-      reviewId: '1',
-      appointmentId: '123',
-      doctorId: mockDoctor.doctorId,
-      patientId: mockPatient.patientId,
-      rating: rating,
+  useEffect(() => {
+    const fetchDoctorData = async () => {
+      await getDoctorByAppointmentID();
+    };
+    fetchDoctorData();
+  }, []);   
+
+  useEffect(() => {
+    if (doctor) {
+      const fetchSpecializationData = async () => {
+        await getSpecializationByAppointmentID();
+      };
+      fetchSpecializationData();
+    }
+  }, [doctor]);
+
+  const getDoctorByAppointmentID = async () => {
+    await firestore()
+      .collection('doctors')
+      .doc(appointment.doctorId)
+      .get()
+      .then(snap => {
+        const doctor = snap.data() as Doctor;
+        setDoctor(doctor);
+      });
+  };
+
+  const getSpecializationByAppointmentID = async () => {
+    try {
+      if (doctor) {
+        const specDoc = await firestore()
+          .collection('specializations')
+          .doc(doctor?.specializationId)
+          .get();
+        if (specDoc.exists) {
+          const specialization = specDoc.data() as Specialization;
+          setSpecialization(specialization);
+        } else {
+          console.error('Specialization document not found');
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching specialization:', error);
+    }
+  };
+
+  const handleAddReview = async () => {
+    const review: Review = {
+      patientId: appointment.patientId,
+      appointmentId: appointment.appointmentId,
       comment: comment,
+      rating: rating,
+      doctorId: appointment.doctorId,
+      reviewId: '',
+      reviewAt: new Date(),
     };
 
-    console.log(newReview);
+    setIsLoading(true);
+
+    try {
+      const reviewRef = await firestore().collection('reviews').add(review);
+      const reviewId = reviewRef.id;
+      await reviewRef.update({reviewId: reviewId});
+      console.log('Review add successfully');
+    } catch (error) {
+      console.log('Cannot add review: ' + error);
+    }
+
+    // update star doctor
+    try {
+      const doctorRef = await firestore()
+        .collection('doctors')
+        .doc(appointment.doctorId);
+      const item = (await doctorRef.get()).data() as Doctor;
+      const oldAverage = item.ratingAverage || 0;
+      const numberOfReview = item.numberOfReviews || 0;
+      const newAverage =
+        (oldAverage * numberOfReview + rating) / (numberOfReview + 1);
+
+      await doctorRef.update({
+        ratingAverage: newAverage,
+        numberOfReviews: numberOfReview + 1,
+      });
+      setIsLoading(false);
+    } catch (e) {
+      console.log(e);
+      setIsLoading(false);
+    }
   };
 
   return (
-    <View style={styles.container}>
-      <Section styles={styles.header}>
-        <Row justifyContent='space-around'>
-          <ArrowLeft2 color="#000" onPress={() => navigation.goBack()} />
-          <Text style={styles.headerText}>Review</Text>
+    <ContainerComponent
+      isScroll
+      style={{backgroundColor: '#fff', paddingHorizontal: 20}}>
+      <Section styles={{marginBottom: 15}}>
+        <Row justifyContent="flex-start">
+          <TouchableOpacity
+            onPress={() => {
+              navigation.goBack();
+            }}>
+            <ArrowLeft2 color="#000" />
+          </TouchableOpacity>
+          <View style={{flex: 1, alignItems: 'center'}}>
+            <TextComponent
+              text="Review Doctor"
+              size={20}
+              font={fontFamilies.semiBold}
+              color="#0B8FAC"
+            />
+          </View>
         </Row>
       </Section>
-      <Text style={styles.description}>
-        It is very important to take care of the patient, the patient will be
+      <TextComponent
+        styles={{
+          fontSize: 14,
+          color: 'gray',
+          marginVertical: 10,
+          justifyContent: 'center',
+          fontFamily: 'Poppins-Regular',
+        }}
+        text="It is very important to take care of the patient, the patient will be
         followed by the patient, but this time it will happen that there is a
-        lot of work and pain.
-      </Text>
+        lot of work and pain."
+      />
 
       <Image
         source={require('../../assets/images/doctor.png')}
         style={styles.image}
       />
 
-      <Text style={styles.doctorName}>{mockDoctor.name}</Text>
-      <Text style={styles.doctorSpecialty}>{mockDoctor.specializationId}</Text>
+      <TextComponent
+        styles={{
+          fontSize: 18,
+          textAlign: 'center',
+          color: '#21a691',
+          fontFamily: fontFamilies.semiBold,
+        }}
+        text={`${doctor?.name}`}
+      />
+      <TextComponent
+        styles={{
+          fontSize: 14,
+          textAlign: 'center',
+          color: '#BDBDBD',
+          fontFamily: 'Poppins-Regular',
+        }}
+        text={`${specialization?.name}`}
+      />
 
       <View style={styles.ratingContainer}>
-        <View style={styles.heartContainer}>
-          <Image
-            source={require('../../assets/images/heart.png')}
-            style={styles.heartIcon}
-          />
-        </View>
+        <FontAwesome name="heart" color={'blue'} size={20} />
 
         <View style={styles.starContainer}>
           {[1, 2, 3, 4, 5].map(item => (
@@ -100,18 +209,33 @@ const ReviewScreen = () => {
         </View>
       </View>
 
-      <TextInput
-        style={styles.commentInput}
+      <Input
+        textAreal
+        styles={styles.commentInput}
+        inputStyles={{fontFamily: fontFamilies.regular, color: '#000'}}
         placeholder="Enter Your Comment Here..."
-        multiline
+        placeholderColor="gray"
         value={comment}
-        onChangeText={setComment}
+        onChange={setComment}
       />
 
-      <TouchableOpacity style={styles.addButton} onPress={handleAddReview}>
-        <Text style={styles.addButtonText}>Add Review</Text>
-      </TouchableOpacity>
-    </View>
+      <Section styles={{alignItems: 'center'}}>
+        <Button
+          title="Add Review"
+          onPress={handleAddReview}
+          styles={{
+            backgroundColor: '#21a691',
+            borderRadius: 15,
+            width: '80%',
+          }}
+          textStyleProps={{
+            fontFamily: fontFamilies.semiBold,
+            fontSize: 16,
+            color: '#fff',
+          }}
+        />
+      </Section>
+    </ContainerComponent>
   );
 };
 
@@ -134,14 +258,7 @@ const styles = StyleSheet.create({
     alignContent: 'center',
     justifyContent: 'center',
     alignItems: 'center',
-    fontFamily: 'Poppins-Bold'
-  },
-  description: {
-    fontSize: 14,
-    color: '#A3B1B4',
-    marginVertical: 10,
-    justifyContent: 'center',
-    fontFamily: 'Poppins-Regular'
+    fontFamily: 'Poppins-Bold',
   },
   image: {
     width: 100,
@@ -150,37 +267,11 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     marginVertical: 20,
   },
-  doctorName: {
-    fontSize: 18,
-    textAlign: 'center',
-    color: '#21a691',
-    fontFamily: 'Poppins-Medium'
-  },
-  doctorSpecialty: {
-    fontSize: 14,
-    textAlign: 'center',
-    color: '#BDBDBD',
-    marginBottom: 20,
-    fontFamily: 'Poppins-Regular'
-  },
   ratingContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
     marginVertical: 10,
-  },
-  heartContainer: {
-    backgroundColor: '#E8F5E9',
-    borderRadius: 13,
-    height: 22,
-    width: 22,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  heartIcon: {
-    position: 'relative',
-    width: 11,
-    height: 10,
   },
   starContainer: {
     flexDirection: 'row',
@@ -193,8 +284,8 @@ const styles = StyleSheet.create({
     marginLeft: 5,
   },
   starIcon: {
-    width: 11,
-    height: 11,
+    width: 15,
+    height: 15,
   },
   commentInput: {
     borderColor: '#e0e0e0',
@@ -204,19 +295,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#E8F5E9',
     textAlignVertical: 'top',
     height: 100,
-    marginVertical: 20,
-    fontFamily: 'Poppins-Regular'
-  },
-  addButton: {
-    backgroundColor: '#21a691',
-    padding: 15,
-    borderRadius: 8,
-    alignItems: 'center',
-  },
-  addButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontFamily: 'Poppins-Medium'
+    marginVertical: 30,
+    fontFamily: 'Poppins-Regular',
   },
 });
 

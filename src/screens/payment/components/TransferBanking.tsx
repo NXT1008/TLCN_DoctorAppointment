@@ -11,10 +11,11 @@ import {
   UIManager,
   Dimensions,
 } from 'react-native';
-import {Card, ContainerComponent} from '../../../components';
+import {Card, ContainerComponent, Section} from '../../../components';
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
 import {faBuilding} from '@fortawesome/free-solid-svg-icons';
 import Container from '../../../components/ContainerComponent';
+import {fontFamilies} from '../../../constants/fontFamilies';
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
@@ -60,7 +61,18 @@ const BankTransferComponent = ({onSelectPaymentMethod, isDisabled}: props) => {
   };
 
   return (
-    <View style={styles.container}>
+    <ContainerComponent
+      style={{
+        flex: 1,
+        backgroundColor: '#fff',
+        shadowColor: '#333',
+        shadowOffset: {width: 0, height: 2},
+        shadowOpacity: 0.25,
+        shadowRadius: 20,
+        elevation: 5,
+        borderRadius: 20,
+        padding: 10,
+      }}>
       <TouchableOpacity
         onPress={handleToggleDropdown}
         style={styles.dropdownHeader}>
@@ -72,7 +84,7 @@ const BankTransferComponent = ({onSelectPaymentMethod, isDisabled}: props) => {
       </TouchableOpacity>
 
       {isExpanded && (
-        <Container style={styles.formContainer} isScroll>
+        <Section styles={styles.formContainer}>
           <TextInput
             style={styles.input}
             placeholder="Bank Name"
@@ -106,24 +118,14 @@ const BankTransferComponent = ({onSelectPaymentMethod, isDisabled}: props) => {
             onChangeText={setTransferAmount}
             placeholderTextColor={'gray'}
           />
-        </Container>
+        </Section>
       )}
-    </View>
+    </ContainerComponent>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    shadowColor: '#333',
-    shadowOffset: {width: 0, height: 2},
-    shadowOpacity: 0.25,
-    shadowRadius: 20,
-    elevation: 5,
-    borderRadius: 20,
-    padding: 10,
-  },
+  container: {},
   dropdownHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -142,9 +144,8 @@ const styles = StyleSheet.create({
     marginLeft: 5,
   },
   title: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    fontFamily: 'Poppins-Medium',
+    fontSize: 16,
+    fontFamily: fontFamilies.semiBold,
     textAlign: 'left',
     padding: 10,
     color: '#21a691',
@@ -155,7 +156,7 @@ const styles = StyleSheet.create({
   },
   formContainer: {
     flex: 1, // Make the form container take up available space
-    marginTop: 10,
+    marginTop: 20,
   },
   input: {
     flex: 1, // Make inputs take up available space
@@ -167,6 +168,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     paddingHorizontal: 15,
     fontSize: 16,
+    fontFamily: fontFamilies.regular,
     backgroundColor: '#f9f9f9',
   },
   button: {
@@ -178,8 +180,8 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: '#fff',
-    fontSize: 18,
-    fontWeight: 'bold',
+    fontSize: 16,
+    fontFamily: fontFamilies.semiBold,
   },
 });
 

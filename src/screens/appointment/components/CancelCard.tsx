@@ -24,43 +24,42 @@ const DoctorCard = (props: Props) => {
   const [doctor, setDoctor] = useState<Doctor>();
   const [specialization, setSpectialization] = useState<Specialization>();
 
-  // Lấy doctor ra trước
   useEffect(() => {
-    getDoctorByAppointmentID();
-  }, []);
+    const fetchData = async () => {
+      try {
+        // Get doctor and specialization data in parallel
+        const doctorDoc = await firestore()
+          .collection('doctors')
+          .doc(appointment.doctorId)
+          .get();
 
-  // có doctor thì lấy spec
-  useEffect(() => {
-    if (doctor) {
-      getSpecializationByDoctorID();
-    }
-  }, [doctor]);
-
-  const getDoctorByAppointmentID = async () => {
-    await firestore()
-      .collection('doctors')
-      .doc(appointment.doctorId)
-      .onSnapshot(snap => {
-        if (snap.exists) {
-          setDoctor(snap.data() as Doctor);
-        } else {
+        if (!doctorDoc.exists) {
           console.error('Doctor document not found');
+          return;
         }
-      });
-  };
 
-  const getSpecializationByDoctorID = () => {
-    firestore()
-      .collection('specializations')
-      .doc(doctor?.specializationId)
-      .onSnapshot(snap => {
-        if (snap.exists) {
-          setSpectialization(snap.data() as Specialization);
-        } else {
+        const doctorData = doctorDoc.data() as Doctor;
+        setDoctor(doctorData);
+
+        const specDoc = await firestore()
+          .collection('specializations') 
+          .doc(doctorData.specializationId)
+          .get();
+
+        if (!specDoc.exists) {
           console.error('Specialization document not found');
+          return;
         }
-      });
-  };
+
+        setSpectialization(specDoc.data() as Specialization);
+
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
   return (
     <Card styles={styles.cardContainer} shadowed>
       <View style={styles.profileContainer}>

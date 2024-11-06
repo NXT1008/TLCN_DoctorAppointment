@@ -31,18 +31,24 @@ const UpcomingAppointmentCard = (props: Props) => {
 
   // Lấy doctor ra trước
   useEffect(() => {
-    getDoctorByAppointmentID();
+    const unSubcribe = getDoctorByAppointmentID();
+    return () => {
+      if (unSubcribe) unSubcribe();
+    };
   }, [])
 
   // có doctor thì lấy spec
   useEffect(() => {
     if (doctor) {
-      getSpecializationByDoctorID();
+      const unSubcribe = getSpecializationByDoctorID();
+      return () => {
+        if (unSubcribe) unSubcribe();
+      };
     }
   }, [doctor]);
 
-  const getDoctorByAppointmentID = async () => {
-    await firestore().collection('doctors').doc(appointment.doctorId)
+  const getDoctorByAppointmentID = () => {
+    return firestore().collection('doctors').doc(appointment.doctorId)
       .onSnapshot(snap => {
         if (snap.exists) {
           setDoctor(snap.data() as Doctor);
@@ -53,7 +59,7 @@ const UpcomingAppointmentCard = (props: Props) => {
   };
 
   const getSpecializationByDoctorID = () => {
-    firestore().collection('specializations').doc(doctor?.specializationId).onSnapshot(snap => {
+    return firestore().collection('specializations').doc(doctor?.specializationId).onSnapshot(snap => {
       if (snap.exists) {
         setSpectialization(snap.data() as Specialization);
       }
@@ -162,7 +168,7 @@ const styles = StyleSheet.create({
   },
   detailsButton: {
     backgroundColor: '#27403e',
-    height: 27,
+    height: 30,
     width: 174,
     borderRadius: 18,
     marginTop: 9,

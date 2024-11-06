@@ -29,9 +29,9 @@ import DoctorReviewComponent from './components/DoctorReviewComponent';
 import {Review} from '../../models/Review';
 import {Doctor} from '../../models/Doctor';
 
-const DoctorDetailScreen = (props: any) => {
+const DoctorDetailScreen = ({navigation, route}: any) => {
   const {width, height} = Dimensions.get('window');
-  const {doctor} = props.route.params;
+  const {doctor} = route.params;
   const doctorData = doctor as Doctor;
 
   const [spec, setSpec] = useState<Specialization>();
@@ -96,7 +96,7 @@ const DoctorDetailScreen = (props: any) => {
           <View style={{paddingHorizontal: 20, marginTop: 16}}>
             <TouchableOpacity
               onPress={() => {
-                props.navigation.goBack();
+                navigation.goBack();
               }}>
               <ArrowLeft2 color="#000" />
             </TouchableOpacity>
@@ -263,7 +263,7 @@ const DoctorDetailScreen = (props: any) => {
           />
           <TouchableOpacity
             style={styles.communicationMethod}
-            onPress={() => Alert.alert('Messaging')}>
+            onPress={() => { navigation.navigate('MainChatScreen', {data: doctorData})}}>
             <Image
               source={require('../../assets/images/message.png')}
               style={styles.communicationIcon}
@@ -338,7 +338,7 @@ const DoctorDetailScreen = (props: any) => {
             />
             <TouchableOpacity
               onPress={() => {
-                props.navigation.navigate('ReviewAllDoctors', {data: reviewList});
+                navigation.navigate('ReviewAllDoctors', {data: reviewList});
               }}>
               <TextComponent
                 text="See All"
@@ -358,7 +358,7 @@ const DoctorDetailScreen = (props: any) => {
       <Button
         title="Book Appointment"
         onPress={() => {
-          props.navigation.navigate('BookingScreen', {data: doctor});
+          navigation.navigate('BookingScreen', {data: doctor});
         }}
         color="#0B8FAC"
         textStyleProps={{fontFamily: fontFamilies.semiBold, color: '#fff'}}

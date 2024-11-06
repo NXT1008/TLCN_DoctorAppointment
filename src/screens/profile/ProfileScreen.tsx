@@ -1,5 +1,5 @@
 import {Alert, Image, Touchable, TouchableOpacity, View} from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {
   Button,
   Col,
@@ -39,26 +39,27 @@ import deleteAllData from '../../data/functions/zResetData';
 import uploadDataToFirestore from '../../data/functions/UploadDataToFirebase';
 import firestore from '@react-native-firebase/firestore';
 import {Patient} from '../../models/Patient';
+import { useFocusEffect } from '@react-navigation/native';
 
 const ProfileScreen = (props: any) => {
   const patientId = auth().currentUser?.uid;
 
   const [patient, setPatient] = useState<Patient>();
 
-  useEffect(() => {
-    const unsubscribe = getInfoPatient();
-
-    // Hủy đăng ký listener khi component unmount
-    return () => unsubscribe();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      getInfoPatient();
+    }, [])
+  );
 
   const [isAlertVisible, setAlertVisible] = useState(false);
 
-  const getInfoPatient = () => {
-    return firestore()
+  const getInfoPatient = async () => {
+    await firestore()
       .collection('patients')
       .doc(patientId)
-      .onSnapshot(
+      .get()
+      .then(
         docSnapshot => {
           if (docSnapshot.exists) {
             const patientData = docSnapshot.data() as Patient;
@@ -145,9 +146,7 @@ const ProfileScreen = (props: any) => {
             <TextComponent
               text={
                 patient
-                  ? patient.nickname
-                    ? patient.nickname
-                    : patient.name
+                  ? patient.name
                   : ''
               }
               size={20}

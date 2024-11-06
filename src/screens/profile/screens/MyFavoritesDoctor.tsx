@@ -1,5 +1,5 @@
 import {View, Text, TouchableOpacity} from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {
   ContainerComponent,
   Row,
@@ -14,6 +14,7 @@ import auth from '@react-native-firebase/auth';
 import {Doctor} from '../../../models/Doctor';
 import {Patient} from '../../../models/Patient';
 import ModalComponent from '../components/ModalComponent';
+import { useFocusEffect } from '@react-navigation/native';
 
 const MyFavoritesDoctor = (props: any) => {
   const patientId = auth().currentUser?.uid;
@@ -21,9 +22,11 @@ const MyFavoritesDoctor = (props: any) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [doctorIdToRemove, setDoctorIdToRemove] = useState<string | null>(null);
 
-  useEffect(() => {
-    getFavoriteDoctors();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      getFavoriteDoctors();
+    }, [])
+  );
 
   // Hàm lấy danh sách bác sĩ yêu thích của bệnh nhân
   const getFavoriteDoctors = async () => {
@@ -120,7 +123,7 @@ const MyFavoritesDoctor = (props: any) => {
       </Section>
       <ModalComponent
         isVisible={modalVisible}
-        message="Do you want to exit?"
+        message="Do you want to remove this doctor from favorites?"
         onConfirm={removeFavoriteDoctor}
         onCancel={() => {
           setModalVisible(false);

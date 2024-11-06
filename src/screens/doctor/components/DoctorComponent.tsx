@@ -199,7 +199,7 @@ const DoctorComponent = (props: Props) => {
             />
           </Row>
           <Space height={5} />
-          <Row justifyContent="flex-start" alignItems="flex-start">
+          <Row justifyContent="flex-start" alignItems="flex-start" styles={{flex: 1}}>
             <Location color="#000" size={16} />
             <Space width={5} />
             <TextComponent
@@ -207,6 +207,10 @@ const DoctorComponent = (props: Props) => {
               size={12}
               font={fontFamilies.regular}
               color="gray"
+              styles={{
+                flexWrap: 'wrap',
+                flexShrink: 1,
+              }}
             />
           </Row>
         </Col>

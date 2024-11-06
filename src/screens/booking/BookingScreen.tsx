@@ -8,6 +8,7 @@ import {
   ScrollView,
   Alert,
   ActivityIndicator,
+  Dimensions,
 } from 'react-native';
 import {
   ContainerComponent,
@@ -42,6 +43,7 @@ const initValue: Appointment = {
 };
 
 const BookingScreen = ({navigation, route}: any) => {
+  const {width, height} = Dimensions.get('window');
   const patientId = auth().currentUser?.uid;
   const {data} = route.params;
   const doctor = data as Doctor;
@@ -55,6 +57,7 @@ const BookingScreen = ({navigation, route}: any) => {
   const [scheduleDate, setScheduleDate] = useState<Date>(new Date()); // ngày được chọn
   const [timeSlots, setTimeSlots] = useState<Schedule[]>([]); // Tất cả timeslot trong 1 ngày
   const [isLoading, setIsLoading] = useState(false);
+  const [bookingFor, setBookingFor] = useState('you'); // State to track selection
 
   const ageRanges = [
     '18 - 25',
@@ -75,33 +78,35 @@ const BookingScreen = ({navigation, route}: any) => {
       note: problem,
       status: 'Upcoming',
     };
-    setIsLoading(true);
-    try {
-      const appointmentRef = await firestore()
-        .collection('appointments')
-        .add(appointment);
-      // Lấy ID appointment mà Firestore đã tự động tạo ra
-      const appointmentId = appointmentRef.id;
-      // Cập nhật lại appointment với appointmentId
-      await appointmentRef.update({appointmentId: appointmentId});
-      console.log('Appointment add successfully');
-    } catch (error) {
-      console.log(error);
-    }
+    // setIsLoading(true);
+    // try {
+    //   const appointmentRef = await firestore()
+    //     .collection('appointments')
+    //     .add(appointment);
+    //   // Lấy ID appointment mà Firestore đã tự động tạo ra
+    //   const appointmentId = appointmentRef.id;
+    //   // Cập nhật lại appointment với appointmentId
+    //   await appointmentRef.update({appointmentId: appointmentId});
+    //   console.log('Appointment add successfully');
+    // } catch (error) {
+    //   console.log(error);
+    // }
 
-    try {
-      await firestore().collection('schedules').doc(scheduleChoosen?.scheduleId).update({
-        isBook: true
-      })
-      console.log("Update schedule successfully")
-      setIsLoading(false)
-    } catch (error) {
-      console.log(error)
-      setIsLoading(false)
-    }
-
+    // try {
+    //   await firestore()
+    //     .collection('schedules')
+    //     .doc(scheduleChoosen?.scheduleId)
+    //     .update({
+    //       isBook: true,
+    //     });
+    //   console.log('Update schedule successfully');
+    //   setIsLoading(false);
+    // } catch (error) {
+    //   console.log(error);
+    //   setIsLoading(false);
+    // }
+    navigation.navigate('Payment', {appointment: appointment, schedule: scheduleChoosen});
   };
-  const handleChangeValue = (key: string, value: string | Date) => {};
 
   useEffect(() => {
     getStartTimeByDate();
@@ -109,6 +114,10 @@ const BookingScreen = ({navigation, route}: any) => {
 
   // lấy timeslot dựa vào ngày
   const getStartTimeByDate = async () => {
+    if (!doctor) {
+      return;
+    }
+
     // Chuyển đổi availableDate thành đối tượng Date
     const inputDate = new Date(scheduleDate.setHours(0, 0, 0, 0)); // Đặt giờ, phút, giây về 0
     const inputYear = inputDate.getFullYear();
@@ -178,17 +187,15 @@ const BookingScreen = ({navigation, route}: any) => {
   };
 
   return (
-    <ContainerComponent isScroll>
+    <ContainerComponent
+      isScroll
+    >
       <Section styles={styles.header}>
         <Row justifyContent="space-around">
           <ArrowLeft2 color="#000" onPress={() => navigation.goBack()} />
           <Text style={styles.headerText}>New Appointment</Text>
         </Row>
       </Section>
-
-      {/* <View>
-        <DateTime />
-      </View> */}
 
       <Section>
         <DateTimePickerComponent
@@ -208,7 +215,7 @@ const BookingScreen = ({navigation, route}: any) => {
           {timeSlots.length > 0 ? (
             timeSlots.map((item, index) => (
               <TouchableOpacity
-                key={index}
+                key={`${item.doctorId}/${index}`}
                 style={[
                   styles.timeBox,
                   selectedTime === formatAvailableDate(item.startTime) &&
@@ -229,110 +236,161 @@ const BookingScreen = ({navigation, route}: any) => {
               </TouchableOpacity>
             ))
           ) : (
-            <TextComponent text="Dont have time" />
+            <TextComponent
+              text="Dont have time"
+              font={fontFamilies.regular}
+              styles={{textAlign: 'center'}}
+            />
           )}
         </View>
       </Section>
-
-      <Section styles={styles.patientDetails}>
-        <TextComponent text="Patient Details" font="Poppins-Medium" size={20} />
-        <TextComponent
-          text="Full Name"
-          font="Poppins-Regular"
-          color="#000"
-          size={14}
-        />
-        <Input
-          clear
-          styles={styles.input}
-          value={fullName}
-          onChange={text => setFullName(text)}
-          placeholder="Full Name"
-          placeholderColor="gray"
-          inputStyles={{fontFamily: fontFamilies.regular, fontSize: 12}}
-        />
-        <View style={styles.pickerContainer}>
-          <TextComponent
-            text="Age"
-            font="Poppins-Regular"
-            color="#000"
-            size={14}
-          />
-          <View style={styles.pickerWrapper}>
-            <Picker
-              mode="dialog"
-              selectedValue={age}
-              dropdownIconColor={'#000'}
-              dropdownIconRippleColor={'#21a691'}
-              style={[
-                styles.picker,
-                {fontFamily: fontFamilies.bold, color: '#000'},
-              ]}
-              itemStyle={{color: 'red', fontFamily: fontFamilies.bold}}
-              onValueChange={itemValue => setAge(itemValue)}>
-              {ageRanges.map((range, index) => (
-                <Picker.Item
-                  label={range}
-                  value={range}
-                  key={index}
-                  style={{fontFamily: fontFamilies.regular, color: '#fff'}}
-                />
-              ))}
-            </Picker>
-          </View>
-        </View>
-
-        <View>
-          <TextComponent
-            text="Gender"
-            font="Poppins-Regular"
-            color="#000"
-            size={14}
-          />
-          <View style={styles.genderRow}>
-            <TouchableOpacity
-              style={[
-                styles.genderButton,
-                gender === 'Male' && styles.selectedBox,
-              ]}
-              onPress={() => setGender('Male')}>
-              <Text
+      <>
+        <Section>
+          <TextComponent text="Book For" font={fontFamilies.medium} size={18} />
+          <View>
+            <View style={styles.genderRow}>
+              <TouchableOpacity
                 style={[
-                  styles.genderText,
-                  gender === 'Male' && styles.selectedBoxText,
-                ]}>
-                Male
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[
-                styles.genderButton,
-                gender === 'Female' && styles.selectedBox,
-              ]}
-              onPress={() => setGender('Female')}>
-              <Text
+                  styles.genderButton,
+                  bookingFor === 'you' && styles.selectedBox,
+                ]}
+                onPress={() => setBookingFor('you')}>
+                <Text
+                  style={[
+                    styles.genderText,
+                    bookingFor === 'you' && styles.selectedBoxText,
+                  ]}>
+                  You
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
                 style={[
-                  styles.genderText,
-                  gender === 'Female' && styles.selectedBoxText,
-                ]}>
-                Female
-              </Text>
-            </TouchableOpacity>
+                  styles.genderButton,
+                  bookingFor === 'relative' && styles.selectedBox,
+                ]}
+                onPress={() => setBookingFor('relative')}>
+                <Text
+                  style={[
+                    styles.genderText,
+                    bookingFor === 'relative' && styles.selectedBoxText,
+                  ]}>
+                  Your Relative
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
-        <Space height={10} />
-        <TextInput
-          style={styles.problemInput}
-          value={problem}
-          onChangeText={text => setProblem(text)}
-          placeholder="Write your problem"
-          multiline
-          placeholderTextColor={'gray'}
-        />
-      </Section>
+        </Section>
 
-      <Section styles={{alignItems: 'center'}}>
-        <TouchableOpacity
+        {/* Render Patient Details section only if 'your relative' is selected */}
+        {bookingFor === 'relative' && (
+          <Section styles={styles.patientDetails}>
+            <TextComponent
+              text="Patient Details"
+              font="Poppins-Medium"
+              size={20}
+            />
+
+            <TextComponent
+              text="Full Name"
+              font="Poppins-Regular"
+              color="#000"
+              size={14}
+            />
+            <Input
+              clear
+              styles={styles.input}
+              value={fullName}
+              onChange={text => setFullName(text)}
+              placeholder="Full Name"
+              placeholderColor="gray"
+              inputStyles={{fontFamily: fontFamilies.regular, fontSize: 12}}
+            />
+
+            <View style={styles.pickerContainer}>
+              <TextComponent
+                text="Age"
+                font="Poppins-Regular"
+                color="#000"
+                size={14}
+              />
+              <View style={styles.pickerWrapper}>
+                <Picker
+                  mode="dialog"
+                  selectedValue={age}
+                  dropdownIconColor={'#000'}
+                  dropdownIconRippleColor={'#21a691'}
+                  style={[
+                    styles.picker,
+                    {fontFamily: fontFamilies.bold, color: '#000'},
+                  ]}
+                  itemStyle={{color: 'red', fontFamily: fontFamilies.bold}}
+                  onValueChange={itemValue => setAge(itemValue)}>
+                  {ageRanges.map((range, index) => (
+                    <Picker.Item
+                      label={range}
+                      value={range}
+                      key={index}
+                      style={{fontFamily: fontFamilies.regular, color: '#fff'}}
+                    />
+                  ))}
+                </Picker>
+              </View>
+            </View>
+
+            <View>
+              <TextComponent
+                text="Gender"
+                font="Poppins-Regular"
+                color="#000"
+                size={14}
+              />
+              <View style={styles.genderRow}>
+                <TouchableOpacity
+                  style={[
+                    styles.genderButton,
+                    gender === 'Male' && styles.selectedBox,
+                  ]}
+                  onPress={() => setGender('Male')}>
+                  <Text
+                    style={[
+                      styles.genderText,
+                      gender === 'Male' && styles.selectedBoxText,
+                    ]}>
+                    Male
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[
+                    styles.genderButton,
+                    gender === 'Female' && styles.selectedBox,
+                  ]}
+                  onPress={() => setGender('Female')}>
+                  <Text
+                    style={[
+                      styles.genderText,
+                      gender === 'Female' && styles.selectedBoxText,
+                    ]}>
+                    Female
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+
+            <Space height={10} />
+            <TextInput
+              style={styles.problemInput}
+              value={problem}
+              onChangeText={text => setProblem(text)}
+              placeholder="Write your problem"
+              multiline
+              placeholderTextColor={'gray'}
+            />
+          </Section>
+        )}
+      </>
+      {bookingFor === 'you' && <Space height={height * 0.28} />}
+        <Section styles={{alignItems: 'center'}}>
+          <TouchableOpacity
           style={styles.setAppointmentButton}
           onPress={handleAddNewAppointment}>
           {isLoading ? (

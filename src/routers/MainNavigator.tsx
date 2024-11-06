@@ -19,6 +19,7 @@ import MainChatScreen from '../screens/chat/MainChatScreen';
 import ScheduleScreen from '../screens/schedule/ScheduleScreen';
 import ReviewScreen from '../screens/appointment/ReviewAppointment';
 import CancelAppointment from '../screens/appointment/CancelAppointment';
+import ChangePassword from '../screens/profile/screens/ChangePassword';
 
 const MainNavigator = () => {
   const Stack = createNativeStackNavigator();
@@ -45,6 +46,7 @@ const MainNavigator = () => {
       <Stack.Screen name="ScheduleScreen" component={ScheduleScreen} />
       <Stack.Screen name="ReviewScreen" component={ReviewScreen} />
       <Stack.Screen name="CancelAppointment" component={CancelAppointment} />
+      <Stack.Screen name="ChangePassword" component={ChangePassword} />
     </Stack.Navigator>
   );
 };
