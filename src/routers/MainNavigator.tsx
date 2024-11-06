@@ -17,6 +17,10 @@ import AddNewCardScreen from '../screens/payment/AddNewCard';
 import ChatScreen from '../screens/chat/ChatScreen';
 import MainChatScreen from '../screens/chat/MainChatScreen';
 import ScheduleScreen from '../screens/schedule/ScheduleScreen';
+import DoctorHome from '../screens/doctor/DoctorHome';
+import DoctorNotificationScreen from '../screens/doctor/components/DoctorNotification';
+import DoctorAppointmentScreen from '../screens/doctor/DoctorAppointment';
+import DoctorReportScreen from '../screens/doctor/DoctorReport';
 
 const MainNavigator = () => {
   const Stack = createNativeStackNavigator();
@@ -41,6 +45,10 @@ const MainNavigator = () => {
       <Stack.Screen name="ChatScreen" component={ChatScreen} />
       <Stack.Screen name="MainChatScreen" component={MainChatScreen} />
       <Stack.Screen name="ScheduleScreen" component={ScheduleScreen} />
+      <Stack.Screen name="DoctorHome" component={DoctorHome} />
+      <Stack.Screen name="DoctorNotification" component={DoctorNotificationScreen} />
+      <Stack.Screen name="DoctorAppointment" component={DoctorAppointmentScreen} />
+      <Stack.Screen name="DoctorReport" component={DoctorReportScreen} />
     </Stack.Navigator>
   );
 };

@@ -326,7 +326,7 @@ const DoctorDetailScreen = (props: any) => {
       </ContainerComponent>
       <Button
         title="Book Appointment"
-        onPress={() => {props.navigation.navigate('BookingScreen'); }}
+        onPress={() => {props.navigation.navigate('DoctorHome'); }}
         color='#0B8FAC'
         textStyleProps={{fontFamily: fontFamilies.semiBold, color: '#fff'}}
         styles={{

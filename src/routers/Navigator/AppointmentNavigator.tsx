@@ -8,6 +8,7 @@ import { Appointment } from '../../models/Appointment';
 import { Doctor } from '../../models/Doctor';
 import DoctorDetailScreen from '../../screens/doctor/DoctorDetail';
 import BookingScreen from '../../screens/booking/BookingScreen';
+import DoctorReportScreen from '../../screens/doctor/DoctorReport';
 
 export type AppointmentStackParamList = {
   AppointmentScreen: undefined;  // Không có tham số
@@ -15,6 +16,7 @@ export type AppointmentStackParamList = {
   ReviewScreen: { appointment: Appointment };  // Tương tự
   DoctorDetailScreen: undefined
   BookingScrren: undefined
+  DoctorReport: undefined
 };
 
 const AppointmentNavigator = () => {
@@ -30,6 +32,7 @@ const AppointmentNavigator = () => {
       <Stack.Screen name="ReviewScreen" component={ReviewScreen} />
       <Stack.Screen name="DoctorDetailScreen" component={DoctorDetailScreen}/>
       <Stack.Screen name="BookingScreen" component={BookingScreen}/>
+      <Stack.Screen name="DoctorReport" component={DoctorReportScreen}/>
     </Stack.Navigator>
   );
 }

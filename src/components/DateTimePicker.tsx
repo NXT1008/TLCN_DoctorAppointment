@@ -24,30 +24,34 @@ const DateTime = () => {
         setShow(true)
     };
 
-    return(
+    const todayMidnight = new Date();
+    todayMidnight.setHours(0, 0, 0, 0);
+
+
+    return (
         <Section styles={styles.dateSection}>
-                <TextComponent text='Date' font='Poppins-Medium' size={20} />
-                <TouchableOpacity style={styles.dateBox} onPress={showMode}>
-                    <Text style={styles.dateText}>
-                        {selectedDate.toLocaleDateString('en-US', {
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric',
-                        })}
-                    </Text>
-                </TouchableOpacity>
-                {mode === 'date' && show && (
-                    <DateTimePicker
-                        testID="datePicker"
-                        value={selectedDate}
-                        mode={mode}
-                        is24Hour={false}
-                        display='default'
-                        onChange={handleDateChange}
-                        minimumDate={new Date()}
-                    />
-                )}
-            </Section>
+            {/* <TextComponent text='Date' font='Poppins-Medium' size={20} /> */}
+            <TouchableOpacity style={styles.dateBox} onPress={showMode}>
+                <Text style={styles.dateText}>
+                    {selectedDate.toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                    })}
+                </Text>
+            </TouchableOpacity>
+            {mode === 'date' && show && (
+                <DateTimePicker
+                    testID="datePicker"
+                    value={selectedDate}
+                    mode={mode}
+                    is24Hour={false}
+                    display='default'
+                    onChange={handleDateChange}
+                    minimumDate={todayMidnight}
+                />
+            )}
+        </Section>
     )
 }
 
