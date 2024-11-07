@@ -48,7 +48,7 @@ const DoctorComponent = (props: Props) => {
 
   useEffect(() => {
     getSpectializationByDoctorID();
-    getHospitalByDoctorID();
+    getHospitalByDoctorID()
   }, []);
 
   //Xử lý khi patient nhấn vào trái tim

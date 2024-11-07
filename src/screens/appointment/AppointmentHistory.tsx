@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -14,8 +14,8 @@ import {
   ContainerComponent,
   Row,
   Section,
-  TextComponent,
-} from '../../components';
+  TextComponent
+} from '../../components'
 import CompletedCard from './components/CompletedCard';
 import UpcomingCard from './components/UpcomingCard';
 import CancelCard from './components/CancelCard';
@@ -110,7 +110,6 @@ const AppointmentScreen = (props: any) => {
     setShowUpcoming(false);
     setShowComplete(true);
     setShowCancel(false);
-    setStatusFilter('Completed');
   };
 
   const handleUpcomingButtonClick = () => {
@@ -128,6 +127,29 @@ const AppointmentScreen = (props: any) => {
   };
 
   // Hiện tại là lấy tất cả Appointment của Patient do chưa truyền pId
+  const getAppointmentByPatientID = async () => {
+    await firestore()
+      .collection('appointments')
+      .get()
+      .then(snap => {
+        if (snap.empty) {
+          console.log('Không có appointment');
+        } else {
+          const items: Appointment[] = []; // Tạo mảng hứng dữ liệu
+          // duyệt từng item có trong snap, push vào trong list items
+          snap.forEach((item: any) =>
+            items.push({
+              id: item.id,
+              ...item.data(),
+            }),
+          );
+          setAppointmentList(items);
+        }
+      })
+      .catch(error => {
+        console.log('Lỗi khi load dữ appointment' + error.message);
+      });
+  };
 
   return (
     <ContainerComponent>
@@ -136,32 +158,32 @@ const AppointmentScreen = (props: any) => {
         size={25}
         font={fontFamilies.semiBold}
         color="#0B8FAC"
-        textAlign="center"
+        textAlign='center'
       />
 
       <Section styles={{marginTop: 10}}>
-        <Row justifyContent="space-between">
+        <Row justifyContent='space-between'>
           <TouchableOpacity
             style={[styles.filterButton, showComplete && styles.buttonActive]}
             onPress={handleCompleteButtonClick}>
-            <TextComponent
-              text="Complete"
-              size={14}
-              color="#ffffff"
-              font="Poppins-Medium"
-            />
+            <TextComponent 
+             text= "Complete"
+             size = {14}
+             color='#ffffff'
+             font = 'Poppins-Medium'
+             />
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={[styles.filterButton, showUpcoming && styles.buttonActive]}
-            onPress={handleUpcomingButtonClick}>
-            <TextComponent
-              text="Upcoming"
-              size={14}
-              color="#ffffff"
-              font="Poppins-Medium"
+          style={[styles.filterButton, showUpcoming && styles.buttonActive]}
+          onPress={handleUpcomingButtonClick}>
+          <TextComponent
+            text='Upcoming'
+            size={14}
+            color='#ffffff'
+            font = 'Poppins-Medium'
             />
-          </TouchableOpacity>
+        </TouchableOpacity>
 
           <TouchableOpacity
             style={[styles.filterButton, showCancel && styles.buttonActive]}
@@ -172,7 +194,7 @@ const AppointmentScreen = (props: any) => {
               color="#ffffff"
               font="Poppins-Medium"
             />
-          </TouchableOpacity>
+        </TouchableOpacity>
         </Row>
       </Section>
 
@@ -258,7 +280,8 @@ const AppointmentScreen = (props: any) => {
           showsVerticalScrollIndicator={false}
         />
       )}
-    </ContainerComponent>
+
+</ContainerComponent>
   );
 };
 

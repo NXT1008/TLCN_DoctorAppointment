@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import MainNavigator from './src/routers/MainNavigator';
 import AuthNavigator from './src/routers/Navigator/AuthNavigator';
