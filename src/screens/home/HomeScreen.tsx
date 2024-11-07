@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   ScrollView,
   Dimensions,
+  ActivityIndicator,
 } from 'react-native';
 import React, {useCallback, useEffect, useState} from 'react';
 import {
@@ -35,7 +36,6 @@ const HomeScreen = (props: any) => {
   const {width, height} = Dimensions.get('window');
   const [listSpec, setListSpecialization] = useState<Specialization[]>([]);
   const [listDoctor, setListDoctor] = useState<Doctor[]>([]);
-
   const [patient, setPatient] = useState<Patient>();
   const [loadingSpecialization, setLoadingSpecialization] = useState(false);
   const [loadingDoctors, setLoadingDoctors] = useState(false);
@@ -64,6 +64,7 @@ const HomeScreen = (props: any) => {
   };
 
   const getAllSpecializations = async () => {
+    setLoadingSpecialization(true);
     await firestore()
       .collection('specializations')
       .get()
@@ -79,14 +80,17 @@ const HomeScreen = (props: any) => {
             ...item.data(),
           });
         });
+        setLoadingSpecialization(false);
         setListSpecialization(items);
       })
       .catch(error => {
         console.error('Error fetching specializations:', error); // Log lỗi
+        setLoadingSpecialization(false);
       });
   };
 
   const getAllDoctors = async () => {
+    setLoadingDoctors(true);
     await firestore()
       .collection('doctors')
       .orderBy('ratingAverage', 'desc')
@@ -104,10 +108,12 @@ const HomeScreen = (props: any) => {
             ...item.data(),
           });
         });
+        setLoadingDoctors(false);
         setListDoctor(items);
       })
       .catch(error => {
         console.error('Error fetching doctor:', error); // Log lỗi
+        setLoadingDoctors(false);
       });
   };
 
@@ -130,7 +136,7 @@ const HomeScreen = (props: any) => {
               <Space width={15} />
               <View>
                 <TextComponent
-                  text="Hi, welcome back!"
+                  text="Hi, how are you today?"
                   font={fontFamilies.regular}
                   color="#00000066"
                 />
@@ -197,15 +203,19 @@ const HomeScreen = (props: any) => {
               />
             </Row>
             <Space height={10} />
-            {listDoctor.slice(0, 5).map((item, index) => (
-              <DoctorCard
-                key={index}
-                data={item}
-                onPress={() => {
-                  props.navigation.navigate('DoctorDetail', { doctor: item });
-                }}
-              />
-            ))}
+            {loadingDoctors ? (
+              <ActivityIndicator color={'#000'} />
+            ) : (
+              listDoctor.slice(0, 5).map((item, index) => (
+                <DoctorCard
+                  key={index}
+                  data={item}
+                  onPress={() => {
+                    props.navigation.navigate('DoctorDetail', {doctor: item});
+                  }}
+                />
+              ))
+            )}
           </Section>
         </View>
       </ContainerComponent>
