@@ -5,8 +5,9 @@ import {
   TouchableOpacity,
   ScrollView,
   Dimensions,
+  ActivityIndicator,
 } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {
   Card,
   Col,
@@ -18,54 +19,52 @@ import {
   TextComponent,
 } from '../../components';
 import auth from '@react-native-firebase/auth';
-import { fontFamilies } from '../../constants/fontFamilies';
+import {fontFamilies} from '../../constants/fontFamilies';
 import DoctorCard from './components/DoctorCard';
 import Swiper from 'react-native-swiper';
 import SwiperOne from './components/SwiperOne';
 import SpecializationComponent from './components/SpecializationComponent';
-import { Message, Messages1, Messages3 } from 'iconsax-react-native';
+import {Message, Messages1, Messages3} from 'iconsax-react-native';
 import firestore from '@react-native-firebase/firestore';
-import { Specialization } from '../../models/Specialization';
-import { Doctor } from '../../models/Doctor';
-import { Patient } from '../../models/Patient';
+import {Specialization} from '../../models/Specialization';
+import {Doctor} from '../../models/Doctor';
+import {Patient} from '../../models/Patient';
+import {useFocusEffect} from '@react-navigation/native';
 
 const HomeScreen = (props: any) => {
   const user = auth().currentUser;
-  const { width, height } = Dimensions.get('window');
-  const [listSpecialization, setListSpecialization] = useState<
-    Specialization[]
-  >([]);
+  const {width, height} = Dimensions.get('window');
+  const [listSpec, setListSpecialization] = useState<Specialization[]>([]);
   const [listDoctor, setListDoctor] = useState<Doctor[]>([]);
-
   const [patient, setPatient] = useState<Patient>();
+  const [loadingSpecialization, setLoadingSpecialization] = useState(false);
+  const [loadingDoctors, setLoadingDoctors] = useState(false);
 
-  useEffect(() => {
-    const getCurrentPatient = async () => {
-      await firestore()
-        .collection('patients')
-        .doc(user?.uid)
-        .get()
-        .then(snap => {
-          if (!snap.exists) {
-            console.log('No such document!');
-          } else {
-            const patient = snap.data() as Patient;
-            setPatient(patient);
-          }
-        })
-        .catch(e => {
-          console.log(e);
-        });
-    };
-    getCurrentPatient();
-  }, [patient]);
-
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     getAllSpecializations();
+  //     getAllDoctors();
+  //     getPatientInfo();
+  //   }, []),
+  // );
   useEffect(() => {
     getAllSpecializations();
     getAllDoctors();
+    getPatientInfo();
   }, []);
 
+  const getPatientInfo = async () => {
+    await firestore()
+      .collection('patients')
+      .doc(user?.uid)
+      .get()
+      .then(snapshot => {
+        setPatient(snapshot.data() as Patient);
+      });
+  };
+
   const getAllSpecializations = async () => {
+    setLoadingSpecialization(true);
     await firestore()
       .collection('specializations')
       .get()
@@ -81,16 +80,21 @@ const HomeScreen = (props: any) => {
             ...item.data(),
           });
         });
+        setLoadingSpecialization(false);
         setListSpecialization(items);
       })
       .catch(error => {
         console.error('Error fetching specializations:', error); // Log lỗi
+        setLoadingSpecialization(false);
       });
   };
 
   const getAllDoctors = async () => {
+    setLoadingDoctors(true);
     await firestore()
       .collection('doctors')
+      .orderBy('ratingAverage', 'desc')
+      .limit(5)
       .get()
       .then(snap => {
         if (snap.empty) {
@@ -104,16 +108,18 @@ const HomeScreen = (props: any) => {
             ...item.data(),
           });
         });
+        setLoadingDoctors(false);
         setListDoctor(items);
       })
       .catch(error => {
         console.error('Error fetching doctor:', error); // Log lỗi
+        setLoadingDoctors(false);
       });
   };
 
   return (
     <>
-      <ContainerComponent isScroll style={{ marginTop: -16 }}>
+      <ContainerComponent isScroll style={{marginTop: -16}}>
         <View>
           <Row
             styles={{
@@ -125,22 +131,17 @@ const HomeScreen = (props: any) => {
             <Row>
               <Image
                 source={require('../../assets/IconTab/profile.png')}
-                style={{ width: 50, height: 50 }}
+                style={{width: 50, height: 50}}
               />
               <Space width={15} />
               <View>
                 <TextComponent
-                  text="Hi, welcome back!"
+                  text="Hi, how are you today?"
                   font={fontFamilies.regular}
                   color="#00000066"
                 />
                 <TextComponent
-                  text={`${patient
-                      ? patient.nickname
-                        ? patient.nickname
-                        : patient.name
-                      : ''
-                    }`}
+                  text={`${patient?.name}`}
                   font={fontFamilies.semiBold}
                 />
               </View>
@@ -148,12 +149,12 @@ const HomeScreen = (props: any) => {
             <TouchableOpacity>
               <Image
                 source={require('../../assets/IconTab/notification.png')}
-                style={{ width: 25, height: 25 }}
+                style={{width: 25, height: 25}}
               />
             </TouchableOpacity>
           </Row>
 
-          <Swiper height={270} style={{ marginTop: 20 }} activeDotColor="#1399ba">
+          <Swiper height={270} style={{marginTop: 20}} activeDotColor="#1399ba">
             <SwiperOne />
             <SwiperOne />
             <SwiperOne />
@@ -176,9 +177,15 @@ const HomeScreen = (props: any) => {
           <Section>
             <Row>
               <ScrollView horizontal>
-                {listSpecialization.slice(0, 5).map((item, index) => (
-                  <SpecializationComponent key={index} data={item} />
-                ))}
+                {loadingSpecialization ? (
+                  <ActivityIndicator color={'#000'} />
+                ) : (
+                  listSpec
+                    .slice(0, 5)
+                    .map((item, index) => (
+                      <SpecializationComponent key={index} data={item} />
+                    ))
+                )}
               </ScrollView>
             </Row>
           </Section>
@@ -196,15 +203,19 @@ const HomeScreen = (props: any) => {
               />
             </Row>
             <Space height={10} />
-            {listDoctor.slice(0, 5).map((item, index) => (
-              <DoctorCard
-                key={index}
-                data={item}
-                onPress={() => {
-                  props.navigation.navigate('DoctorDetail', { doctor: item });
-                }}
-              />
-            ))}
+            {loadingDoctors ? (
+              <ActivityIndicator color={'#000'} />
+            ) : (
+              listDoctor.slice(0, 5).map((item, index) => (
+                <DoctorCard
+                  key={index}
+                  data={item}
+                  onPress={() => {
+                    props.navigation.navigate('DoctorDetail', {doctor: item});
+                  }}
+                />
+              ))
+            )}
           </Section>
         </View>
       </ContainerComponent>

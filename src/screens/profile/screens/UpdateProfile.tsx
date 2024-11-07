@@ -7,6 +7,7 @@ import {
   Row,
   Section,
   Select,
+  Space,
   TextComponent,
 } from '../../../components';
 import {fontFamilies} from '../../../constants/fontFamilies';
@@ -23,6 +24,7 @@ const UpdateProfile = (props: any) => {
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [gender, setGender] = useState('');
+  const [address, setAddress] = useState('');
   const [infoUpdate, setInfoUpdate] = useState('');
   const [isShowModal, setIsShowModal] = useState(false);
   const [isError, setIsError] = useState(false);
@@ -34,6 +36,7 @@ const UpdateProfile = (props: any) => {
       setEmail(patient.email);
       setPhone(patient.phone);
       setGender(patient.gender);
+      setAddress(patient.address ? patient.address : '');
     }
   }, []);
 
@@ -43,16 +46,16 @@ const UpdateProfile = (props: any) => {
     const updatedPatient: Patient = {
       patientId: oldPatient.patientId,
       name: name,
-      nickname: nickname,
       email: email,
       phone: phone,
       gender: gender,
-      image: oldPatient.image,
+      image: oldPatient.image,    
+      address: address,
     };
     await firestore()
       .collection('patients')
       .doc(updatedPatient.patientId)
-      .set(updatedPatient)
+      .update(updatedPatient)
       .then(() => {
         setInfoUpdate('Update success');
         setIsError(false);
@@ -89,7 +92,7 @@ const UpdateProfile = (props: any) => {
           label="Full Name"
           labelStyleProps={{
             paddingHorizontal: 5,
-            fontFamily: fontFamilies.regular,
+            fontFamily: fontFamilies.semiBold,
             fontSize: 14,
           }}
           styles={{marginTop: -5, marginBottom: 10, borderRadius: 15}}
@@ -103,27 +106,10 @@ const UpdateProfile = (props: any) => {
           color="#F5F5F5"
         />
         <Input
-          label="Nick name"
-          labelStyleProps={{
-            paddingHorizontal: 5,
-            fontFamily: fontFamilies.regular,
-            fontSize: 14,
-          }}
-          styles={{marginTop: -5, marginBottom: 10, borderRadius: 15}}
-          value={nickname}
-          onChange={setNickname}
-          placeholder="Enter your nick name"
-          placeholderColor="gray"
-          inputStyles={{fontFamily: fontFamilies.regular, fontSize: 14}}
-          prefix
-          bordered={false}
-          color="#F5F5F5"
-        />
-        <Input
           label="Email"
           labelStyleProps={{
             paddingHorizontal: 5,
-            fontFamily: fontFamilies.regular,
+            fontFamily: fontFamilies.semiBold,
             fontSize: 14,
           }}
           styles={{marginTop: -5, marginBottom: 10, borderRadius: 15}}
@@ -140,7 +126,7 @@ const UpdateProfile = (props: any) => {
           label="Phone"
           labelStyleProps={{
             paddingHorizontal: 5,
-            fontFamily: fontFamilies.regular,
+            fontFamily: fontFamilies.semiBold,
             fontSize: 14,
           }}
           styles={{marginTop: -5, marginBottom: 10, borderRadius: 15}}
@@ -157,7 +143,7 @@ const UpdateProfile = (props: any) => {
           label="Gender"
           labelStyleProps={{
             paddingHorizontal: 5,
-            fontFamily: fontFamilies.regular,
+            fontFamily: fontFamilies.semiBold,
             fontSize: 14,
           }}
           styles={{marginTop: -5, marginBottom: 10, borderRadius: 15}}
@@ -174,12 +160,12 @@ const UpdateProfile = (props: any) => {
           label="Address"
           labelStyleProps={{
             paddingHorizontal: 5,
-            fontFamily: fontFamilies.regular,
+            fontFamily: fontFamilies.semiBold,
             fontSize: 14,
           }}
           styles={{marginTop: -5, marginBottom: 10, borderRadius: 15}}
-          value=""
-          onChange={() => {}}
+          value={address}
+          onChange={setAddress}
           placeholder="Enter your address"
           placeholderColor="gray"
           inputStyles={{fontFamily: fontFamilies.regular, fontSize: 14}}
@@ -187,6 +173,7 @@ const UpdateProfile = (props: any) => {
           bordered={false}
           color="#F5F5F5"
         />
+        <Space height={100} /> 
         <Button
           title="Update"
           color="#0B8FAC"

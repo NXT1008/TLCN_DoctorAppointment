@@ -6,7 +6,7 @@ import {
   Section,
   TextComponent,
 } from '../../../components';
-import {ArrowLeft2} from 'iconsax-react-native';
+import {ArrowLeft2, ArrowRight2} from 'iconsax-react-native';
 import {fontFamilies} from '../../../constants/fontFamilies';
 import i18n, {changeLanguage} from 'i18next';
 import ToggleSwitch from '../../../components/ToggleSwitch';
@@ -104,6 +104,19 @@ const SettingScreen = (props: any) => {
             }}
           />
         </Row>
+        <TouchableOpacity
+          onPress={() => {
+            props.navigation.navigate('ChangePassword');
+          }}>
+          <Row justifyContent="space-between" styles={{paddingVertical: 10}}>
+            <TextComponent
+              text="Change Password"
+              size={16}
+              font={fontFamilies.semiBold}
+            />
+            <ArrowRight2 color="#000" size={22} />
+          </Row>
+        </TouchableOpacity>
       </Section>
     </ContainerComponent>
   );

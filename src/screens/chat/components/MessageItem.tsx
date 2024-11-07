@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
+import { fontFamilies } from '../../../constants/fontFamilies';
 
 interface MessageItemProps {
   name: string;
@@ -49,30 +50,36 @@ const styles = StyleSheet.create({
     marginLeft: 15,
   },
   name: {
-    fontSize: 16,
-    fontWeight: 'bold',
+    fontSize: 14,
+    color: '#0d9e81',
+    fontFamily: fontFamilies.medium,
   },
   message: {
-    fontSize: 14,
+    fontSize: 12,
     color: '#777',
+    fontFamily: fontFamilies.regular,
   },
   messageMeta: {
     alignItems: 'flex-end',
   },
   time: {
-    fontSize: 12,
+    fontSize: 10,
     color: '#999',
+    fontFamily: fontFamilies.regular,
   },
   unreadBadge: {
     backgroundColor: '#21a691',
-    borderRadius: 15,
-    paddingVertical: 2,
-    paddingHorizontal: 8,
+    borderRadius: 100,
+    height: 20,
+    width: 20,
     marginTop: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   unreadText: {
     color: '#fff',
     fontSize: 12,
+    fontFamily: fontFamilies.regular,
   },
 });
 

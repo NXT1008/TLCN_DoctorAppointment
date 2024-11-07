@@ -1,28 +1,27 @@
-import DateTimePicker from '@react-native-community/datetimepicker'
-import { useState } from 'react';
-import { Section, TextComponent } from '.';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import {useState} from 'react';
+import {Section, TextComponent} from '.';
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity } from 'react-native';
+import {StyleSheet, Text, TouchableOpacity} from 'react-native';
 
 const DateTime = () => {
-    const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-    const [mode, setMode] = useState<any>('date');
-    const [show, setShow] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [mode, setMode] = useState<any>('date');
+  const [show, setShow] = useState(false);
 
-    const handleDateChange = (event: any, selectedDate: Date | undefined) => {
-        const currentDate = new Date();
-        if (selectedDate && selectedDate >= currentDate) {
-            setSelectedDate(selectedDate);
-            setMode('closed');
-            setShow(false)
-        }
-    };
+  const handleDateChange = (event: any, selectedDate: Date | undefined) => {
+    const currentDate = new Date();
+    if (selectedDate && selectedDate >= currentDate) {
+      setSelectedDate(selectedDate);
+      setMode('closed');
+      setShow(false);
+    }
+  };
 
-
-    const showMode = () => {
-        setMode('date');
-        setShow(true)
-    };
+  const showMode = () => {
+    setMode('date');
+    setShow(true);
+  };
 
     const todayMidnight = new Date();
     todayMidnight.setHours(0, 0, 0, 0);
@@ -55,21 +54,21 @@ const DateTime = () => {
     )
 }
 
-export default DateTime
+export default DateTime;
 const styles = StyleSheet.create({
-    dateSection: {
-        marginBottom: 20,
-    },
-    dateBox: {
-        alignItems: 'center',
-        padding: 10,
-        borderRadius: 8,
-        borderWidth: 1,
-        borderColor: '#ddd',
-    },
-    dateText: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: '#000',
-    }
-})
+  dateSection: {
+    marginBottom: 20,
+  },
+  dateBox: {
+    alignItems: 'center',
+    padding: 10,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#ddd',
+  },
+  dateText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#000',
+  },
+});

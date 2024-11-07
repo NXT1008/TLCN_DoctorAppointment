@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { fontFamilies } from '../../../constants/fontFamilies';
 
 interface MessageBubbleProps {
   message: string;
@@ -30,9 +31,13 @@ const styles = StyleSheet.create({
   },
   sentText: {
     color: '#fff',
+    fontFamily: fontFamilies.regular,
+    fontSize: 13,
   },
   receivedText: {
     color: '#000',
+    fontFamily: fontFamilies.regular,
+    fontSize: 13,
   },
 });
 

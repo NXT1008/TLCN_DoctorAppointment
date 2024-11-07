@@ -1,135 +1,292 @@
-import React from 'react';
-import { View, Text, TextInput, ScrollView, StyleSheet, Image, FlatList, KeyboardAvoidingView, Platform, Dimensions, TouchableOpacity, Alert } from 'react-native';
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faSearch, faMicrophone } from '@fortawesome/free-solid-svg-icons';
+import React, {useEffect, useState} from 'react';
+import {
+  View,
+  Text,
+  TextInput,
+  ScrollView,
+  StyleSheet,
+  Image,
+  FlatList,
+  KeyboardAvoidingView,
+  Platform,
+  Dimensions,
+  TouchableOpacity,
+  Alert,
+} from 'react-native';
+import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
+import {faSearch, faMicrophone} from '@fortawesome/free-solid-svg-icons';
 import ActiveUserAvatar from './components/ActiveUser';
 import MessageItem from './components/MessageItem';
-import { Row, Section } from '../../components';
-import { ArrowLeft2 } from 'iconsax-react-native';
-import { useNavigation } from '@react-navigation/native';
+import {Row, Section} from '../../components';
+import {ArrowLeft2} from 'iconsax-react-native';
+import {fontFamilies} from '../../constants/fontFamilies';
+import firestore from '@react-native-firebase/firestore';
+import auth from '@react-native-firebase/auth';
+import {Conversation} from '../../models/chats/chat';
 
 const activeUsers = [
-    { id: '1', name: 'Dr.Upul', avatar: require('../../assets/images/doctor.png') },
-    { id: '2', name: 'Dr.Silva', avatar: require('../../assets/images/doctor.png') },
-    { id: '3', name: 'Dr.Pawani', avatar: require('../../assets/images/doctor.png') },
-    { id: '4', name: 'Dr.Rayan', avatar: require('../../assets/images/doctor.png') },
+  {id: '1', name: 'Dr.Upul', avatar: require('../../assets/images/doctor.png')},
+  {
+    id: '2',
+    name: 'Dr.Silva',
+    avatar: require('../../assets/images/doctor.png'),
+  },
+  {
+    id: '3',
+    name: 'Dr.Pawani',
+    avatar: require('../../assets/images/doctor.png'),
+  },
+  {
+    id: '4',
+    name: 'Dr.Rayan',
+    avatar: require('../../assets/images/doctor.png'),
+  },
+  {
+    id: '5',
+    name: 'Dr.Aaaa',
+    avatar: require('../../assets/images/doctor.png'),
+  },
 ];
 
 const messages = [
-    { id: '1', name: 'Dr.Upul', avatar: require('../../assets/images/doctor.png'), message: 'Hi, how are you?', time: '12.50', unread: 2 },
-    { id: '2', name: 'Dr.Silva', avatar: require('../../assets/images/doctor.png'), message: 'Alo mot hai ba bon nam sau', time: '12.50', unread: 3 },
-    { id: '3', name: 'Dr.Pawani', avatar: require('../../assets/images/doctor.png'), message: 'Worem consectetur...', time: '12.50', unread: 0 },
-    { id: '4', name: 'Dr.Rayan', avatar: require('../../assets/images/doctor.png'), message: 'Worem consectetur...', time: '12.50', unread: 0 },
+  {
+    id: '1',
+    name: 'Dr.Upul',
+    avatar: require('../../assets/images/doctor.png'),
+    message: 'Hi, how are you?',
+    time: '12.50',
+    unread: 2,
+  },
+  {
+    id: '2',
+    name: 'Dr.Silva',
+    avatar: require('../../assets/images/doctor.png'),
+    message: 'Alo mot hai ba bon nam sau',
+    time: '12.50',
+    unread: 3,
+  },
+  {
+    id: '3',
+    name: 'Dr.Pawani',
+    avatar: require('../../assets/images/doctor.png'),
+    message: 'Worem consectetur...',
+    time: '12.50',
+    unread: 0,
+  },
+  {
+    id: '4',
+    name: 'Dr.Rayan',
+    avatar: require('../../assets/images/doctor.png'),
+    message: 'Worem consectetur...',
+    time: '12.50',
+    unread: 0,
+  },
 ];
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
 const ChatScreen = (prop: any) => {
-    const {navigation} = prop 
+  const {navigation} = prop;
+  const patientId = auth().currentUser?.uid;
+  const [conversations, setConversations] = useState<any[]>([]);
 
-    return (
-        <KeyboardAvoidingView
-            style={styles.container}>
-            <View >
-                <Section styles={styles.header}>
-                    <Row justifyContent='space-around'>
-                        <ArrowLeft2 color="#000" onPress={() => navigation.goBack()} />
-                        <Text style={styles.headerText}>Message</Text>
-                    </Row>
-                </Section>
+  useEffect(() => {
+    const unsubscribe = firestore()
+      .collection('conversations')
+      .where('patientId', '==', patientId)
+      .orderBy('lastMessageTimestamp', 'desc')
+      .onSnapshot(async snapshot => {
+        if (!snapshot) return;
 
-                <View style={styles.searchContainer}>
-                    <FontAwesomeIcon icon={faSearch} size={20} color="#999" style={styles.searchIcon} />
-                    <TextInput placeholder="Search a Doctor" style={styles.searchInput} />
-                    <FontAwesomeIcon icon={faMicrophone} size={20} color="#999" style={styles.microphoneIcon} />
-                </View>
+        // Sử dụng Promise.all để đợi toàn bộ dữ liệu bác sĩ được tải
+        const conversationsPromises = snapshot.docs.map(async doc => {
+          const data = doc.data();
+          if (!data) return null;
 
-                <Text style={styles.activeNowText}>Active Now</Text>
-                <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.activeNowContainer}>
-                    {activeUsers.map(user => (
-                        <ActiveUserAvatar key={user.id} name={user.name} avatar={user.avatar} />
-                    ))}
-                </ScrollView>
+          const doctorId = data.doctorId;
+          if (!doctorId) return null;
 
+          try {
+            const doctorDoc = await firestore()
+              .collection('doctors')
+              .doc(doctorId)
+              .get();
+            const doctorData = doctorDoc.data();
 
-                <Text style={styles.messagesText}>Messages</Text>
-                <FlatList
-                    data={messages}
-                    renderItem={({ item }) => (
-                        <TouchableOpacity onPress={()=> prop.navigation.navigate('MainChatScreen')}>
-                            <MessageItem
-                                name={item.name}
-                                avatar={item.avatar}
-                                message={item.message}
-                                time={item.time}
-                                unread={item.unread}
-                            />
-                        </TouchableOpacity>
+            return {
+              conversationId: doc.id,
+              doctorName: doctorData?.name || 'Unknown Doctor',
+              lastMessage: data.lastMessage || '',
+              timestamp: data.lastMessageTimestamp?.toDate() || new Date(),
+              avatar: require('../../assets/images/doctor.png'), // Default avatar
+              unReadCount: data.unReadCount || 0,
+            };
+          } catch (error) {
+            console.error('Error loading doctor data:', error);
+            return null;
+          }
+        });
 
-                    )}
-                    keyExtractor={(item) => item.id}
-                />
-            </View>
-        </KeyboardAvoidingView>
+        // Lọc bỏ các hội thoại không hợp lệ
+        const loadedConversations = (
+          await Promise.all(conversationsPromises)
+        ).filter(Boolean);
+        setConversations(loadedConversations);
+      });
 
+    return () => unsubscribe();
+  }, [patientId, conversations]);
 
+  const handleConversationPress = async (conversationId: string) => {
+    await firestore()
+      .collection('conversations')
+      .doc(conversationId)
+      .update({unReadCount: 0});
+
+    // Cập nhật trạng thái cục bộ để hiển thị trên UI
+    setConversations(prevConversations =>
+      prevConversations.map(conversation =>
+        conversation.conversationId === conversationId
+          ? {...conversation, unread: 0}
+          : conversation,
+      ),
     );
+
+    navigation.navigate('MainChatScreen', {
+      conv_Id: conversationId,
+    });
+  };
+
+  return (
+    <KeyboardAvoidingView style={styles.container}>
+      <View>
+        <Section styles={styles.header}>
+          <Row justifyContent="space-around">
+            <ArrowLeft2 color="#000" onPress={() => navigation.goBack()} />
+            <Text style={styles.headerText}>Message</Text>
+          </Row>
+        </Section>
+
+        <View style={styles.searchContainer}>
+          <FontAwesomeIcon
+            icon={faSearch}
+            size={20}
+            color="#999"
+            style={styles.searchIcon}
+          />
+          <TextInput
+            placeholder="Search a Doctor"
+            style={styles.searchInput}
+            placeholderTextColor="gray"
+          />
+          <FontAwesomeIcon
+            icon={faMicrophone}
+            size={20}
+            color="#999"
+            style={styles.microphoneIcon}
+          />
+        </View>
+
+        <Text style={styles.activeNowText}>Active Now</Text>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={styles.activeNowContainer}>
+          {activeUsers.map(user => (
+            <ActiveUserAvatar
+              key={user.id}
+              name={user.name}
+              avatar={user.avatar}
+            />
+          ))}
+        </ScrollView>
+
+        <Text style={styles.messagesText}>Messages</Text>
+        <FlatList
+          data={conversations}
+          renderItem={({item}) => (
+            <TouchableOpacity
+              onPress={() => handleConversationPress(item.conversationId)}>
+              <MessageItem
+                name={item.doctorName}
+                avatar={item.avatar}
+                message={item.lastMessage}
+                time={
+                  item.timestamp
+                    ? new Date(item.timestamp).toLocaleTimeString([], {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      })
+                    : ''
+                }
+                unread={item.unReadCount}
+              />
+            </TouchableOpacity>
+          )}
+          keyExtractor={item => item.conversationId}
+        />
+      </View>
+    </KeyboardAvoidingView>
+  );
 };
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#fff',
-        padding: 20,
-    },
-    header: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 10,
-    },
-    headerText: {
-        flex: 1,
-        textAlign: 'center',
-        fontSize: 18,
-        color: '#21a691',
-        alignContent: 'center',
-        justifyContent: 'center',
-        alignItems: 'center',
-        fontFamily: 'Poppins-Bold'
-    },
-    searchContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: '#f2f2f2',
-        borderRadius: 10,
-        paddingVertical: 10,
-        paddingHorizontal: 10,
-        marginBottom: 20,
-    },
-    searchIcon: {
-        marginRight: 10,
-    },
-    searchInput: {
-        flex: 1,
-        fontSize: 16,
-    },
-    microphoneIcon: {
-        marginLeft: 10,
-    },
-    activeNowText: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        marginBottom: 10,
-    },
-    activeNowContainer: {
-        marginBottom: 0,
-        height: screenHeight * 0.15
-    },
-    messagesText: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        marginBottom: 10,
-        top: -10
-    },
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    padding: 20,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  headerText: {
+    flex: 1,
+    textAlign: 'center',
+    fontSize: 18,
+    color: '#21a691',
+    alignContent: 'center',
+    justifyContent: 'center',
+    alignItems: 'center',
+    fontFamily: 'Poppins-Bold',
+  },
+  searchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#f2f2f2',
+    borderRadius: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 10,
+    marginBottom: 20,
+  },
+  searchIcon: {
+    marginRight: 10,
+  },
+  searchInput: {
+    flex: 1,
+    fontSize: 16,
+    fontFamily: fontFamilies.regular,
+    color: 'gray',
+  },
+  microphoneIcon: {
+    marginLeft: 10,
+  },
+  activeNowText: {
+    fontSize: 16,
+    marginBottom: 10,
+    fontFamily: fontFamilies.semiBold,
+    color: '#000',
+  },
+  activeNowContainer: {
+    marginBottom: 0,
+    height: screenHeight * 0.15,
+  },
+  messagesText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    top: -10,
+  },
 });
 
 export default ChatScreen;

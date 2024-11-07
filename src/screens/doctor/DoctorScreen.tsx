@@ -1,6 +1,16 @@
-import {View, Text, Image, TouchableOpacity} from 'react-native';
-import React, {useEffect, useState} from 'react';
 import {
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  ActivityIndicator,
+  FlatList,
+  Dimensions,
+  ScrollView,
+} from 'react-native';
+import React, {useEffect, useState, useMemo} from 'react';
+import {
+  Button,
   ContainerComponent,
   Dropdown,
   Input,
@@ -19,54 +29,106 @@ import RadioGroup from '../../components/RadioGroup';
 import {Doctor} from '../../models/Doctor';
 import firestore from '@react-native-firebase/firestore';
 import {Specialization} from '../../models/Specialization';
+import _ from 'lodash';
+import SpecializationComponent from './components/SpecializationComponent';
+import SpecializationModalComponent from './components/SpecializationModal';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import { colors } from '../../constants/colors';
 
 const DoctorScreen = (props: any) => {
   const [doctorList, setDoctorList] = useState<Doctor[]>([]);
+  const [loadingDoctors, setLoadingDoctors] = useState(false);
+
+  const {width, height} = Dimensions.get('window');
+  const [listSpec, setListSpecialization] = useState<Specialization[]>([]);
+  const [loadingSpecialization, setLoadingSpecialization] = useState(false);
+  const [selectedSpecialization, setSelectedSpecialization] = useState('All');
+  const [selectedSpecializationName, setSelectedSpecializationName] =
+    useState('All');
+  const [isSpecializationModalVisible, setIsSpecializationModalVisible] =
+    useState(false);
+
+  const [search, setsearch] = useState('');
+  const [filterDoctors, setFilterDoctors] = useState<Doctor[]>([]);
 
   useEffect(() => {
-    getAllDoctors();
+    const unsubscribe = getAllDoctors();
+    getAllSpecializations();
+    return () => {
+      if (unsubscribe) unsubscribe();
+    };
   }, []);
 
-  /// Dropdown menu
-  const [selected, setSelected] = useState<MenuItem>();
-  const menuItems: MenuItem[] = [
-    {key: '1', label: 'Item 1', icon: <Home color="black" />, disable: false},
-    {key: '2', label: 'Item 2', icon: <Clock color="black" />, disable: false},
-    {key: '3', label: 'Item 3', icon: <User color="black" />, disable: false},
-    {key: '4', label: 'Item 3', icon: <User color="black" />, disable: false},
-    {key: '5', label: 'Item 3', icon: <User color="black" />, disable: false},
-    {key: '6', label: 'Item 3', icon: <User color="black" />, disable: false},
-    {key: '7', label: 'Item 3', icon: <User color="black" />, disable: false},
-  ];
+  const filteredDoctors = useMemo(() => {
+    let filtered = doctorList;
 
-  const getAllDoctors = async () => {
-    await firestore()
+    // Filter by search
+    if (search) {
+      filtered = filtered.filter(doctor =>
+        doctor.name.toLowerCase().includes(search.toLowerCase()),
+      );
+    }
+
+    // Filter by specialization
+    if (selectedSpecialization !== 'All') {
+      filtered = filtered.filter(
+        doctor => doctor.specializationId === selectedSpecialization,
+      );
+    }
+
+    return filtered;
+  }, [search, doctorList, selectedSpecialization]);
+
+  useEffect(() => {
+    setFilterDoctors(filteredDoctors);
+  }, [filteredDoctors]);
+
+  const getAllDoctors = () => {
+    setLoadingDoctors(true);
+    return firestore()
       .collection('doctors')
-      .get()
-      .then(snap => {
-        if (snap.empty) {
-          console.log('Không có bác sĩ');
-          return;
-        }
-        const items: Doctor[] = [];
-        snap.forEach((item: any) => {
-          items.push({
-            id: item.id,
-            ...item.data(),
+      .onSnapshot(
+        snap => {
+          if (snap.empty) {
+            setDoctorList([]);
+            setFilterDoctors([]);
+            setLoadingDoctors(false);
+            return;
+          }
+          const items: Doctor[] = [];
+          snap.forEach((item: any) => {
+            items.push({
+              doctorId: item.id, // Changed from id to doctorId to match DoctorComponent
+              ...item.data(),
+            });
           });
-        });
-        setDoctorList(items);
-      })
-      .catch(error => {
-        console.error('Error fetching doctor:', error); // Log lỗi
-      });
+          setDoctorList(items);
+          setFilterDoctors(items);
+          setLoadingDoctors(false);
+        },
+        error => {
+          console.log(error);
+          setLoadingDoctors(false);
+        },
+      );
   };
 
-  const handleMenuClick = (key: string | number) => {
-    const item = menuItems.find(menuItem => menuItem.key === key); // Tìm menu item dựa trên key
-    if (item) {
-      setSelected(item); // Cập nhật selected với menu item đã tìm thấy
+  const getAllSpecializations = async () => {
+    setLoadingSpecialization(true);
+    try {
+      const snap = await firestore().collection('specializations').get();
+      const items: Specialization[] = [];
+      snap.forEach((item: any) => {
+        items.push({
+          specializationId: item.id, // Changed from id to specializationId to match model
+          ...item.data(),
+        });
+      });
+      setListSpecialization(items);
+    } catch (error) {
+      console.log(error);
     }
+    setLoadingSpecialization(false);
   };
 
   return (
@@ -84,9 +146,12 @@ const DoctorScreen = (props: any) => {
         />
         <Space height={10} />
         <Input
-          value=""
-          placeholder="Search"
-          onChange={() => {}}
+          value={search}
+          placeholder="Enter doctor name"
+          onChange={val => {
+            setsearch(val);
+          }}
+          inputStyles={{fontFamily: fontFamilies.regular}}
           prefix
           affix={
             <TouchableOpacity>
@@ -97,46 +162,58 @@ const DoctorScreen = (props: any) => {
           color="#f4f6f9"
         />
       </Section>
+
+      <View>
+        {/* Modal */}
+        <SpecializationModalComponent
+          visible={isSpecializationModalVisible}
+          specializations={listSpec}
+          onClose={() => setIsSpecializationModalVisible(false)}
+          onSelectSpecialization={specialization => {
+            setSelectedSpecialization(specialization.specializationId);
+            setSelectedSpecializationName(specialization.name);
+            setIsSpecializationModalVisible(false);
+          }}
+        />
+      </View>
+
+      {/* Specialization */}
       <Section>
-        <Row justifyContent="space-between" styles={{paddingHorizontal: 10}}>
+        <Row justifyContent="space-between">
           <TextComponent
-            text="Choose Specialization"
+            text="Doctor Speciality"
+            size={18}
             font={fontFamilies.semiBold}
-            size={14}
           />
-          <Dropdown
-            dropdownStyleProps={{backgroundColor: 'pink'}}
-            items={menuItems}
-            onMenuClick={handleMenuClick}
-            loading={false}
-            placement="bottomRight">
-            {selected?.label ? (
-              <TextComponent
-                text={selected.label.toString()}
-                size={12}
-                font={fontFamilies.regular}
-              />
-            ) : (
-              <TextComponent
-                text="Select"
-                size={12}
-                font={fontFamilies.regular}
-              /> // Hoặc có thể hiển thị một placeholder nào đó
-            )}
-          </Dropdown>
+          <TouchableOpacity onPress={() => setIsSpecializationModalVisible(true)}>
+            <TextComponent text="See All" font={fontFamilies.regular} size={12} />
+          </TouchableOpacity>
         </Row>
       </Section>
-
       <Section>
-        {doctorList.map((item, index) => (
-          <DoctorComponent
-            key={index}
-            data={item}
-            onPress={() => {
-              props.navigation.navigate('DoctorDetail', {doctor: item});
-            }}
-          />
-        ))}
+        <TextComponent
+          text={`${filterDoctors.length} doctors found`}
+          font={fontFamilies.semiBold}
+          size={14}
+          color={colors.primary}
+        />
+      </Section>
+
+      {/* Doctor */}
+      <Section>
+        {loadingDoctors ? (
+          <ActivityIndicator color={'#000'} />
+        ) : (
+          filterDoctors.map((item, index) => (
+            <DoctorComponent
+              key={item.doctorId}
+              data={item}
+              onPress={() => {
+                props.navigation.navigate('DoctorDetail', {doctor: item});
+              }}
+            />
+          ))
+        )}
       </Section>
     </ContainerComponent>
   );

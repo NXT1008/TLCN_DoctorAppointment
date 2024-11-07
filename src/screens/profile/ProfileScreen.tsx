@@ -1,5 +1,5 @@
 import {Alert, Image, Touchable, TouchableOpacity, View} from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {
   Button,
   Col,
@@ -35,37 +35,44 @@ import {
 import {fontFamilies} from '../../constants/fontFamilies';
 import ProfileComponent from './components/ProfileComponent';
 import ModalComponent from './components/ModalComponent';
-import deleteAllData from '../../data/zResetData';
-import uploadDataToFirestore from '../../data/UploadDataToFirebase';
+import deleteAllData from '../../data/functions/zResetData';
+import uploadDataToFirestore from '../../data/functions/UploadDataToFirebase';
 import firestore from '@react-native-firebase/firestore';
 import {Patient} from '../../models/Patient';
+import { useFocusEffect } from '@react-navigation/native';
 
 const ProfileScreen = (props: any) => {
-  const user = auth().currentUser;
+  const patientId = auth().currentUser?.uid;
+
   const [patient, setPatient] = useState<Patient>();
 
-  useEffect(() => {
-    const getCurrentPatient = async () => {
-      await firestore()
-        .collection('patients')
-        .doc(user?.uid)
-        .get()
-        .then(snap => {
-          if (!snap.exists) {
-            console.log('No such document!');
-          } else {
-            const patient = snap.data() as Patient;
-            setPatient(patient);
-          }
-        })
-        .catch(e => {
-          console.log(e);
-        });
-    };
-    getCurrentPatient();
-  }, [patient]);
+  useFocusEffect(
+    useCallback(() => {
+      getInfoPatient();
+    }, [])
+  );
 
   const [isAlertVisible, setAlertVisible] = useState(false);
+
+  const getInfoPatient = async () => {
+    await firestore()
+      .collection('patients')
+      .doc(patientId)
+      .get()
+      .then(
+        docSnapshot => {
+          if (docSnapshot.exists) {
+            const patientData = docSnapshot.data() as Patient;
+            setPatient(patientData); // Cập nhật state patient với dữ liệu mới
+          } else {
+            console.log('No such document!');
+          }
+        },
+        error => {
+          console.error('Error fetching patient:', error);
+        },
+      );
+  };
 
   const showAlert = () => {
     setAlertVisible(true);
@@ -139,9 +146,7 @@ const ProfileScreen = (props: any) => {
             <TextComponent
               text={
                 patient
-                  ? patient.nickname
-                    ? patient.nickname
-                    : patient.name
+                  ? patient.name
                   : ''
               }
               size={20}

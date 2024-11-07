@@ -1,5 +1,5 @@
 import React from 'react';
-import {ScrollView, StyleSheet} from 'react-native';
+import {ScrollView, StyleSheet, TouchableOpacity, View} from 'react-native';
 import {
   ContainerComponent,
   Section,
@@ -14,14 +14,21 @@ const PrivacyPolicyScreen = ({navigation}: any) => {
   return (
     <ContainerComponent isScroll>
       <Section>
-        <Row styles={styles.header}>
-          <TextComponent
-            text="Privacy Policy"
-            size={25}
-            font={fontFamilies.semiBold}
-            color="#0B8FAC"
-            styles={styles.title}
-          />
+        <Row justifyContent="flex-start">
+          <TouchableOpacity
+            onPress={() => {
+              navigation.goBack();
+            }}>
+            <ArrowLeft2 color="#000" />
+          </TouchableOpacity>
+          <View style={{flex: 1, alignItems: 'center'}}>
+            <TextComponent
+              text="Privacy Policy"
+              size={22}
+              font={fontFamilies.semiBold}
+              color="#0B8FAC"
+            />
+          </View>
         </Row>
       </Section>
       <ScrollView contentContainerStyle={styles.contentContainer}>

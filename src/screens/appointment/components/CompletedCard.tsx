@@ -1,19 +1,64 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {View, Text, StyleSheet, TouchableOpacity, Image} from 'react-native';
 import {Appointment} from '../../../models/Appointment';
 import {Review} from '../../../models/Review';
-import { Card } from '../../../components';
-import { NavigationProp, useNavigation } from '@react-navigation/native';
-import { AppointmentStackParamList } from '../../../routers/Navigator/AppointmentNavigator';
+import {Card, Row, Space, TextComponent} from '../../../components';
+import {NavigationProp, useNavigation} from '@react-navigation/native';
+import {AppointmentStackParamList} from '../../../routers/Navigator/AppointmentNavigator';
+import {Doctor} from '../../../models/Doctor';
+import {Specialization} from '../../../models/Specialization';
+import firestore, {doc} from '@react-native-firebase/firestore';
+import {fontFamilies} from '../../../constants/fontFamilies';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 interface Props {
   appointment: Appointment;
-  review?: Review;
-  onPress() : void
+  onPressRebook: () => void;
+  onPressAddReview: () => void;
 }
 const CompletedAppointmentCard = (prop: Props) => {
-  const navigation = useNavigation<NavigationProp<AppointmentStackParamList>>();
-  const {appointment, review, onPress} = prop
+  const {appointment, onPressAddReview, onPressRebook} = prop;
+  const [doctor, setDoctor] = useState<Doctor>();
+  const [specialization, setspecialization] = useState<Specialization>();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Get doctor data
+        const doctorDoc = await firestore()
+          .collection('doctors')
+          .doc(appointment.doctorId)
+          .get();
+
+        if (!doctorDoc.exists) {
+          console.error('Doctor document not found');
+          return;
+        }
+
+        const doctorData = doctorDoc.data() as Doctor;
+        setDoctor(doctorData);
+
+        // Get specialization data
+        const specDoc = await firestore()
+          .collection('specializations')
+          .doc(doctorData.specializationId)
+          .get();
+
+        if (!specDoc.exists) {
+          console.error('Specialization document not found');
+          return;
+        }
+
+        setspecialization(specDoc.data() as Specialization);
+
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchData();
+  }, [appointment.doctorId]);
+
   return (
     <Card styles={styles.appointmentContainer} shadowed>
       <View style={styles.profileInfo}>
@@ -22,22 +67,29 @@ const CompletedAppointmentCard = (prop: Props) => {
           style={styles.profileImage}
         />
         <View>
-          <Text style={styles.doctorName}>{appointment.doctorId}</Text>
-          <Text style={styles.specialty}>specializationId...</Text>
-          <View style={styles.ratingContainer}>
-            <Text style={styles.ratingText}>{review?.rating}</Text>
-            <Image
-              source={require('../../../assets/images/fill-star.png')}
-              style={styles.ratingIcon}
+          <Text style={styles.doctorName}>{doctor?.name}</Text>
+          <Text style={styles.specialty}>{specialization?.name}</Text>
+          <Row
+            justifyContent="flex-start"
+            alignItems="baseline"
+            styles={{marginTop: 0, marginBottom: -5}}>
+            <FontAwesome name="star" size={16} color="#21a691" />
+            <Space width={5} />
+            <TextComponent
+              font={fontFamilies.regular}
+              size={12}
+              text={`${doctor?.ratingAverage?.toFixed(1)}`}
             />
-          </View>
+          </Row>
         </View>
       </View>
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.rebookButton} onPress={onPress}>
+        <TouchableOpacity style={styles.rebookButton} onPress={onPressRebook}>
           <Text style={styles.buttonText}>Re-Book</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.addReviewButton} onPress={() => navigation.navigate('ReviewScreen', {appointment})}>
+        <TouchableOpacity
+          style={styles.addReviewButton}
+          onPress={onPressAddReview}>
           <Text style={styles.buttonText}>Add Review</Text>
         </TouchableOpacity>
       </View>
@@ -70,18 +122,13 @@ const styles = StyleSheet.create({
     letterSpacing: 0,
     left: 0,
     top: 0,
-    fontFamily: 'Poppins-Medium'
+    fontFamily: fontFamilies.medium,
   },
   specialty: {
     fontSize: 14,
     color: '#27403e',
     marginTop: 6,
-    fontFamily: 'Poppins-Regular'
-  },
-  ratingContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 5,
+    fontFamily: 'Poppins-Regular',
   },
   ratingText: {
     fontSize: 14,
@@ -106,7 +153,7 @@ const styles = StyleSheet.create({
   },
   rebookButton: {
     backgroundColor: '#21a691',
-    height: 27,
+    height: 30,
     width: 116,
     borderRadius: 18,
     marginTop: 9,
@@ -115,7 +162,7 @@ const styles = StyleSheet.create({
   },
   addReviewButton: {
     backgroundColor: '#27403e',
-    height: 27,
+    height: 30,
     width: 116,
     borderRadius: 18,
     marginTop: 9,
@@ -126,7 +173,7 @@ const styles = StyleSheet.create({
     color: '#fff',
     textAlign: 'center',
     fontSize: 14,
-    fontFamily: 'Poppins-Medium'
+    fontFamily: 'Poppins-Medium',
   },
 });
 

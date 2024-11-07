@@ -8,13 +8,15 @@ import {
   Space,
   TextComponent,
 } from '../../../components';
-import {Image} from 'react-native';
-import {Clock, Icon} from 'iconsax-react-native';
+import {Image, TouchableOpacity} from 'react-native';
+import {Clock, Icon, Location} from 'iconsax-react-native';
 import {fontFamilies} from '../../../constants/fontFamilies';
 import {Doctor} from '../../../models/Doctor';
 import firestore from '@react-native-firebase/firestore';
 import {Specialization} from '../../../models/Specialization';
 import {Hospital} from '../../../models/Hospital';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import auth from '@react-native-firebase/auth';
 
 interface Props {
   onPress: () => void;
@@ -27,46 +29,81 @@ const DoctorComponent = (props: Props) => {
   const [hospital, setHospital] = useState<Hospital>();
   const doctor = data;
 
+  const patientId = auth().currentUser?.uid;
+  const [isFavorite, setIsFavorite] = useState(false);
+
+  // Lấy danh sách favoriteDoctors từ Firestore khi component được mount
+  // và kiểm tra doctorId đã có trong favorites chưa
+  useEffect(() => {
+    const fetchFavoriteStatus = firestore()
+      .collection('patients')
+      .doc(patientId)
+      .onSnapshot(doc => {
+        const favoriteDoctors = doc.data()?.favoriteDoctors || [];
+        setIsFavorite(favoriteDoctors.includes(doctor.doctorId));
+      });
+
+    return () => fetchFavoriteStatus();
+  }, []);
+
   useEffect(() => {
     getSpectializationByDoctorID();
     getHospitalByDoctorID()
   }, []);
 
-  const getSpectializationByDoctorID = async () => {
+  //Xử lý khi patient nhấn vào trái tim
+  const handleUpdateFavorite = async () => {
     try {
-      const specializationDoc = await firestore()
-        .collection('specializations')
-        .doc(doctor.specializationId)
-        .get();
+      const patientRef = firestore().collection('patients').doc(patientId);
+      const patientDoc = await patientRef.get();
+      const favoriteDoctors =
+        (patientDoc.data()?.favoriteDoctors as string[]) || [];
 
-      if (specializationDoc.exists) {
-        const specializationData = specializationDoc.data() as Specialization;
-        setSpec(specializationData);
+      if (isFavorite) {
+        // Nếu đã yêu thích, loại bỏ doctorId khỏi favoriteDoctors
+        const updatedFavorites = favoriteDoctors.filter(
+          id => id !== doctor.doctorId,
+        );
+        await patientRef.update({favoriteDoctors: updatedFavorites});
+        setIsFavorite(false);
       } else {
-        console.error('Specialization document not found');
+        const updatedFavorites = [...favoriteDoctors, doctor.doctorId];
+        await patientRef.update({favoriteDoctors: updatedFavorites});
+        setIsFavorite(true);
       }
     } catch (error) {
-      console.error('Error fetching specialization:', error);
+      console.error('Lỗi khi cập nhật danh sách yêu thích:', error);
     }
   };
 
+  const getSpectializationByDoctorID = async () => {
+    const subscriber = await firestore()
+      .collection('specializations')
+      .doc(doctor.specializationId)
+      .onSnapshot(docSnap => {
+        if (docSnap.exists) {
+          const specializationData = docSnap.data() as Specialization;
+          setSpec(specializationData);
+        } else {
+          console.error('Specialization document not found');
+        }
+      });
+    return () => subscriber;
+  };
+
   const getHospitalByDoctorID = async () => {
-    try {
-      const hospital = await firestore()
-        .collection('hospitals')
-        .doc(doctor.hospitalId)
-        .get();
-      
-      if (hospital.exists) {
-        const hospitalData = hospital.data() as Hospital;
-        setHospital(hospitalData)
-      }
-      else {
-        console.error('Hospital document not found');
-      }
-    } catch (error) {
-      console.error('Error fetching hospital:', error);
-    }
+    const subscriber = await firestore()
+      .collection('hospitals')
+      .doc(doctor.hospitalId)
+      .onSnapshot(docSnap => {
+        if (docSnap.exists) {
+          const hospitalData = docSnap.data() as Hospital;
+          setHospital(hospitalData);
+        } else {
+          console.error('Hospital document not found');
+        }
+      });
+    return () => subscriber;
   };
 
   return (
@@ -84,65 +121,98 @@ const DoctorComponent = (props: Props) => {
         />
         <Space width={10} />
         <Col flex={2}>
-          <TextComponent
-            text={data.name}
-            size={16}
-            font={fontFamilies.semiBold}
-          />
+          <Row justifyContent="space-between">
+            <TextComponent
+              text={data.name}
+              size={16}
+              font={fontFamilies.semiBold}
+            />
+            <TouchableOpacity onPress={handleUpdateFavorite}>
+              {isFavorite ? (
+                <FontAwesome name="heart" size={20} color={'red'} />
+              ) : (
+                <FontAwesome name="heart-o" size={20} color={'#000'} />
+              )}
+            </TouchableOpacity>
+          </Row>
           <TextComponent
             text={spec ? spec.name : ''}
-            size={14}
+            size={12}
             font={fontFamilies.regular}
             color="gray"
           />
-          <Row styles={{justifyContent: 'flex-start', marginVertical: 2}}>
-            <Image
-              source={require('../../../assets/images/fill-star.png')}
-              style={{
-                width: 20,
-                height: 20,
-                resizeMode: 'contain',
-              }}
+          <Row
+            styles={{
+              justifyContent: 'flex-start',
+              marginVertical: 2,
+              alignItems: 'baseline',
+              marginBottom: -5,
+            }}>
+            {Array.from({length: 5}).map((_, index) => {
+              const wholeStars = Math.floor(data.ratingAverage as number); // Số sao nguyên
+              const hasHalfStar =
+                (data.ratingAverage as number) - wholeStars >= 0.5; // Kiểm tra nếu có nửa sao
+
+              return (
+                <FontAwesome
+                  key={index}
+                  name={
+                    index < wholeStars
+                      ? 'star' // Sao đầy đủ
+                      : index === wholeStars && hasHalfStar
+                      ? 'star-half-full' // Sao nửa
+                      : 'star-o' // Sao trống
+                  }
+                  size={16}
+                  color={
+                    index < wholeStars || (index === wholeStars && hasHalfStar)
+                      ? '#e6b800'
+                      : '#cccccc'
+                  } // Vàng cho sao đầy đủ hoặc nửa sao
+                />
+              );
+            })}
+            <Space width={10} />
+            <TextComponent
+              text={`${data.ratingAverage?.toFixed(1)}`}
+              font={fontFamilies.semiBold}
+              size={14}
+              color="#000"
             />
-            <Image
-              source={require('../../../assets/images/fill-star.png')}
-              style={{
-                width: 20,
-                height: 20,
-                resizeMode: 'contain',
-              }}
+            <Divider
+              type="vertical"
+              styles={{marginTop: -7, marginLeft: -3, marginRight: -3}}
             />
-            <Image
-              source={require('../../../assets/images/fill-star.png')}
-              style={{
-                width: 20,
-                height: 20,
-                resizeMode: 'contain',
-              }}
+
+            <TextComponent
+              text={`${data.numberOfReviews}`}
+              font={fontFamilies.semiBold}
+              size={14}
+              color="#000"
             />
-            <Image
-              source={require('../../../assets/images/fill-star.png')}
-              style={{
-                width: 20,
-                height: 20,
-                resizeMode: 'contain',
-              }}
+            <Space width={5} />
+            <TextComponent
+              text="Reviews"
+              font={fontFamilies.regular}
+              size={12}
+              color="gray"
             />
-            <Image
-              source={require('../../../assets/images/fill-star.png')}
-              style={{
-                width: 20,
-                height: 20,
-                resizeMode: 'contain',
+          </Row>
+          <Space height={5} />
+          <Row justifyContent="flex-start" alignItems="flex-start" styles={{flex: 1}}>
+            <Location color="#000" size={16} />
+            <Space width={5} />
+            <TextComponent
+              text={hospital ? hospital.name : ''}
+              size={12}
+              font={fontFamilies.regular}
+              color="gray"
+              styles={{
+                flexWrap: 'wrap',
+                flexShrink: 1,
               }}
             />
           </Row>
-          <TextComponent
-            text={hospital ? hospital.name : ''}
-            size={14}
-            font={fontFamilies.regular}
-            color="gray"
-          />
         </Col>
       </Row>
       <Divider styles={{marginBottom: 0}} />

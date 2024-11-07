@@ -21,15 +21,18 @@ import DoctorHome from '../screens/doctor/DoctorHome';
 import DoctorNotificationScreen from '../screens/doctor/components/DoctorNotification';
 import DoctorAppointmentScreen from '../screens/doctor/DoctorAppointment';
 import DoctorReportScreen from '../screens/doctor/DoctorReport';
+import ReviewScreen from '../screens/appointment/ReviewAppointment';
+import CancelAppointment from '../screens/appointment/CancelAppointment';
+import ChangePassword from '../screens/profile/screens/ChangePassword';
 
 const MainNavigator = () => {
   const Stack = createNativeStackNavigator();
   return (
     <Stack.Navigator screenOptions={{headerShown: false}}>
       <Stack.Screen name="Main" component={TabNavigator} />
-      <Stack.Screen name="BookingScreen" component={BookingScreen}/>
-      <Stack.Screen name="Notification" component={NotificationScreen}/>
-      <Stack.Screen name="Payment" component={PaymentScreen}/>
+      <Stack.Screen name="BookingScreen" component={BookingScreen} />
+      <Stack.Screen name="Notification" component={NotificationScreen} />
+      <Stack.Screen name="Payment" component={PaymentScreen} />
       <Stack.Screen name="DoctorDetail" component={DoctorDetail} />
       <Stack.Screen name="FAQsScreen" component={FAQsScreen} />
       <Stack.Screen name="ReportScreen" component={ReportScreen} />
@@ -49,6 +52,9 @@ const MainNavigator = () => {
       <Stack.Screen name="DoctorNotification" component={DoctorNotificationScreen} />
       <Stack.Screen name="DoctorAppointment" component={DoctorAppointmentScreen} />
       <Stack.Screen name="DoctorReport" component={DoctorReportScreen} />
+      <Stack.Screen name="ReviewScreen" component={ReviewScreen} />
+      <Stack.Screen name="CancelAppointment" component={CancelAppointment} />
+      <Stack.Screen name="ChangePassword" component={ChangePassword} />
     </Stack.Navigator>
   );
 };

@@ -20,9 +20,9 @@ import {fontFamilies} from '../../constants/fontFamilies';
 
 import auth from '@react-native-firebase/auth';
 import ModalComponent from './components/ModalComponent';
-import { Forbidden2 } from 'iconsax-react-native';
-import { Patient } from '../../models/Patient';
-import firestore from '@react-native-firebase/firestore'
+import {Forbidden2} from 'iconsax-react-native';
+import {Patient} from '../../models/Patient';
+import firestore from '@react-native-firebase/firestore';
 
 const SignUpScreen = ({navigation}: any) => {
   const [name, setName] = useState('');
@@ -32,6 +32,8 @@ const SignUpScreen = ({navigation}: any) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
   const [errorText, setErrorText] = useState('');
+
+  console.log(auth().currentUser)
 
   const handleSignInWithEmail = async () => {
     const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
@@ -59,30 +61,36 @@ const SignUpScreen = ({navigation}: any) => {
       setIsError(true);
       setIsLoading(false);
       return;
-    } else {
-      setIsLoading(true);
-      await auth()
-        .createUserWithEmailAndPassword(email, password)
-        .then(userCridential => {
-          const user = userCridential.user;
-          const patient: Patient = {
-            patientId: user.uid,
-            name: name,
-            nickname: '',
-            email: email,
-            gender: '',
-            phone: '',
-            image: ''
-          }
-          firestore().collection('patients').doc(user.uid).set(patient)
+    } 
+    setIsLoading(true);
 
-          // save user to firestore
-          setIsLoading(false);
-        })
-        .catch((error: any) => {
-          setIsLoading(false);
-          setErrorText(error)
-        });
+    try {
+      const userCredential = await auth().createUserWithEmailAndPassword(
+        email,
+        password,
+      );
+      const user = userCredential.user;
+
+      const patient: Patient = {
+        patientId: user.uid,
+        name: name,
+        email: email,
+        gender: '',
+        phone: '',
+        image: '',
+        address: '',
+      };
+
+      await firestore()
+        .collection('patients')
+        .doc(patient.patientId)
+        .set(patient);
+
+      setIsLoading(false);
+    } catch (error : any) {
+      setIsLoading(false);
+      setErrorText(error.message); // Lấy thông báo lỗi từ Firebase
+      setIsError(true);
     }
   };
 

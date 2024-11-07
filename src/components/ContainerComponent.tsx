@@ -1,6 +1,8 @@
 import {ArrowLeft2} from 'iconsax-react-native';
 import React, {ReactNode} from 'react';
 import {
+  KeyboardAvoidingView,
+  Platform,
   ScrollView,
   StyleProp,
   TouchableOpacity,
@@ -30,7 +32,11 @@ const Container = (props: Props) => {
   const navigation: any = useNavigation();
 
   return (
-    <View style={[globalStyles.container, {flex: 1}, style]}>
+    <View
+      style={[globalStyles.container, {flex: 1}, style]}
+      // behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      // keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 50}
+    >
       {/* Header container */}
       <RowComponent
         styles={[
