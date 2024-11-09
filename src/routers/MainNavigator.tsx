@@ -2,28 +2,24 @@ import {View, Text} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import TabNavigator from './BottomTab/TabNavigator';
-import FAQsScreen from '../screens/profile/screens/FAQsScreen';
-import PrivacyPolicyScreen from '../screens/profile/screens/PrivacyPolicyScreen';
-import ReportScreen from '../screens/profile/screens/ReportScreen';
-import UpdateProfile from '../screens/profile/screens/UpdateProfile';
-import MyFavoritesDoctor from '../screens/profile/screens/MyFavoritesDoctor';
-import SettingScreen from '../screens/profile/screens/SettingScreen';
-import ReviewAllDoctors from '../screens/doctor/ReviewAllDoctors';
-import BookingScreen from '../screens/booking/BookingScreen';
-import DoctorDetail from '../screens/doctor/DoctorDetail';
-import { NotificationScreen } from '../screens';
-import PaymentScreen from '../screens/payment/PaymentScreen';
-import AddNewCardScreen from '../screens/payment/AddNewCard';
-import ChatScreen from '../screens/chat/ChatScreen';
-import MainChatScreen from '../screens/chat/MainChatScreen';
-import ScheduleScreen from '../screens/schedule/ScheduleScreen';
-import DoctorHome from '../screens/doctor/DoctorHome';
-import DoctorNotificationScreen from '../screens/doctor/components/DoctorNotification';
-import DoctorAppointmentScreen from '../screens/doctor/DoctorAppointment';
-import DoctorReportScreen from '../screens/doctor/DoctorReport';
-import ReviewScreen from '../screens/appointment/ReviewAppointment';
-import CancelAppointment from '../screens/appointment/CancelAppointment';
-import ChangePassword from '../screens/profile/screens/ChangePassword';
+import FAQsScreen from '../screens/patient/profile/screens/FAQsScreen';
+import PrivacyPolicyScreen from '../screens/patient/profile/screens/PrivacyPolicyScreen';
+import ReportScreen from '../screens/patient/profile/screens/ReportScreen';
+import UpdateProfile from '../screens/patient/profile/screens/UpdateProfile';
+import MyFavoritesDoctor from '../screens/patient/profile/screens/MyFavoritesDoctor';
+import SettingScreen from '../screens/patient/profile/screens/SettingScreen';
+import ReviewAllDoctors from '../screens/patient/doctor/ReviewAllDoctors';
+import BookingScreen from '../screens/patient/booking/BookingScreen';
+import DoctorDetail from '../screens/patient/doctor/DoctorDetail';
+import { NotificationScreen } from '../screens/patient';
+import PaymentScreen from '../screens/patient/payment/PaymentScreen';
+import AddNewCardScreen from '../screens/patient/payment/AddNewCard';
+import ChatScreen from '../screens/patient/chat/ChatScreen';
+import MainChatScreen from '../screens/patient/chat/MainChatScreen';
+import ScheduleScreen from '../screens/patient/schedule/ScheduleScreen';
+import ReviewScreen from '../screens/patient/appointment/ReviewAppointment';
+import CancelAppointment from '../screens/patient/appointment/CancelAppointment';
+import ChangePassword from '../screens/patient/profile/screens/ChangePassword';
 
 const MainNavigator = () => {
   const Stack = createNativeStackNavigator();
@@ -48,10 +44,6 @@ const MainNavigator = () => {
       <Stack.Screen name="ChatScreen" component={ChatScreen} />
       <Stack.Screen name="MainChatScreen" component={MainChatScreen} />
       <Stack.Screen name="ScheduleScreen" component={ScheduleScreen} />
-      <Stack.Screen name="DoctorHome" component={DoctorHome} />
-      <Stack.Screen name="DoctorNotification" component={DoctorNotificationScreen} />
-      <Stack.Screen name="DoctorAppointment" component={DoctorAppointmentScreen} />
-      <Stack.Screen name="DoctorReport" component={DoctorReportScreen} />
       <Stack.Screen name="ReviewScreen" component={ReviewScreen} />
       <Stack.Screen name="CancelAppointment" component={CancelAppointment} />
       <Stack.Screen name="ChangePassword" component={ChangePassword} />

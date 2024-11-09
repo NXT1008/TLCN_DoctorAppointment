@@ -1,13 +1,12 @@
 import {View, Text, Image, StyleSheet} from 'react-native';
 import React from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import HomeNavigator from '../Navigator/HomeNavigator';
-import DoctorNavigator from '../Navigator/DoctorNavigator';
-import ProfileNavigator from '../Navigator/ProfileNavigator';
-import {Home2} from 'iconsax-react-native';
+import HomeNavigator from '../Navigator/Patient/HomeNavigator';
+import ProfileNavigator from '../Navigator/Patient/ProfileNavigator';
 import {Row, TextComponent} from '../../components';
-import { fontFamilies } from '../../constants/fontFamilies';
-import AppointmentNavigator from '../Navigator/AppointmentNavigator';
+import {fontFamilies} from '../../constants/fontFamilies';
+import AppointmentNavigator from '../Navigator/Patient/AppointmentNavigator';
+import DoctorNavigator from '../Navigator/Patient/DoctorNavigator';
 
 const TabNavigator = () => {
   const styleImage = {height: 25, width: 25};
@@ -81,7 +80,11 @@ const TabNavigator = () => {
                 <TextComponent
                   text={route.name.slice(0, -3)}
                   size={13}
-                  styles={{paddingHorizontal: 10, color: '#63B4FF', fontFamily: fontFamilies.semiBold}}
+                  styles={{
+                    paddingHorizontal: 10,
+                    color: '#63B4FF',
+                    fontFamily: fontFamilies.semiBold,
+                  }}
                 />
               )}
             </Row>
