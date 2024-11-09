@@ -16,50 +16,13 @@ import firestore from '@react-native-firebase/firestore'
 
 interface Props {
   appointment: Appointment,
+  doctor: Doctor;
+  specialization: Specialization;
   onPress: () => void
 }
 
 const DoctorCard = (props: Props) => {
-  const { appointment, onPress } = props;
-  const [doctor, setDoctor] = useState<Doctor>();
-  const [specialization, setSpectialization] = useState<Specialization>();
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // Get doctor and specialization data in parallel
-        const doctorDoc = await firestore()
-          .collection('doctors')
-          .doc(appointment.doctorId)
-          .get();
-
-        if (!doctorDoc.exists) {
-          console.error('Doctor document not found');
-          return;
-        }
-
-        const doctorData = doctorDoc.data() as Doctor;
-        setDoctor(doctorData);
-
-        const specDoc = await firestore()
-          .collection('specializations') 
-          .doc(doctorData.specializationId)
-          .get();
-
-        if (!specDoc.exists) {
-          console.error('Specialization document not found');
-          return;
-        }
-
-        setSpectialization(specDoc.data() as Specialization);
-
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    };
-
-    fetchData();
-  }, []);
+  const {appointment, onPress, doctor, specialization} = props;
   return (
     <Card styles={styles.cardContainer} shadowed>
       <View style={styles.profileContainer}>
@@ -140,7 +103,7 @@ const styles = StyleSheet.create({
   },
   detailsButton: {
     backgroundColor: '#27403e',
-    height: 27,
+    height: 30,
     width: 174,
     borderRadius: 18,
     marginTop: 9,
@@ -150,7 +113,7 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#fff',
     textAlign: 'center',
-    fontSize: 14,
+    fontSize: 13,
     fontFamily: 'Poppins-Medium'
   },
   checkButton: {

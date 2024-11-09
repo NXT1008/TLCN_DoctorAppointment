@@ -15,6 +15,7 @@ interface Props {
 
 const SpecializationModalComponent = (props: Props) => {
   const {visible, specializations, onClose, onSelectSpecialization} = props;
+  const [selectedId, setSelectedId] = useState<string>(''); // Thêm state này
 
   return (
     <Modal visible={visible} transparent animationType="slide">
@@ -52,6 +53,7 @@ const SpecializationModalComponent = (props: Props) => {
             <SpecializationComponent
               data={{specializationId: 'All', name: 'All'}} // Đặt dữ liệu tên là "All" cho component
               onPress={() => {
+                setSelectedId('All');
                 if (onSelectSpecialization) {
                   onSelectSpecialization({
                     specializationId: 'All',
@@ -59,6 +61,7 @@ const SpecializationModalComponent = (props: Props) => {
                   }); // Truyền 'All' để xác định chọn tất cả
                 }
               }}
+              isSelected={selectedId === 'All'}
               stylesCard={{
                 justifyContent: 'flex-start',
                 paddingHorizontal: 15,
@@ -71,10 +74,12 @@ const SpecializationModalComponent = (props: Props) => {
                 key={specialization.specializationId}
                 data={specialization}
                 onPress={() => {
+                  setSelectedId(specialization.specializationId);
                   if (onSelectSpecialization) {
                     onSelectSpecialization(specialization);
                   }
                 }}
+                isSelected={selectedId === specialization.specializationId}
                 stylesCard={{
                   justifyContent: 'flex-start',
                   paddingHorizontal: 15,

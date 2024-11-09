@@ -47,75 +47,143 @@ const HomeScreen = (props: any) => {
   //     getPatientInfo();
   //   }, []),
   // );
-  useEffect(() => {
-    getAllSpecializations();
-    getAllDoctors();
-    getPatientInfo();
-  }, []);
 
-  const getPatientInfo = async () => {
-    await firestore()
+  // Sử dụng useEffect để setup realtime listener
+  useEffect(() => {
+    // Tạo listener cho thông tin patient
+    const unsubscribePatient = firestore()
       .collection('patients')
       .doc(user?.uid)
-      .get()
-      .then(snapshot => {
-        setPatient(snapshot.data() as Patient);
-      });
-  };
+      .onSnapshot(
+        snapshot => {
+          if (snapshot.exists) {
+            setPatient(snapshot.data() as Patient);
+          }
+        },
+        error => {
+          console.error('Error listening to patient changes:', error);
+        },
+      );
 
-  const getAllSpecializations = async () => {
-    setLoadingSpecialization(true);
-    await firestore()
-      .collection('specializations')
-      .get()
-      .then(snapshot => {
-        if (snapshot.empty) {
-          console.log('Không có specialization');
-          return;
-        }
-        const items: Specialization[] = [];
-        snapshot.forEach((item: any) => {
-          items.push({
-            id: item.id,
-            ...item.data(),
-          });
-        });
-        setLoadingSpecialization(false);
-        setListSpecialization(items);
-      })
-      .catch(error => {
-        console.error('Error fetching specializations:', error); // Log lỗi
-        setLoadingSpecialization(false);
-      });
-  };
-
-  const getAllDoctors = async () => {
-    setLoadingDoctors(true);
-    await firestore()
+    // Tạo listener cho danh sách bác sĩ
+    const unsubscribeDoctors = firestore()
       .collection('doctors')
       .orderBy('ratingAverage', 'desc')
       .limit(5)
-      .get()
-      .then(snap => {
-        if (snap.empty) {
-          console.log('Không có bác sĩ');
-          return;
-        }
-        const items: Doctor[] = [];
-        snap.forEach((item: any) => {
-          items.push({
-            id: item.id,
-            ...item.data(),
-          });
-        });
-        setLoadingDoctors(false);
-        setListDoctor(items);
-      })
-      .catch(error => {
-        console.error('Error fetching doctor:', error); // Log lỗi
-        setLoadingDoctors(false);
-      });
-  };
+      .onSnapshot(
+        snapshot => {
+          if (!snapshot.empty) {
+            const items: Doctor[] = [];
+            snapshot.forEach((item : any) => {
+              items.push({
+                id: item.id,
+                ...item.data(),
+              });
+            });
+            setListDoctor(items);
+            setLoadingDoctors(false);
+          }
+        },
+        error => {
+          console.error('Error listening to doctors changes:', error);
+          setLoadingDoctors(false);
+        },
+      );
+
+    // Tạo listener cho specializations
+    const unsubscribeSpec = firestore()
+      .collection('specializations')
+      .onSnapshot(
+        snapshot => {
+          if (!snapshot.empty) {
+            const items: Specialization[] = [];
+            snapshot.forEach((item : any) => {
+              items.push({
+                id: item.id,
+                ...item.data(),
+              });
+            });
+            setListSpecialization(items);
+            setLoadingSpecialization(false);
+          }
+        },
+        error => {
+          console.error('Error listening to specializations changes:', error);
+          setLoadingSpecialization(false);
+        },
+      );
+
+    // Cleanup listeners khi component unmount
+    return () => {
+      unsubscribePatient();
+      unsubscribeDoctors();
+      unsubscribeSpec();
+    };
+  }, []);
+
+  // const getPatientInfo = async () => {
+  //   await firestore()
+  //     .collection('patients')
+  //     .doc(user?.uid)
+  //     .get()
+  //     .then(snapshot => {
+  //       setPatient(snapshot.data() as Patient);
+  //     });
+  // };
+
+  // const getAllSpecializations = async () => {
+  //   setLoadingSpecialization(true);
+  //   await firestore()
+  //     .collection('specializations')
+  //     .get()
+  //     .then(snapshot => {
+  //       if (snapshot.empty) {
+  //         console.log('Không có specialization');
+  //         return;
+  //       }
+  //       const items: Specialization[] = [];
+  //       snapshot.forEach((item: any) => {
+  //         items.push({
+  //           id: item.id,
+  //           ...item.data(),
+  //         });
+  //       });
+  //       setLoadingSpecialization(false);
+  //       setListSpecialization(items);
+  //     })
+  //     .catch(error => {
+  //       console.error('Error fetching specializations:', error); // Log lỗi
+  //       setLoadingSpecialization(false);
+  //     });
+  // };
+
+  // const getAllDoctors = async () => {
+  //   setLoadingDoctors(true);
+  //   await firestore()
+  //     .collection('doctors')
+  //     .orderBy('ratingAverage', 'desc')
+  //     .limit(5)
+  //     .get()
+  //     .then(snap => {
+  //       if (snap.empty) {
+  //         console.log('Không có bác sĩ');
+  //         return;
+  //       }
+  //       const items: Doctor[] = [];
+  //       snap.forEach((item: any) => {
+  //         items.push({
+  //           id: item.id,
+  //           ...item.data(),
+  //         });
+  //       });
+  //       setLoadingDoctors(false);
+  //       setListDoctor(items);
+  //     })
+  //     .catch(error => {
+  //       console.error('Error fetching doctor:', error); // Log lỗi
+  //       setLoadingDoctors(false);
+  //     });
+  // };
 
   return (
     <>
@@ -130,8 +198,12 @@ const HomeScreen = (props: any) => {
             }}>
             <Row>
               <Image
-                source={require('../../assets/IconTab/profile.png')}
-                style={{width: 50, height: 50}}
+                source={
+                  patient?.image
+                    ? {uri: patient.image}
+                    : require('../../assets/IconTab/profile.png')
+                }
+                style={{width: 50, height: 50, borderRadius: 100}}
               />
               <Space width={15} />
               <View>

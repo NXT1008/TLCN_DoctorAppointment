@@ -20,54 +20,14 @@ import { specializations } from '../../../data';
 
 interface Props {
   appointment: Appointment;
+  doctor: Doctor;
+  specialization: Specialization;
   onPressDetail: () => void;
   onPressOK: () => void;
   onPressCancel: () => void;
 }
 const UpcomingAppointmentCard = (props: Props) => {
-  const {appointment, onPressDetail, onPressOK, onPressCancel} = props;
-  const [doctor, setDoctor] = useState<Doctor>();
-  const [specialization, setSpectialization] = useState<Specialization>();
-
-  // Lấy doctor ra trước
-  useEffect(() => {
-    const unSubcribe = getDoctorByAppointmentID();
-    return () => {
-      if (unSubcribe) unSubcribe();
-    };
-  }, [])
-
-  // có doctor thì lấy spec
-  useEffect(() => {
-    if (doctor) {
-      const unSubcribe = getSpecializationByDoctorID();
-      return () => {
-        if (unSubcribe) unSubcribe();
-      };
-    }
-  }, [doctor]);
-
-  const getDoctorByAppointmentID = () => {
-    return firestore().collection('doctors').doc(appointment.doctorId)
-      .onSnapshot(snap => {
-        if (snap.exists) {
-          setDoctor(snap.data() as Doctor);
-        } else {
-          console.error('Doctor document not found');
-        }
-      })
-  };
-
-  const getSpecializationByDoctorID = () => {
-    return firestore().collection('specializations').doc(doctor?.specializationId).onSnapshot(snap => {
-      if (snap.exists) {
-        setSpectialization(snap.data() as Specialization);
-      }
-      else {
-        console.error('Specialization document not found');
-      }
-    })
-  };
+  const {appointment, onPressDetail, onPressOK, onPressCancel, doctor, specialization} = props;
 
   return (
     <Card styles={styles.cardContainer} shadowed>
@@ -178,7 +138,7 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#fff',
     textAlign: 'center',
-    fontSize: 14,
+    fontSize: 13,
     fontFamily: 'Poppins-Medium'
   },
   checkButton: {

@@ -38,18 +38,25 @@ import ModalComponent from './components/ModalComponent';
 import deleteAllData from '../../data/functions/zResetData';
 import uploadDataToFirestore from '../../data/functions/UploadDataToFirebase';
 import firestore from '@react-native-firebase/firestore';
+import storage from '@react-native-firebase/storage';
 import {Patient} from '../../models/Patient';
-import { useFocusEffect } from '@react-navigation/native';
+import {useFocusEffect} from '@react-navigation/native';
+import {
+  ImageLibraryOptions,
+  launchImageLibrary,
+} from 'react-native-image-picker';
+import axios from 'axios';
 
 const ProfileScreen = (props: any) => {
   const patientId = auth().currentUser?.uid;
 
   const [patient, setPatient] = useState<Patient>();
+  const [image, setImage] = useState<string>('');
 
   useFocusEffect(
     useCallback(() => {
       getInfoPatient();
-    }, [])
+    }, []),
   );
 
   const [isAlertVisible, setAlertVisible] = useState(false);
@@ -63,7 +70,7 @@ const ProfileScreen = (props: any) => {
         docSnapshot => {
           if (docSnapshot.exists) {
             const patientData = docSnapshot.data() as Patient;
-            setPatient(patientData); // Cập nhật state patient với dữ liệu mới
+            setPatient(patientData);
           } else {
             console.log('No such document!');
           }
@@ -72,6 +79,68 @@ const ProfileScreen = (props: any) => {
           console.error('Error fetching patient:', error);
         },
       );
+  };
+
+  const handleChooseImage = async () => {
+    const options = {
+      mediaType: 'photo',
+      quality: 0.8,
+    };
+
+    try {
+      const result = await launchImageLibrary(options as ImageLibraryOptions);
+
+      if (result.didCancel) {
+        console.log('User cancelled image picker');
+        return;
+      }
+
+      if (result.errorMessage) {
+        console.log('ImagePicker Error: ', result.errorMessage);
+        return;
+      }
+
+      const imageUri = result?.assets?.[0]?.uri;
+      if (!imageUri) {
+        Alert.alert('Error', 'Failed to get image URI');
+        return;
+      }
+
+      // Create form data
+      const formData = new FormData();
+      formData.append('file', {
+        uri: imageUri,
+        type: 'image/jpeg',
+        name: 'upload.jpg',
+      });
+      formData.append('upload_preset', 'DoctorAppointment');
+      formData.append('folder', 'doctor-appointment/patient-avatars'); 
+
+      // Upload to Cloudinary
+      const response = await axios.post(
+        'https://api.cloudinary.com/v1_1/xuanthe/image/upload',
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        },
+      );
+
+      const downloadURL = response.data.secure_url;
+
+      // Update Firestore
+      await firestore().collection('patients').doc(patientId).update({
+        image: downloadURL,
+      });
+
+      setImage(downloadURL);
+      getInfoPatient();
+      Alert.alert('Success', 'Image uploaded successfully');
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      Alert.alert('Error', 'Failed to upload image');
+    }
   };
 
   const showAlert = () => {
@@ -84,7 +153,6 @@ const ProfileScreen = (props: any) => {
   };
 
   const handleCancel = () => {
-    // Xử lý khi nhấn Cancel
     setAlertVisible(false);
   };
 
@@ -111,18 +179,19 @@ const ProfileScreen = (props: any) => {
         <Row justifyContent="flex-start" styles={{paddingHorizontal: 20}}>
           <View>
             <Image
-              source={require('../../assets/images/doctor.png')}
+              source={
+                patient?.image
+                  ? {uri: patient.image}
+                  : require('../../assets/images/doctor.png')
+              }
               style={{
                 width: 80,
                 height: 80,
                 borderRadius: 100,
-                resizeMode: 'contain',
+                resizeMode: 'cover',
               }}
             />
-            <TouchableOpacity
-              onPress={() => {
-                Alert.alert('Update Image');
-              }}>
+            <TouchableOpacity onPress={handleChooseImage}>
               <View
                 style={{
                   position: 'absolute',
@@ -144,11 +213,7 @@ const ProfileScreen = (props: any) => {
           <Space width={30} />
           <Col>
             <TextComponent
-              text={
-                patient
-                  ? patient.name
-                  : ''
-              }
+              text={patient ? patient.name : ''}
               size={20}
               font={fontFamilies.semiBold}
             />

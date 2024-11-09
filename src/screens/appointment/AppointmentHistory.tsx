@@ -24,6 +24,7 @@ import {Appointment} from '../../models/Appointment';
 import firestore, {getDoc} from '@react-native-firebase/firestore';
 import {fontFamilies} from '../../constants/fontFamilies';
 import auth from '@react-native-firebase/auth';
+import {Specialization} from '../../models/Specialization';
 
 const AppointmentScreen = (props: any) => {
   const {navigation} = props;
@@ -36,6 +37,10 @@ const AppointmentScreen = (props: any) => {
   const [showComplete, setShowComplete] = useState<boolean>(false);
   const [showUpcoming, setShowUpcoming] = useState<boolean>(true);
   const [showCancel, setShowCancel] = useState<boolean>(false);
+  const [doctorsMap, setDoctorsMap] = useState<{[key: string]: Doctor}>({});
+  const [specializationsMap, setSpecializationsMap] = useState<{[key: string]: Specialization}>({});
+
+  
 
   useEffect(() => {
     const unsubcribe = getAllAppointmentByPatientID();
@@ -48,6 +53,33 @@ const AppointmentScreen = (props: any) => {
   useEffect(() => {
     filterAppointments(statusFilter);
   }, [statusFilter, appointmentList]);
+
+  // Thêm useEffect mới để fetch tất cả doctors và specializations một lần
+  useEffect(() => {
+    const fetchDoctorsAndSpecializations = async () => {
+      try {
+        // Fetch all doctors
+        const doctorsSnapshot = await firestore().collection('doctors').get();
+        const doctorsData: {[key: string]: Doctor} = {};
+        doctorsSnapshot.forEach(doc => {
+          doctorsData[doc.id] = doc.data() as Doctor;
+        });
+        setDoctorsMap(doctorsData);
+
+        // Fetch all specializations
+        const specializationsSnapshot = await firestore().collection('specializations').get();
+        const specializationsData: {[key: string]: Specialization} = {};
+        specializationsSnapshot.forEach(doc => {
+          specializationsData[doc.id] = doc.data() as Specialization;
+        });
+        setSpecializationsMap(specializationsData);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchDoctorsAndSpecializations();
+  }, []);
 
   // Hàm lọc cuộc hẹn dựa trên trạng thái
   const filterAppointments = (status: string) => {
@@ -158,32 +190,32 @@ const AppointmentScreen = (props: any) => {
         size={25}
         font={fontFamilies.semiBold}
         color="#0B8FAC"
-        textAlign='center'
+        textAlign="center"
       />
 
       <Section styles={{marginTop: 10}}>
-        <Row justifyContent='space-between'>
+        <Row justifyContent="space-between">
           <TouchableOpacity
             style={[styles.filterButton, showComplete && styles.buttonActive]}
             onPress={handleCompleteButtonClick}>
-            <TextComponent 
-             text= "Complete"
-             size = {14}
-             color='#ffffff'
-             font = 'Poppins-Medium'
-             />
+            <TextComponent
+              text="Complete"
+              size={14}
+              color="#ffffff"
+              font="Poppins-Medium"
+            />
           </TouchableOpacity>
 
           <TouchableOpacity
-          style={[styles.filterButton, showUpcoming && styles.buttonActive]}
-          onPress={handleUpcomingButtonClick}>
-          <TextComponent
-            text='Upcoming'
-            size={14}
-            color='#ffffff'
-            font = 'Poppins-Medium'
+            style={[styles.filterButton, showUpcoming && styles.buttonActive]}
+            onPress={handleUpcomingButtonClick}>
+            <TextComponent
+              text="Upcoming"
+              size={14}
+              color="#ffffff"
+              font="Poppins-Medium"
             />
-        </TouchableOpacity>
+          </TouchableOpacity>
 
           <TouchableOpacity
             style={[styles.filterButton, showCancel && styles.buttonActive]}
@@ -194,7 +226,7 @@ const AppointmentScreen = (props: any) => {
               color="#ffffff"
               font="Poppins-Medium"
             />
-        </TouchableOpacity>
+          </TouchableOpacity>
         </Row>
       </Section>
 
@@ -204,6 +236,10 @@ const AppointmentScreen = (props: any) => {
           renderItem={({item}) => (
             <CompletedCard
               appointment={item}
+              doctor={doctorsMap[item.doctorId]}
+              specialization={
+                specializationsMap[doctorsMap[item.doctorId]?.specializationId]
+              }
               onPressRebook={async () => {
                 const doctor = await getDoctorByAppointmentID(item);
                 if (doctor) {
@@ -237,6 +273,10 @@ const AppointmentScreen = (props: any) => {
           renderItem={({item}) => (
             <UpcomingCard
               appointment={item}
+              doctor={doctorsMap[item.doctorId]}
+              specialization={
+                specializationsMap[doctorsMap[item.doctorId]?.specializationId]
+              }
               onPressDetail={() => Alert.alert('Cập nhật Detail Appointment')}
               onPressOK={() => {
                 Alert.alert('Hiển thị popup xác nhận hoàn thành cuộc hẹn');
@@ -245,7 +285,7 @@ const AppointmentScreen = (props: any) => {
                 navigation.navigate('CancelAppointment', {
                   data: {
                     ...item,
-                    endTime: item.endTime.getTime(), // hoặc endTime.toISOString()
+                    endTime: item.endTime.getTime(),
                     startTime: item.startTime.getTime(),
                     scheduleDate: item.scheduleDate.getTime(),
                   },
@@ -264,6 +304,10 @@ const AppointmentScreen = (props: any) => {
           renderItem={({item}) => (
             <CancelCard
               appointment={item}
+              doctor={doctorsMap[item.doctorId]}
+              specialization={
+                specializationsMap[doctorsMap[item.doctorId]?.specializationId]
+              }
               onPress={() => {
                 navigation.navigate('ReviewScreen', {
                   data: {
@@ -280,8 +324,7 @@ const AppointmentScreen = (props: any) => {
           showsVerticalScrollIndicator={false}
         />
       )}
-
-</ContainerComponent>
+    </ContainerComponent>
   );
 };
 

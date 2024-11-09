@@ -17,6 +17,7 @@ import {
   Input,
   Row,
   Section,
+  Space,
   TextComponent,
 } from '../../components';
 import {ArrowLeft2} from 'iconsax-react-native';
@@ -25,7 +26,6 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import {Appointment} from '../../models/Appointment';
 import firestore, {getDoc} from '@react-native-firebase/firestore';
 import {Specialization} from '../../models/Specialization';
-import {sub, subSeconds} from 'date-fns';
 
 const ReviewScreen = ({navigation, route}: any) => {
   const {data} = route.params;
@@ -46,7 +46,7 @@ const ReviewScreen = ({navigation, route}: any) => {
       await getDoctorByAppointmentID();
     };
     fetchDoctorData();
-  }, []);   
+  }, []);
 
   useEffect(() => {
     if (doctor) {
@@ -196,14 +196,11 @@ const ReviewScreen = ({navigation, route}: any) => {
         <View style={styles.starContainer}>
           {[1, 2, 3, 4, 5].map(item => (
             <TouchableOpacity key={item} onPress={() => handleRating(item)}>
-              <Image
-                source={
-                  item <= rating
-                    ? require('../../assets/images/fill-star.png')
-                    : require('../../assets/images/empty_star.png')
-                }
-                style={styles.starIcon}
-              />
+              {item <= rating ? (
+                <FontAwesome name="star" color={'blue'} size={16} />
+              ) : (
+                <FontAwesome name="star-o" color={'blue'} size={16} />
+              )}
             </TouchableOpacity>
           ))}
         </View>
@@ -218,7 +215,7 @@ const ReviewScreen = ({navigation, route}: any) => {
         value={comment}
         onChange={setComment}
       />
-
+      <Space height={70} />
       <Section styles={{alignItems: 'center'}}>
         <Button
           title="Add Review"

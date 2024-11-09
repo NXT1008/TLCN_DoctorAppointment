@@ -13,51 +13,14 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 interface Props {
   appointment: Appointment;
+  doctor: Doctor;
+  specialization: Specialization;
   onPressRebook: () => void;
   onPressAddReview: () => void;
 }
 const CompletedAppointmentCard = (prop: Props) => {
-  const {appointment, onPressAddReview, onPressRebook} = prop;
-  const [doctor, setDoctor] = useState<Doctor>();
-  const [specialization, setspecialization] = useState<Specialization>();
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // Get doctor data
-        const doctorDoc = await firestore()
-          .collection('doctors')
-          .doc(appointment.doctorId)
-          .get();
-
-        if (!doctorDoc.exists) {
-          console.error('Doctor document not found');
-          return;
-        }
-
-        const doctorData = doctorDoc.data() as Doctor;
-        setDoctor(doctorData);
-
-        // Get specialization data
-        const specDoc = await firestore()
-          .collection('specializations')
-          .doc(doctorData.specializationId)
-          .get();
-
-        if (!specDoc.exists) {
-          console.error('Specialization document not found');
-          return;
-        }
-
-        setspecialization(specDoc.data() as Specialization);
-
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    };
-
-    fetchData();
-  }, [appointment.doctorId]);
+  const {appointment, onPressAddReview, onPressRebook, doctor, specialization} =
+    prop;
 
   return (
     <Card styles={styles.appointmentContainer} shadowed>
@@ -172,7 +135,7 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#fff',
     textAlign: 'center',
-    fontSize: 14,
+    fontSize: 13,
     fontFamily: 'Poppins-Medium',
   },
 });

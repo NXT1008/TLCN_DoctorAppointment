@@ -28,11 +28,6 @@ const AppointmentNavigator = () => {
         headerShown: false,
       }}>
       <Stack.Screen name="AppointmentScreen" component={AppointmentScreen} />
-      <Stack.Screen name="CancelAppointment" component={CancelAppointment} />
-      <Stack.Screen name="ReviewScreen" component={ReviewScreen} />
-      <Stack.Screen name="DoctorDetailScreen" component={DoctorDetailScreen}/>
-      <Stack.Screen name="BookingScreen" component={BookingScreen}/>
-      <Stack.Screen name="DoctorReport" component={DoctorReportScreen}/>
     </Stack.Navigator>
   );
 }
