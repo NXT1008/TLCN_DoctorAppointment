@@ -5,6 +5,7 @@ export interface Appointment {
   endTime: Date;
   status: string;
   note: string;
+  scheduleId?: string;
   patientId: string;
   doctorId: string;
 }

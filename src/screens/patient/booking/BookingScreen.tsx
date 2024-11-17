@@ -30,17 +30,8 @@ import {formatDate} from 'date-fns';
 import {Schedule} from '../../../models/Schedule';
 import {Appointment} from '../../../models/Appointment';
 import auth from '@react-native-firebase/auth';
+import { FormatTime } from '../../../utils/formatTime';
 
-const initValue: Appointment = {
-  appointmentId: '',
-  doctorId: '',
-  patientId: '',
-  scheduleDate: new Date(),
-  startTime: new Date(),
-  endTime: new Date(),
-  note: '',
-  status: 'Upcoming',
-};
 
 const BookingScreen = ({navigation, route}: any) => {
   const {width, height} = Dimensions.get('window');
@@ -77,34 +68,8 @@ const BookingScreen = ({navigation, route}: any) => {
       endTime: scheduleChoosen?.endTime,
       note: problem,
       status: 'Upcoming',
+      scheduleId: scheduleChoosen?.scheduleId
     };
-    // setIsLoading(true);
-    // try {
-    //   const appointmentRef = await firestore()
-    //     .collection('appointments')
-    //     .add(appointment);
-    //   // Lấy ID appointment mà Firestore đã tự động tạo ra
-    //   const appointmentId = appointmentRef.id;
-    //   // Cập nhật lại appointment với appointmentId
-    //   await appointmentRef.update({appointmentId: appointmentId});
-    //   console.log('Appointment add successfully');
-    // } catch (error) {
-    //   console.log(error);
-    // }
-
-    // try {
-    //   await firestore()
-    //     .collection('schedules')
-    //     .doc(scheduleChoosen?.scheduleId)
-    //     .update({
-    //       isBook: true,
-    //     });
-    //   console.log('Update schedule successfully');
-    //   setIsLoading(false);
-    // } catch (error) {
-    //   console.log(error);
-    //   setIsLoading(false);
-    // }
     navigation.navigate('Payment', {appointment: appointment, schedule: scheduleChoosen});
   };
 
@@ -166,30 +131,8 @@ const BookingScreen = ({navigation, route}: any) => {
       });
   };
 
-  // định dạng timeslot
-  const formatAvailableDate = (availableDate: Date | Timestamp): string => {
-    let hour = 0;
-    let minute = 0;
-
-    if (availableDate instanceof Timestamp) {
-      const date = new Date(availableDate.seconds * 1000);
-      hour = date.getHours();
-      minute = date.getMinutes();
-    } else if (availableDate instanceof Date) {
-      hour = availableDate.getHours();
-      minute = availableDate.getMinutes();
-    }
-
-    // Đảm bảo định dạng giờ và phút
-    const formattedHour = hour < 10 ? `0${hour}` : hour.toString();
-    const formattedMinute = minute < 10 ? `0${minute}` : minute.toString();
-    return `${formattedHour}:${formattedMinute}`; // Trả về chuỗi thời gian
-  };
-
   return (
-    <ContainerComponent
-      isScroll
-    >
+    <ContainerComponent isScroll>
       <Section styles={styles.header}>
         <Row justifyContent="space-around">
           <ArrowLeft2 color="#000" onPress={() => navigation.goBack()} />
@@ -218,20 +161,24 @@ const BookingScreen = ({navigation, route}: any) => {
                 key={`${item.doctorId}/${index}`}
                 style={[
                   styles.timeBox,
-                  selectedTime === formatAvailableDate(item.startTime) &&
+                  selectedTime ===
+                    FormatTime.formatAvailableDate(item.startTime) &&
                     styles.selectedBox,
                 ]}
                 onPress={() => {
-                  setSelectedTime(formatAvailableDate(item.startTime));
+                  setSelectedTime(
+                    FormatTime.formatAvailableDate(item.startTime),
+                  );
                   setScheduleChoosen(item);
                 }}>
                 <TextComponent
                   styles={[
                     styles.timeText,
-                    selectedTime === formatAvailableDate(item.startTime) &&
+                    selectedTime ===
+                      FormatTime.formatAvailableDate(item.startTime) &&
                       styles.selectedBoxText,
                   ]}
-                  text={formatAvailableDate(item.startTime)}
+                  text={FormatTime.formatAvailableDate(item.startTime)}
                 />
               </TouchableOpacity>
             ))
@@ -389,8 +336,8 @@ const BookingScreen = ({navigation, route}: any) => {
         )}
       </>
       {bookingFor === 'you' && <Space height={height * 0.28} />}
-        <Section styles={{alignItems: 'center'}}>
-          <TouchableOpacity
+      <Section styles={{alignItems: 'center'}}>
+        <TouchableOpacity
           style={styles.setAppointmentButton}
           onPress={handleAddNewAppointment}>
           {isLoading ? (

@@ -10,6 +10,7 @@ export interface Doctor {
   ratingAverage?: number; // Điểm đánh giá trung bình của bác sĩ
   numberOfReviews?: number; // Số lượng đánh giá của bác sĩ
   password?: string;
+  gender?: string;
 }
 
 

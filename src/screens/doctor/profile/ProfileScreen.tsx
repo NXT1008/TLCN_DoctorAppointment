@@ -35,48 +35,46 @@ import {
 import {fontFamilies} from '../../../constants/fontFamilies';
 import ProfileComponent from './components/ProfileComponent';
 import ModalComponent from './components/ModalComponent';
-import deleteAllData from '../../../data/functions/zResetData';
-import uploadDataToFirestore from '../../../data/functions/UploadDataToFirebase';
 import firestore from '@react-native-firebase/firestore';
-import storage from '@react-native-firebase/storage';
-import {Patient} from '../../../models/Patient';
 import {useFocusEffect} from '@react-navigation/native';
 import {
   ImageLibraryOptions,
   launchImageLibrary,
 } from 'react-native-image-picker';
 import axios from 'axios';
+import { Doctor } from '../../../models/Doctor';
 
 const ProfileScreen = (props: any) => {
-  const patientId = auth().currentUser?.uid;
+  const user = auth().currentUser;
 
-  const [patient, setPatient] = useState<Patient>();
+  const [doctor, setDoctor] = useState<Doctor>();
   const [image, setImage] = useState<string>('');
-
-  useFocusEffect(
-    useCallback(() => {
-      getInfoPatient();
-    }, []),
-  );
 
   const [isAlertVisible, setAlertVisible] = useState(false);
 
-  const getInfoPatient = async () => {
-    await firestore()
-      .collection('patients')
-      .doc(patientId)
-      .get()
-      .then(
-        docSnapshot => {
-          if (docSnapshot.exists) {
-            const patientData = docSnapshot.data() as Patient;
-            setPatient(patientData);
+  useEffect(() => {
+    const unsubscribeDoctor = getInfoDoctor();
+
+    return () => {
+      unsubscribeDoctor();
+    };
+  }, []);
+
+  const getInfoDoctor = () => {
+    return firestore()
+      .collection('doctors')
+      .where('email', '==', user?.email)
+      .onSnapshot(
+        snapshot => {
+          if (!snapshot.empty) {
+            const doctorData = snapshot.docs[0].data() as Doctor;
+            setDoctor(doctorData);
           } else {
             console.log('No such document!');
           }
         },
         error => {
-          console.error('Error fetching patient:', error);
+          console.error('Error fetching doctor:', error);
         },
       );
   };
@@ -130,12 +128,12 @@ const ProfileScreen = (props: any) => {
       const downloadURL = response.data.secure_url;
 
       // Update Firestore
-      await firestore().collection('patients').doc(patientId).update({
+      await firestore().collection('doctors').doc(doctor?.doctorId).update({
         image: downloadURL,
       });
 
       setImage(downloadURL);
-      getInfoPatient();
+      getInfoDoctor();
       Alert.alert('Success', 'Image uploaded successfully');
     } catch (error) {
       console.error('Error uploading image:', error);
@@ -169,7 +167,7 @@ const ProfileScreen = (props: any) => {
           />
           <TouchableOpacity
             onPress={() => {
-              props.navigation.navigate('UpdateProfile', {patient});
+              props.navigation.navigate('UpdateProfile', {doctor});
             }}>
             <Edit color="#000" size={26} />
           </TouchableOpacity>
@@ -180,8 +178,8 @@ const ProfileScreen = (props: any) => {
           <View>
             <Image
               source={
-                patient?.image
-                  ? {uri: patient.image}
+                doctor?.image
+                  ? {uri: doctor.image}
                   : require('../../../assets/images/doctor.png')
               }
               style={{
@@ -213,12 +211,12 @@ const ProfileScreen = (props: any) => {
           <Space width={30} />
           <Col>
             <TextComponent
-              text={patient ? patient.name : ''}
+              text={doctor ? doctor.name : ''}
               size={20}
               font={fontFamilies.semiBold}
             />
             <TextComponent
-              text={patient ? patient.gender : ''}
+              text={doctor ? (doctor.gender ? doctor.gender : '') : ''}
               size={12}
               font={fontFamilies.regular}
             />
@@ -230,14 +228,14 @@ const ProfileScreen = (props: any) => {
           <Space width={20} />
           <TextComponent
             text={
-              patient
-                ? patient.phone
-                  ? patient.phone.slice(0, 4) +
+              doctor
+                ? doctor.phone
+                  ? doctor.phone.slice(0, 4) +
                     '-' +
-                    patient.phone.slice(4, 7) +
+                    doctor.phone.slice(4, 7) +
                     '-' +
-                    patient.phone.slice(7)
-                  : "Don't have"
+                    doctor.phone.slice(7)
+                  : `Don't have`
                 : ''
             }
             size={12}
@@ -250,7 +248,7 @@ const ProfileScreen = (props: any) => {
           <Sms color="#000" />
           <Space width={20} />
           <TextComponent
-            text={patient ? patient.email : ''}
+            text={doctor ? doctor.email : `Don't have`}
             size={12}
             font={fontFamilies.regular}
           />

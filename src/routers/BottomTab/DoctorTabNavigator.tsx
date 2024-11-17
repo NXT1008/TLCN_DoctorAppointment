@@ -6,6 +6,7 @@ import {Row, TextComponent} from '../../components';
 import {fontFamilies} from '../../constants/fontFamilies';
 import AppointmentNavigator from '../Navigator/Doctor/AppointmentNavigator';
 import DoctorHomeScreen from '../../screens/doctor/home/DoctorHome';
+import ScheduleScreen from '../../screens/doctor/schedule/ScheduleScreen';
 
 const TabNavigator = () => {
   const styleImage = {height: 25, width: 25};
@@ -42,10 +43,10 @@ const TabNavigator = () => {
                 />
               );
               break;
-            case 'DoctorTab':
+            case 'TimeTab':
               icon = (
                 <Image
-                  source={require('../../assets/IconTab/doctor.png')}
+                  source={require('../../assets/IconTab/timetable.png')}
                   style={styleImage}
                   resizeMode="contain"
                 />
@@ -91,6 +92,7 @@ const TabNavigator = () => {
         },
       })}>
       <Tab.Screen name="HomeTab" component={DoctorHomeScreen} />
+      <Tab.Screen name="TimeTab" component={ScheduleScreen} />
       <Tab.Screen name="HistoryTab" component={AppointmentNavigator} />
       <Tab.Screen name="ProfileTab" component={ProfileNavigator} />
     </Tab.Navigator>

@@ -16,7 +16,6 @@ import PaymentScreen from '../screens/patient/payment/PaymentScreen';
 import AddNewCardScreen from '../screens/patient/payment/AddNewCard';
 import ChatScreen from '../screens/patient/chat/ChatScreen';
 import MainChatScreen from '../screens/patient/chat/MainChatScreen';
-import ScheduleScreen from '../screens/patient/schedule/ScheduleScreen';
 import ReviewScreen from '../screens/patient/appointment/ReviewAppointment';
 import CancelAppointment from '../screens/patient/appointment/CancelAppointment';
 import ChangePassword from '../screens/patient/profile/screens/ChangePassword';
@@ -43,7 +42,6 @@ const MainNavigator = () => {
       <Stack.Screen name="AddNewCard" component={AddNewCardScreen} />
       <Stack.Screen name="ChatScreen" component={ChatScreen} />
       <Stack.Screen name="MainChatScreen" component={MainChatScreen} />
-      <Stack.Screen name="ScheduleScreen" component={ScheduleScreen} />
       <Stack.Screen name="ReviewScreen" component={ReviewScreen} />
       <Stack.Screen name="CancelAppointment" component={CancelAppointment} />
       <Stack.Screen name="ChangePassword" component={ChangePassword} />

@@ -22,6 +22,7 @@ import {ArrowLeft2} from 'iconsax-react-native';
 import {fontFamilies} from '../../../constants/fontFamilies';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
+import {Doctor} from '../../../models/Doctor';
 
 const activeUsers = [
   {
@@ -51,18 +52,46 @@ const activeUsers = [
   },
 ];
 
+
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
+
 const ChatScreen = (prop: any) => {
   const {navigation} = prop;
-  const patientId = auth().currentUser?.uid;
+  const user = auth().currentUser;
+  const [doctor, setDoctor] = useState<Doctor>();
   const [conversations, setConversations] = useState<any[]>([]);
+
+  useEffect(() => {
+    // Tạo listener cho thông tin doctor theo email đã login
+    const unsubscribeDoctor = firestore()
+      .collection('doctors')
+      .where('email', '==', user?.email)
+      .onSnapshot(
+        snapshot => {
+          if (!snapshot.empty) {
+            const doctorData = snapshot.docs[0].data() as Doctor;
+            setDoctor(doctorData);
+          }
+        },
+        error => {
+          console.error('Error listening to doctor changes:', error);
+        },
+      );
+
+    return () => {
+      unsubscribeDoctor();
+    };
+  }, []);
+
 
   // lấy toàn bộ conversations
   useEffect(() => {
+    if (!doctor?.doctorId) return;
+
     const unsubscribe = firestore()
       .collection('conversations')
-      .where('patientId', '==', patientId)
+      .where('doctorId', '==', doctor.doctorId)
       .orderBy('lastMessageTimestamp', 'desc')
       .onSnapshot(async snapshot => {
         if (!snapshot) return;
@@ -72,22 +101,21 @@ const ChatScreen = (prop: any) => {
           const data = doc.data();
           if (!data) return null;
 
-          const doctorId = data.doctorId;
-          if (!doctorId) return null;
+          const patientId = data.patientId;
+          if (!patientId) return null;
 
           try {
-            const doctorDoc = await firestore()
-              .collection('doctors')
-              .doc(doctorId)
+            const patientDoc = await firestore()
+              .collection('patients')
+              .doc(patientId)
               .get();
-            const doctorData = doctorDoc.data();
-
+            const patientData = patientDoc.data();
             return {
               conversationId: doc.id,
-              doctorName: doctorData?.name || 'Unknown Doctor',
+              patientName: patientData?.name || 'Unknown Patient',
               lastMessage: data.lastMessage || '',
               timestamp: data.lastMessageTimestamp?.toDate() || new Date(),
-              avatar: require('../../../assets/images/doctor.png'), // Default avatar
+              avatar: patientData?.image || '',
               unReadCount: data.unReadCount || 0,
             };
           } catch (error) {
@@ -104,9 +132,8 @@ const ChatScreen = (prop: any) => {
       });
 
     return () => unsubscribe();
-  }, [patientId, conversations]);
+  }, [doctor?.doctorId]);
 
-  
   const handleConversationPress = async (conversationId: string) => {
     await firestore()
       .collection('conversations')
@@ -178,7 +205,7 @@ const ChatScreen = (prop: any) => {
             <TouchableOpacity
               onPress={() => handleConversationPress(item.conversationId)}>
               <MessageItem
-                name={item.doctorName}
+                name={item.patientName}
                 avatar={item.avatar}
                 message={item.lastMessage}
                 time={

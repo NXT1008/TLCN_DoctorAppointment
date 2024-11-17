@@ -29,7 +29,6 @@ import firestore from '@react-native-firebase/firestore';
 import {Specialization} from '../../../models/Specialization';
 import {Doctor} from '../../../models/Doctor';
 import {Patient} from '../../../models/Patient';
-import {useFocusEffect} from '@react-navigation/native';
 
 const HomeScreen = (props: any) => {
   const user = auth().currentUser;
@@ -40,13 +39,6 @@ const HomeScreen = (props: any) => {
   const [loadingSpecialization, setLoadingSpecialization] = useState(false);
   const [loadingDoctors, setLoadingDoctors] = useState(false);
 
-  // useFocusEffect(
-  //   useCallback(() => {
-  //     getAllSpecializations();
-  //     getAllDoctors();
-  //     getPatientInfo();
-  //   }, []),
-  // );
 
   // Sử dụng useEffect để setup realtime listener
   useEffect(() => {
@@ -121,70 +113,6 @@ const HomeScreen = (props: any) => {
     };
   }, []);
 
-  // const getPatientInfo = async () => {
-  //   await firestore()
-  //     .collection('patients')
-  //     .doc(user?.uid)
-  //     .get()
-  //     .then(snapshot => {
-  //       setPatient(snapshot.data() as Patient);
-  //     });
-  // };
-
-  // const getAllSpecializations = async () => {
-  //   setLoadingSpecialization(true);
-  //   await firestore()
-  //     .collection('specializations')
-  //     .get()
-  //     .then(snapshot => {
-  //       if (snapshot.empty) {
-  //         console.log('Không có specialization');
-  //         return;
-  //       }
-  //       const items: Specialization[] = [];
-  //       snapshot.forEach((item: any) => {
-  //         items.push({
-  //           id: item.id,
-  //           ...item.data(),
-  //         });
-  //       });
-  //       setLoadingSpecialization(false);
-  //       setListSpecialization(items);
-  //     })
-  //     .catch(error => {
-  //       console.error('Error fetching specializations:', error); // Log lỗi
-  //       setLoadingSpecialization(false);
-  //     });
-  // };
-
-  // const getAllDoctors = async () => {
-  //   setLoadingDoctors(true);
-  //   await firestore()
-  //     .collection('doctors')
-  //     .orderBy('ratingAverage', 'desc')
-  //     .limit(5)
-  //     .get()
-  //     .then(snap => {
-  //       if (snap.empty) {
-  //         console.log('Không có bác sĩ');
-  //         return;
-  //       }
-  //       const items: Doctor[] = [];
-  //       snap.forEach((item: any) => {
-  //         items.push({
-  //           id: item.id,
-  //           ...item.data(),
-  //         });
-  //       });
-  //       setLoadingDoctors(false);
-  //       setListDoctor(items);
-  //     })
-  //     .catch(error => {
-  //       console.error('Error fetching doctor:', error); // Log lỗi
-  //       setLoadingDoctors(false);
-  //     });
-  // };
-
   return (
     <>
       <ContainerComponent isScroll style={{marginTop: -16}}>
@@ -226,7 +154,14 @@ const HomeScreen = (props: any) => {
             </TouchableOpacity>
           </Row>
 
-          <Swiper height={270} style={{marginTop: 20}} activeDotColor="#1399ba">
+          <Swiper
+            height={270}
+            style={{marginTop: 20}}
+            activeDotColor="#1399ba"
+            autoplay
+            autoplayTimeout={2}
+            loop
+          >
             <SwiperOne />
             <SwiperOne />
             <SwiperOne />

@@ -16,9 +16,10 @@ import {Patient} from '../../../../models/Patient';
 import firestore from '@react-native-firebase/firestore';
 import ModalComponent from '../components/ModalComponent';
 import {updateCurrentUser} from '@react-native-firebase/auth';
+import { Doctor } from '../../../../models/Doctor';
 
 const UpdateProfile = (props: any) => {
-  const {patient} = props.route.params;
+  const {doctor} = props.route.params;
   const [name, setName] = useState('');
   const [nickname, setNickname] = useState('');
   const [email, setEmail] = useState('');
@@ -30,32 +31,33 @@ const UpdateProfile = (props: any) => {
   const [isError, setIsError] = useState(false);
 
   useEffect(() => {
-    if (patient) {
-      setName(patient.name);
-      setNickname(patient.nickname ? patient.nickname : '');
-      setEmail(patient.email);
-      setPhone(patient.phone);
-      setGender(patient.gender);
-      setAddress(patient.address ? patient.address : '');
+    if (doctor) {
+      setName(doctor.name);
+      setNickname(doctor.nickname ? doctor.nickname : '');
+      setEmail(doctor.email);
+      setPhone(doctor.phone);
+      setGender(doctor.gender);
+      setAddress(doctor.address ? doctor.address : '');
     }
   }, []);
 
   const handleUpdateProfile = async () => {
     // Update patient data here
-    const oldPatient: Patient = patient;
-    const updatedPatient: Patient = {
-      patientId: oldPatient.patientId,
+    const oldDoctor: Doctor = doctor;
+    const updatedDoctor: Doctor = {
+      doctorId: oldDoctor.doctorId,
       name: name,
       email: email,
       phone: phone,
       gender: gender,
-      image: oldPatient.image,    
-      address: address,
+      image: oldDoctor.image,    
+      hospitalId: oldDoctor.hospitalId,
+      specializationId: oldDoctor.specializationId,
     };
     await firestore()
-      .collection('patients')
-      .doc(updatedPatient.patientId)
-      .update(updatedPatient)
+      .collection('doctors')
+      .doc(updatedDoctor.doctorId)
+      .update(updatedDoctor)
       .then(() => {
         setInfoUpdate('Update success');
         setIsError(false);

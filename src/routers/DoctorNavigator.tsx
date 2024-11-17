@@ -5,6 +5,9 @@ import DoctorNotificationScreen from '../screens/doctor/notification/DoctorNotif
 import DoctorAppointmentScreen from '../screens/doctor/appointment/DoctorAppointment';
 import DoctorReportScreen from '../screens/doctor/report/DoctorReport';
 import DoctorTabNavigator from './BottomTab/DoctorTabNavigator';
+import UpdateProfile from '../screens/doctor/profile/screens/UpdateProfile';
+import ChatScreen from '../screens/doctor/chat/ChatScreen';
+import MainChatScreen from '../screens/doctor/chat/MainChatScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -22,6 +25,9 @@ const DoctorNavigator = () => {
         component={DoctorAppointmentScreen}
       />
       <Stack.Screen name="DoctorReport" component={DoctorReportScreen} />
+      <Stack.Screen name="UpdateProfile" component={UpdateProfile} />
+      <Stack.Screen name="ChatScreen" component={ChatScreen} />
+      <Stack.Screen name="MainChatScreen" component={MainChatScreen} />
     </Stack.Navigator>
   );
 };
