@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   Dimensions,
   ScrollView,
@@ -11,59 +11,29 @@ import {
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import moment from 'moment';
-import { Calendar } from 'react-native-calendars';
+import {Calendar} from 'react-native-calendars';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { Row, Section } from '../../../components';
+import {Row, Section} from '../../../components';
 import Container from '../../../components/ContainerComponent';
-import { fontFamilies } from '../../../constants/fontFamilies';
-import { Doctor } from '../../../models/Doctor';
-import { Patient } from '../../../models/Patient';
-import { Schedule } from '../../../models/Schedule';
-import Timetable from 'react-native-calendar-timetable'
-
-interface Appointment {
-  time: Date;
-  patientName: string;
-  appointmentType: string;
-}
-
-interface DailySchedule {
-  date: Date;
-  appointments: Appointment[];
-}
-
-const schedules: DailySchedule[] = [
-  {
-    date: new Date('2024-11-15'),
-    appointments: [
-      {
-        time: new Date('2024-11-15T09:00:00'),
-        patientName: 'John Doe',
-        appointmentType: 'Consultation',
-      },
-      {
-        time: new Date('2024-11-15T10:00:00'),
-        patientName: 'Jane Smith',
-        appointmentType: 'Follow-up',
-      },
-      {
-        time: new Date('2024-11-15T12:00:00'),
-        patientName: 'Peter Parker',
-        appointmentType: 'Consultation',
-      },
-    ],
-  },
-];
+import {fontFamilies} from '../../../constants/fontFamilies';
+import {Doctor} from '../../../models/Doctor';
+import {Patient} from '../../../models/Patient';
+import {Schedule} from '../../../models/Schedule';
+// import Timetable from 'react-native-calendar-timetable';
+import {FormatTime} from '../../../utils/formatTime';
+import TimeTable from '@mikezzb/react-native-timetable';
+import {Alert} from 'react-native';
+import TimeTableComponent from './components/TimeTableComponent';
 
 const availableTimes = [
   '09:00',
-  '09:30',
   '10:00',
+  '11:00',
   '12:00',
-  '12:30',
-  '13:30',
+  '13:00',
+  '14:00',
   '15:00',
-  '16:30',
+  '16:00',
   '17:00',
 ];
 
@@ -76,15 +46,14 @@ const ScheduleScreen = () => {
   const [startDate, setStartDate] = useState<Date>(new Date());
   const [endDate, setEndDate] = useState<Date>(new Date());
   const [scheduleList, setScheduleList] = useState<Schedule[]>([]); // workingtime on a day of doctor
-  const [patientName, setPatientName] = useState('');
+  const [patientNames, setPatientNames] = useState<string[]>([]);
 
   //------
   const [showCalendar, setShowCalendar] = useState(false);
-  const [weeklySchedules, setWeeklySchedules] = useState<DailySchedule[]>([]);
+  //const [weeklySchedules, setWeeklySchedules] = useState<DailySchedule[]>([]);
 
   // get info doctor
   useEffect(() => {
-    // Tạo listener cho thông tin doctor theo email đã login
     const unsubscribeDoctor = firestore()
       .collection('doctors')
       .where('email', '==', user?.email)
@@ -105,39 +74,29 @@ const ScheduleScreen = () => {
     };
   }, []);
 
-  // useEffect get schedule by date
+  // useEffect để lấy lịch hẹn theo tuần
   useEffect(() => {
-    handleGetScheduleByTime();
-  }, [selectedDate]);
-
-  const handleGetScheduleByTime = async () => {
     const start = new Date(startDate.setHours(0, 0, 0, 0));
     const end = new Date(endDate.setHours(0, 0, 0, 0));
 
     const yearStart = start.getFullYear();
     const monthStart = start.getMonth();
     const dateStart = start.getDate();
-
     const dateEnd = end.getDate();
 
     if (doctor) {
-      //console.log(day + "/" + month + "/" + year)
-      await firestore()
+      const unsubscribeSchedule = firestore()
         .collection('schedules')
         .where('doctorId', '==', doctor.doctorId)
-        .get()
-        .then(snap => {
-          if (snap.empty) {
-            console.log('No schedules found for this doctor.');
-          } else {
+        .onSnapshot(
+          snapshot => {
             const items: Schedule[] = [];
-            snap.forEach((doc: any) => {
+            snapshot.forEach((doc: any) => {
               const data = doc.data();
               const date = data.availableDate; // type: timestamp
-              // change second -> milliseconds
               const dateObject = new Date(date.seconds * 1000);
 
-              //get day, month and year from date object
+              // Lấy ngày, tháng, năm từ đối tượng ngày
               const availableDate = dateObject.getDate();
               const availableMonth = dateObject.getMonth();
               const availableYear = dateObject.getFullYear();
@@ -155,15 +114,38 @@ const ScheduleScreen = () => {
               }
             });
             setScheduleList(items);
-            const timetableItems = transformSchedulesToTimetableItems(items);
-            setItems(timetableItems);
-          }
-        })
-        .catch(error => {
-          console.log('Error fetching data: ', error);
-        });
+          },
+          error => {
+            console.log('Error fetching schedules: ', error);
+          },
+        );
+
+      return () => {
+        unsubscribeSchedule();
+      };
     }
-  };
+  }, [doctor, startDate, endDate]);
+
+  useEffect(() => {
+    setStartDate(FormatTime.getStartOfWeek(selectedDate));
+    setEndDate(FormatTime.getEndOfWeek(selectedDate));
+  }, [selectedDate]);
+
+  // useEffect để lấy tên bệnh nhân cho mỗi cuộc hẹn
+  useEffect(() => {
+    const fetchPatientNames = async () => {
+      const names: string[] = []; // Mảng để lưu trữ tên bệnh nhân
+      for (const item of scheduleList) {
+        const name = await getPatientNameBySchedule(item);
+        names.push(name); // Thêm tên bệnh nhân vào mảng
+      }
+      setPatientNames(names); // Cập nhật state với mảng tên bệnh nhân
+    };
+
+    if (scheduleList.length > 0) {
+      fetchPatientNames();
+    }
+  }, [scheduleList]);
 
   const getPatientNameBySchedule = async (schedule: Schedule) => {
     const appointmentSnap = await firestore()
@@ -173,67 +155,18 @@ const ScheduleScreen = () => {
     if (!appointmentSnap.empty) {
       const patientId = appointmentSnap.docs[0].data().patientId;
       if (patientId) {
-        await firestore()
+        const patientSnap = await firestore()
           .collection('patients')
           .doc(patientId)
-          .get()
-          .then(snap => {
-            if (snap.exists) {
-              const tmp = snap.data() as Patient;
-              setPatientName(tmp.name);
-              console.log(tmp);
-            }
-          });
+          .get();
+        if (patientSnap.exists) {
+          const tmp = patientSnap.data() as Patient;
+          return tmp.name; // Trả về tên bệnh nhân
+        }
       }
     }
+    return ''; // Trả về chuỗi rỗng nếu không tìm thấy
   };
-
-  // format date to dd/mm/yyyy để hiển thị lên lịch
-  const getFormattedDate = (date: Date): string => {
-    return date.toLocaleDateString('en-US', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
-  };
-
-  // format date to dd/mm/yyyy để hiển thị lên lịch
-  const getShortFormattedDate = (date: Date): string => {
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const year = date.getFullYear();
-    return `${day}/${month}/${year}`;
-  };
-
-  // Lấy lịch trình tuần hiện tại
-  const getWeeklySchedules = () => {
-    const currentDay = new Date(selectedDate).getDay(); // lấy thứ hiện tại
-    const startOfWeek = new Date(selectedDate); // lấy ngày hiện tại
-    startOfWeek.setDate(new Date(selectedDate).getDate() - currentDay); // đặt ngày đầu tuần
-
-    // lấy ra 7 ngày trong tuần
-    return Array.from({length: 7}, (_, i) => {
-      const date = new Date(startOfWeek); // lấy ngày đầu tuần
-      date.setDate(startOfWeek.getDate() + i); // đặt ngày hiện tại
-      const formattedDate = getFormattedDate(date); // lấy ra ngày hiện tại
-
-      // Tìm lịch trình cho ngày này trong mảng schedules
-      const scheduleForDay = schedules.find(schedule => {
-        // Chuyển đổi chuỗi ngày từ schedule thành đối tượng Date để so sánh
-        const scheduleDate = new Date(schedule.date);
-        const currentDate = new Date(date);
-        return scheduleDate.toDateString() === currentDate.toDateString();
-      });
-      return scheduleForDay || {date: formattedDate, appointments: []};
-    });
-  };
-
-  useEffect(() => {
-    // Tính toán lại lịch trình khi `selectedDate` thay đổi
-    const newWeeklySchedules = getWeeklySchedules();
-    setWeeklySchedules(newWeeklySchedules as DailySchedule[]);
-  }, [selectedDate]); // Chạy lại khi `selectedDate` thay đổi
 
   // chuyển sang tuần tiếp theo
   const goToNextWeek = () => {
@@ -253,65 +186,13 @@ const ScheduleScreen = () => {
     });
   };
 
-  const getStartOfWeek = (date: Date): Date => {
-    const startOfWeek = new Date(date);
-    startOfWeek.setDate(date.getDate() - date.getDay());
-    return startOfWeek;
-  };
-
-  const getEndOfWeek = (date: Date): Date => {
-    const endOfWeek = new Date(date);
-    endOfWeek.setDate(date.getDate() + (6 - date.getDay()));
-    return endOfWeek;
-  };
-
   // Thêm mảng các ngày trong tuần cố định
   const weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
-  const convertTo12HourFormat = (time: Date) => {
-    const hours = time.getUTCHours();
-    const minutes = time.getUTCMinutes();
-    const ampm = hours >= 12 ? 'PM' : 'AM';
-    const hour12 = hours % 12 || 12; // Convert hour to 12-hour format
-    const hourWithPrefix = hour12 < 10 ? '0' + hour12 : hour12; // Add prefix 0 if hour < 10
-    const minute = minutes < 10 ? '0' + minutes : minutes;
-    return `${hourWithPrefix}:${minute} ${ampm}`;
-  };
-
-  // Chuyển đổi dữ liệu thành format của Timetable
-  // const timetableItems = scheduleList.flatMap((schedule, dayIndex) => {
-  //   return schedule.map(appointment => ({
-  //     startDate: `2024-11-${dayIndex + 13}T${appointment.time}`,
-  //     endDate: `2024-11-${dayIndex + 13}T${appointment.time}`, // endDate có thể cộng thêm 30 phút
-  //     title: 'aaa',
-  //     day: schedule,
-  //   }));
-  // });
-
+  // 13:00
+  //console.log(FormatTime.formatAvailableDate(new Date()))
+  //console.log(convertTo12HourFormat(new Date())) // 08:00 AM
   ///-------------------
-  const [from] = React.useState(moment().subtract(3, 'days').toDate());
-  const [till] = React.useState(moment().add(3, 'days').toDate());
-  const range = {from, till};
-
-  const [items, setItems] = useState<any[]>([]);
-  function transformSchedulesToTimetableItems(schedules: Schedule[]) {
-    return schedules.map(schedule => ({
-      key: schedule.scheduleId,
-      startDate: new Date(),
-      // (schedule.availableDate as Date).getFullYear(),
-      // (schedule.availableDate as Date).getMonth(),
-      // (schedule.availableDate as Date).getDate(),
-      // schedule.startTime.getHours(),
-      // schedule.startTime.getMinutes(),
-      endDate: new Date(),
-      // (schedule.availableDate as Date).getFullYear(),
-      // (schedule.availableDate as Date).getMonth(),
-      // (schedule.availableDate as Date).getDate(),
-      // schedule.endTime.getHours(),
-      // schedule.endTime.getMinutes(),
-      data: schedule, // Lưu dữ liệu gốc nếu cần dùng thêm
-    }));
-  }
 
   return (
     <Container
@@ -321,66 +202,13 @@ const ScheduleScreen = () => {
         padding: 16,
         backgroundColor: '#fff',
       }}>
-      <ScrollView>
-        {/* <Timetable
-          style={{
-            container: {backgroundColor: '#f5f5f5'},
-            headersContainer: {
-              backgroundColor: '#ffffff',
-              borderBottomWidth: 1,
-              borderBottomColor: '#ccc',
-            },
-            contentContainer: {padding: 10},
-            time: {color: '#333', fontWeight: 'bold'},
-            lines: {borderColor: '#ddd', borderBottomWidth: 1},
-          }}
-          items={items}
-          renderHeader={day => (
-            <View style={styles.headerCell}>
-              <Text style={styles.headerText}>
-                {weekDays[day.date.getDay()]}
-              </Text>
-            </View>
-          )}
-          renderItem={item => (
-            <View
-              key={item.key}
-              style={[styles.cell, {backgroundColor: '#e1f5fe'}]}>
-              <Text style={styles.cellText}>{item.data}</Text>
-            </View>
-          )}
-          timeWidth={60} // Tăng độ rộng cột thời gian
-          hourHeight={60} // Giảm chiều cao mỗi giờ để hiển thị gọn hơn
-          columnHorizontalPadding={10} // Khoảng cách giữa các cột
-          date={new Date('2024-11-13')}
-          fromHour={8}
-          toHour={18}
-        /> */}
-        {/* <Timetable
-          items={scheduleList}
-          renderItem={({item}) => (
-            <View
-              key={item.key || item.data.id || item.data.startTime}
-              style={{
-                backgroundColor: 'red'
-              }}>
-              <TextComponent text="aaaa" color="#000" />
-              <Text>{`Start: ${item.data.startTime}`}</Text>
-              <Text>{`End: ${item.data.endTime}`}</Text>
-            </View>
-          )}
-          range={{
-            from: new Date('2024-11-01T00:00:00'), // Ngày bắt đầu
-            till: new Date('2024-11-05T23:59:59'), // Ngày kết thúc
-          }}
-        /> */}
-      </ScrollView>
       <Section
         styles={{flexDirection: 'row', alignItems: 'center', marginBottom: 20}}>
         <Row justifyContent="space-around">
           <Text style={styles.headerText}>Doctor's Weekly Schedule</Text>
         </Row>
       </Section>
+
       <View
         style={{
           flexDirection: 'row',
@@ -391,8 +219,13 @@ const ScheduleScreen = () => {
           <Icon name="arrow-back" size={24} color="#21a691" />
         </TouchableOpacity>
         <Text style={styles.selectedDate}>
-          {getShortFormattedDate(getStartOfWeek(new Date(selectedDate)))} -{' '}
-          {getShortFormattedDate(getEndOfWeek(new Date(selectedDate)))}
+          {FormatTime.getShortFormattedDate(
+            FormatTime.getStartOfWeek(new Date(selectedDate)),
+          )}{' '}
+          -{' '}
+          {FormatTime.getShortFormattedDate(
+            FormatTime.getEndOfWeek(new Date(selectedDate)),
+          )}
         </Text>
         <TouchableOpacity onPress={() => setShowCalendar(!showCalendar)}>
           <Icon name="calendar-outline" size={24} color="#21a691" />
@@ -412,8 +245,8 @@ const ScheduleScreen = () => {
           <Calendar
             onDayPress={(day: any) => {
               setSelectedDate(new Date(day.dateString));
-              setStartDate(getStartOfWeek(new Date(day.dateString)));
-              setEndDate(getEndOfWeek(new Date(day.dateString)));
+              setStartDate(FormatTime.getStartOfWeek(new Date(day.dateString)));
+              setEndDate(FormatTime.getEndOfWeek(new Date(day.dateString)));
               setShowCalendar(false);
             }}
             markedDates={{
@@ -466,7 +299,14 @@ const ScheduleScreen = () => {
         )}
       </Section>
 
-      <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+      <View style={{paddingTop: 20, paddingHorizontal: 5}}>
+        <TimeTableComponent
+          selectedDate={selectedDate}
+          doctorId={doctor ? doctor.doctorId : ''}
+        />
+      </View>
+
+      {/* <ScrollView horizontal showsHorizontalScrollIndicator={false}>
         <View style={styles.tableContainer}>
           <View style={styles.tableHeader}>
             <View style={[styles.headerCell, {width: 60}]}>
@@ -485,30 +325,45 @@ const ScheduleScreen = () => {
                 <View style={styles.timeCell}>
                   <Text style={styles.cellText}>{timeSlot}</Text>
                 </View>
-                {weeklySchedules.map((schedule, index) => {
-                  const appointment = schedule.appointments.find(app => {
-                    const time = convertTo12HourFormat(app.time);
+                {scheduleList.length > 0
+                  ? scheduleList.map((item, index) => {
+                      const patientName = patientNames[index] || ''; // Lấy tên bệnh nhân từ state
+                      const scheduleStartTime = FormatTime.formatAvailableDate(
+                        item.startTime,
+                      ); // Định dạng thời gian bắt đầu
+                      const scheduleEndTime = FormatTime.formatAvailableDate(
+                        item.endTime,
+                      ); // Định dạng thời gian kết thúc
 
-                    return time === timeSlot;
-                  });
-                  return (
-                    <View key={index} style={styles.cell}>
-                      <Text
-                        style={
-                          appointment ? styles.cellText : styles.emptyCellText
-                        }>
-                        {appointment
-                          ? appointment.patientName.slice(0, 10)
-                          : '-'}
-                      </Text>
-                    </View>
-                  );
-                })}
+                      // Kiểm tra xem khung giờ có trùng với lịch hẹn không
+                      const isTimeSlotMatched = timeSlot === scheduleStartTime;
+
+                      return (
+                        <View key={index} style={styles.cell}>
+                          <Text
+                            style={
+                              isTimeSlotMatched && patientName !== ''
+                                ? styles.cellText
+                                : styles.emptyCellText
+                            }>
+                            {isTimeSlotMatched && patientName !== ''
+                              ? patientName.split(' ').pop()
+                              : '-'}
+                          </Text>
+                        </View>
+                      );
+                    })
+                  : Array.from({length: 6}, (_, index) => (
+                      <View key={index} style={styles.cell}>
+                        <Text style={styles.emptyCellText}>{'-'}</Text>
+                      </View>
+                    ))}
               </View>
             ))}
           </View>
         </View>
-      </ScrollView>
+      </ScrollView> */}
+      
     </Container>
   );
 };
@@ -581,7 +436,6 @@ const styles = StyleSheet.create({
     width: (width * 1.1 - 60) / 6, // Điều chỉnh độ rộng để phù hợp với header
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 5,
     borderRightWidth: 1,
     borderRightColor: '#ccc',
     height: '100%',

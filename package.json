@@ -13,6 +13,7 @@
     "@date-io/date-fns": "^3.0.0",
     "@fortawesome/free-solid-svg-icons": "^6.6.0",
     "@fortawesome/react-native-fontawesome": "^0.3.2",
+    "@mikezzb/react-native-timetable": "^0.2.6",
     "@mui/x-date-pickers": "^7.21.0",
     "@react-native-community/checkbox": "^0.5.17",
     "@react-native-community/datetimepicker": "^8.2.0",
@@ -59,7 +60,8 @@
     "react-native-tab-view": "^3.5.2",
     "react-native-vector-icons": "^10.2.0",
     "react-native-webview": "^13.12.3",
-    "react-native-week-view": "^0.30.0"
+    "react-native-week-view": "^0.30.0",
+    "react-native-weekly-view": "^1.1.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
