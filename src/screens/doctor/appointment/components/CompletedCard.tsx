@@ -1,38 +1,50 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {View, Text, StyleSheet, TouchableOpacity, Image} from 'react-native';
 import {Appointment} from '../../../../models/Appointment';
 import {Review} from '../../../../models/Review';
-import {Card} from '../../../../components';
-import {NavigationProp, useNavigation} from '@react-navigation/native';
+import {Card, Row, Space, TextComponent} from '../../../../components';
+import {Doctor} from '../../../../models/Doctor';
+import {Specialization} from '../../../../models/Specialization';
+import firestore, {doc} from '@react-native-firebase/firestore';
+import {fontFamilies} from '../../../../constants/fontFamilies';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import {Patient} from '../../../../models/Patient';
 
 interface Props {
   appointment: Appointment;
-  review?: Review;
-  onPress(): void;
+  patient: Patient;
+  onPressAddReview: () => void;
 }
 const CompletedAppointmentCard = (prop: Props) => {
-  const {appointment, review, onPress} = prop;
+  const {appointment, onPressAddReview, patient} = prop;
+
   return (
     <Card styles={styles.appointmentContainer} shadowed>
       <View style={styles.profileInfo}>
         <Image
-          source={require('../../../../assets/images/doctor.png')}
+          source={
+            patient?.image && patient?.image.includes('https')
+              ? {uri: patient.image}
+              : require('../../../../assets/images/doctor.png')
+          }
           style={styles.profileImage}
         />
         <View>
-          <Text style={styles.patientName}>{appointment.patientId}</Text>
-          <View style={styles.ratingContainer}>
-            <Text style={styles.ratingText}>{review?.rating}</Text>
-            <Image
-              source={require('../../../../assets/images/fill-star.png')}
-              style={styles.ratingIcon}
-            />
-          </View>
+          <Text style={styles.doctorName}>{patient?.name}</Text>
+          <Row
+            justifyContent="flex-start"
+            alignItems="baseline"
+            styles={{marginTop: 0, marginBottom: -5}}>
+            <FontAwesome name="star" size={16} color="#21a691" />
+            <Space width={5} />
+          </Row>
         </View>
       </View>
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.resultButton} onPress={onPress}>
-          <Text style={styles.buttonText}>Result</Text>
+        <TouchableOpacity
+          style={styles.addReviewButton}
+          onPress={onPressAddReview}>
+          <Text style={styles.buttonText}>Add Review</Text>
         </TouchableOpacity>
       </View>
     </Card>
@@ -58,24 +70,19 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     marginRight: 15,
   },
-  patientName: {
+  doctorName: {
     fontSize: 16,
     color: '#21a691',
     letterSpacing: 0,
     left: 0,
     top: 0,
-    fontFamily: 'Poppins-Medium',
+    fontFamily: fontFamilies.medium,
   },
   specialty: {
     fontSize: 14,
     color: '#27403e',
     marginTop: 6,
     fontFamily: 'Poppins-Regular',
-  },
-  ratingContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 5,
   },
   ratingText: {
     fontSize: 14,
@@ -93,26 +100,33 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     flexDirection: 'row',
-    justifyContent: 'center',
-    alignContent: 'center',
+    justifyContent: 'space-between',
     marginTop: 10,
     marginRight: 17,
     marginLeft: 17,
   },
-  resultButton: {
+  rebookButton: {
     backgroundColor: '#21a691',
-    height: 27,
+    height: 30,
     width: 116,
     borderRadius: 18,
     marginTop: 9,
     alignItems: 'center',
     justifyContent: 'center',
-    alignContent: 'center',
+  },
+  addReviewButton: {
+    backgroundColor: '#27403e',
+    height: 30,
+    width: 116,
+    borderRadius: 18,
+    marginTop: 9,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   buttonText: {
     color: '#fff',
     textAlign: 'center',
-    fontSize: 14,
+    fontSize: 13,
     fontFamily: 'Poppins-Medium',
   },
 });

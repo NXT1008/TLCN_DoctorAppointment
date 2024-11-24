@@ -68,7 +68,6 @@ const PaymentMethodComponent = ({navigation, route}: any) => {
   }, []);
 
   const handlePayNow = async () => {
-    console.log("Appointment: ", appointment);
     setIsLoading(true); // Bắt đầu quá trình loading
 
     let appointmentId = ''; // Khai báo biến để lưu appointmentId

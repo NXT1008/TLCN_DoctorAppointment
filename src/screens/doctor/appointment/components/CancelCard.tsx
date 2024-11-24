@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -8,33 +8,41 @@ import {
   StyleSheet,
   Alert,
 } from 'react-native';
-import { Doctor } from '../../../../models/Doctor'
-import { Card } from '../../../../components'
+import {Doctor} from '../../../../models/Doctor';
+import {Card} from '../../../../components';
+import {Appointment} from '../../../../models/Appointment';
+import {Specialization} from '../../../../models/Specialization';
+import firestore from '@react-native-firebase/firestore';
+import {Patient} from '../../../../models/Patient';
 
 interface Props {
-  doctor: Doctor,
-  onPress: () => void
+  appointment: Appointment;
+  patient: Patient;
+  onPress: () => void;
 }
 
 const DoctorCard = (props: Props) => {
-  const { doctor, onPress } = props
+  const {appointment, onPress, patient} = props;
   return (
     <Card styles={styles.cardContainer} shadowed>
       <View style={styles.profileContainer}>
         <Image
-          source={require('../../../../assets/images/doctor.png')}
+          source={
+            patient?.image && patient?.image.includes('https')
+              ? {uri: patient.image}
+              : require('../../../../assets/images/doctor.png')
+          }
           style={styles.profileImage}
         />
         <View style={styles.doctorInfo}>
-          <Text style={styles.doctorName}>{doctor.name}</Text>
-          <Text style={styles.specialty}>{doctor.specializationId}</Text>
+          <Text style={styles.doctorName}>{patient?.name}</Text>
         </View>
       </View>
-      {/* <View style={styles.buttonContainer}>
+      <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.detailsButton} onPress={onPress}>
           <Text style={styles.buttonText}>Add Review</Text>
         </TouchableOpacity>
-      </View> */}
+      </View>
     </Card>
   );
 };
@@ -68,14 +76,14 @@ const styles = StyleSheet.create({
     letterSpacing: 0,
     left: 0,
     top: 0,
-    fontFamily: 'Poppins-Medium'
+    fontFamily: 'Poppins-Medium',
   },
   specialty: {
     fontSize: 14,
     color: '#27403e',
     fontWeight: '400',
     marginTop: 6,
-    fontFamily: 'Poppins-Regular'
+    fontFamily: 'Poppins-Regular',
   },
   appointmentInfo: {
     flexDirection: 'row',
@@ -98,7 +106,7 @@ const styles = StyleSheet.create({
   },
   detailsButton: {
     backgroundColor: '#27403e',
-    height: 27,
+    height: 30,
     width: 174,
     borderRadius: 18,
     marginTop: 9,
@@ -108,8 +116,8 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#fff',
     textAlign: 'center',
-    fontSize: 14,
-    fontFamily: 'Poppins-Medium'
+    fontSize: 13,
+    fontFamily: 'Poppins-Medium',
   },
   checkButton: {
     backgroundColor: '#fff',

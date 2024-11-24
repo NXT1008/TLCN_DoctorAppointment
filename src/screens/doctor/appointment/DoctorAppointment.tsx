@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Image,
   FlatList,
+  Alert,
 } from 'react-native';
 
 import {
@@ -13,120 +14,151 @@ import {
   ContainerComponent,
   Row,
   Section,
-  TextComponent
-} from '../../../components'
-import CompletedCard from './components/CompletedCard'
-import UpcomingCard from './components/UpcomingCard'
-import CancelCard from './components/CancelCard'
-import {Doctor} from '../../../models/Doctor';
+  TextComponent,
+} from '../../../components';
+import CompletedCard from './components/CompletedCard';
+import UpcomingCard from './components/UpcomingCard';
+import CancelCard from './components/CancelCard';
 import {Appointment} from '../../../models/Appointment';
-import firestore from '@react-native-firebase/firestore';
+import {Doctor} from '../../../models/Doctor';
+import firestore, {getDoc} from '@react-native-firebase/firestore';
 import {fontFamilies} from '../../../constants/fontFamilies';
+import auth from '@react-native-firebase/auth';
+import {Specialization} from '../../../models/Specialization';
+import { Patient } from '../../../models/Patient';
 
-const appointments: Appointment[] = [
-  {
-    appointmentId: '1',
-    patientId: 'p001',
-    doctorId: 'd001',
-    scheduleDate: new Date('2024-10-19'),
-    startTime: new Date('2024-10-19T15:30:00'),
-    endTime: new Date('2024-10-19T15:30:00'),
-    status: 'completed',
-    note: 'Hẹn gặp để kiểm tra sức khỏe tổng quát.',
-  },
-  {
-    appointmentId: '2',
-    patientId: 'p002',
-    doctorId: 'd002',
-    scheduleDate: new Date('2024-06-13'),
-    startTime: new Date('2024-06-13T10:00:00'),
-    endTime: new Date('2024-06-13T10:30:00'),
-    status: 'booked',
-    note: 'Hẹn gặp bác sĩ để kiểm tra da liễu.',
-  },
-  {
-    appointmentId: '3',
-    patientId: 'p003',
-    doctorId: 'd001',
-    scheduleDate: new Date('2024-06-14'),
-    startTime: new Date('2024-06-14T11:00:00'),
-    endTime: new Date('2024-06-14T11:30:00'),
-    status: 'canceled',
-    note: 'Hủy hẹn do lý do cá nhân.',
-  },
-  {
-    appointmentId: '4',
-    patientId: 'p004',
-    doctorId: 'd003',
-    scheduleDate: new Date('2024-06-15'),
-    startTime: new Date('2024-06-15T14:00:00'),
-    endTime: new Date('2024-06-15T14:30:00'),
-    status: 'completed',
-    note: 'Kiểm tra định kỳ sức khỏe cho bệnh nhân.',
-  },
-  {
-    appointmentId: '5',
-    patientId: 'p005',
-    doctorId: 'd004',
-    scheduleDate: new Date('2024-06-16'),
-    startTime: new Date('2024-06-16T15:00:00'),
-    endTime: new Date('2024-06-16T15:30:00'),
-    status: 'booked',
-    note: 'Khám sức khỏe tổng quát.',
-  },
-  {
-    appointmentId: '6',
-    patientId: 'p006',
-    doctorId: 'd001',
-    scheduleDate: new Date('2024-06-17'),
-    startTime: new Date('2024-06-17T10:00:00'),
-    endTime: new Date('2024-06-17T10:30:00'),
-    status: 'completed',
-    note: 'Hẹn gặp để kiểm tra tình trạng sức khỏe.',
-  },
-];
-const doctors: Doctor[] = [
-  {
-    doctorId: 'doctor01',
-    name: 'Dr. Olivia Turner, M.D.',
-    email: 'olivia@example.com',
-    phone: '123-456-7890',
-    image: 'https://via.placeholder.com/150',
-    specializationId: 'Dermato-Endocrinology',
-    hospitalId: 'hosp001',
-  },
-  {
-    doctorId: 'doctor02',
-    name: 'Dr. Olivia Turner, M.D.',
-    email: 'olivia@example.com',
-    phone: '123-456-7890',
-    image: 'https://via.placeholder.com/150',
-    specializationId: 'Dermato-Endocrinology',
-    hospitalId: 'hosp001',
-  },
-  {
-    doctorId: 'doctor03',
-    name: 'Dr. Alexander Bennett, Ph.D.',
-    email: 'olivia@example.com',
-    phone: '123-456-7890',
-    image: 'https://via.placeholder.com/150',
-    specializationId: 'Dermato-Endocrinology',
-    hospitalId: 'hosp001',
-  },
-];
-
-const DoctorAppointmentScreen = (props: any) => {
+const DoctorAppointment = (props: any) => {
   const { navigation } = props;
 
-  const [appointmentList, setAppointmentList] = useState<Appointment[]>([]);
+  const user = auth().currentUser
+  const [doctor, setDoctor] = useState<Doctor>();
 
+  const [appointmentList, setAppointmentList] = useState<Appointment[]>([]);
+  const [filteredAppointments, setFilteredAppointments] = useState<
+    Appointment[]
+    >([]);
+  
+  const [statusFilter, setStatusFilter] = useState('Upcoming'); // Trạng thái hiện tại
+  const [showComplete, setShowComplete] = useState<boolean>(false);
+  const [showUpcoming, setShowUpcoming] = useState<boolean>(true);
+  const [showCancel, setShowCancel] = useState<boolean>(false);
+
+  const [patients, setPatients] = useState<{[key: string]: Patient}>({});
+
+
+
+  // get info doctor
   useEffect(() => {
-    getAppointmentByPatientID();
+    const unsubscribeDoctor = firestore()
+      .collection('doctors')
+      .where('email', '==', user?.email)
+      .onSnapshot(
+        snapshot => {
+          if (!snapshot.empty) {
+            const doctorData = snapshot.docs[0].data() as Doctor;
+            setDoctor(doctorData);
+          }
+        },
+        error => {
+          console.log('Error listening to doctor changes:', error);
+        },
+      );
+
+    return () => {
+      unsubscribeDoctor();
+    };
   }, []);
 
-  const [showComplete, setShowComplete] = useState<boolean>(true);
-  const [showUpcoming, setShowUpcoming] = useState<boolean>(false);
-  const [showCancel, setShowCancel] = useState<boolean>(false);
+  useEffect(() => {
+    const unsubcribe = getAllAppointmentByDoctorID();
+
+    return () => {
+      if (unsubcribe) unsubcribe();
+    };
+  }, [doctor]);
+
+  // effect fiilter
+  useEffect(() => {
+    filterAppointments(statusFilter);
+  }, [statusFilter, appointmentList]);
+
+  // Thêm useEffect mới để fetch tất cả patients
+  useEffect(() => {
+    const fetchDoctorsAndSpecializations = async () => {
+      try {
+        // Fetch all doctors
+        const patientsSnapshot = await firestore().collection('patients').get();
+        const patientsData: {[key: string]: Patient} = {};
+        patientsSnapshot.forEach(doc => {
+          patientsData[doc.id] = doc.data() as Patient;
+        });
+        setPatients(patientsData);
+        
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchDoctorsAndSpecializations();
+  }, []);
+
+  // Hàm lọc cuộc hẹn dựa trên trạng thái
+  const filterAppointments = (status: string) => {
+    const filtered: Appointment[] = appointmentList.filter(
+      appointment => appointment.status === status,
+    );
+    setFilteredAppointments(filtered);
+    // console.log("-------------------")
+    // console.log(filtered.length)
+  };
+
+  const getAllAppointmentByDoctorID = () => {
+    if (!doctor) return;
+    return firestore()
+      .collection('appointments')
+      .where('doctorId', '==', doctor?.doctorId)
+      .onSnapshot(
+        docSnapShot => {
+          if (docSnapShot.empty) {
+            console.log('Không có appointment');
+          } else {
+            const items: Appointment[] = []; // Tạo mảng hứng dữ liệu
+            docSnapShot.forEach((item: any) => {
+              const appointmentData = {
+                id: item.id,
+                ...item.data(),
+                scheduleDate: item.data().scheduleDate.toDate(), // Chuyển đổi sang Date
+                startTime: item.data().startTime.toDate(), // Chuyển đổi sang Date
+                endTime: item.data().endTime.toDate(), // Chuyển đổi sang Date
+              };
+              items.push(appointmentData);
+            });
+            setAppointmentList(items);
+          }
+        },
+        error => {
+          console.log('Lỗi khi load dữ appointment:', error.message); // Log lỗi nếu có
+        },
+      );
+  };
+
+  const getPatientByAppointment = async (appointment: Appointment) => {
+    const snap = await firestore()
+      .collection('patients')
+      .doc(appointment.patientId)
+      .get(); // Sử dụng get() để lấy dữ liệu 1 lần
+
+    if (snap.exists) {
+      const patient = snap.data() as Patient;
+      return patient; // Trả về giá trị bác sĩ
+    } else {
+      console.error(
+        'Patient not found for appointment ID:',
+        appointment.patientId,
+      );
+      return null;
+    }
+  };
 
   const handleCompleteButtonClick = () => {
     setShowUpcoming(false);
@@ -138,38 +170,16 @@ const DoctorAppointmentScreen = (props: any) => {
     setShowUpcoming(true);
     setShowComplete(false);
     setShowCancel(false);
+    setStatusFilter('Upcoming');
   };
 
   const handleCancelButtonClick = () => {
     setShowUpcoming(false);
     setShowComplete(false);
     setShowCancel(true);
+    setStatusFilter('Canceled');
   };
 
-  // Hiện tại là lấy tất cả Appointment của Patient do chưa truyền pId
-  const getAppointmentByPatientID = async () => {
-    await firestore()
-      .collection('appointments')
-      .get()
-      .then(snap => {
-        if (snap.empty) {
-          console.log('Không có appointment');
-        } else {
-          const items: Appointment[] = []; // Tạo mảng hứng dữ liệu
-          // duyệt từng item có trong snap, push vào trong list items
-          snap.forEach((item: any) =>
-            items.push({
-              id: item.id,
-              ...item.data(),
-            }),
-          );
-          setAppointmentList(items);
-        }
-      })
-      .catch(error => {
-        console.log('Lỗi khi load dữ appointment' + error.message);
-      });
-  };
 
   return (
     <ContainerComponent>
@@ -178,54 +188,64 @@ const DoctorAppointmentScreen = (props: any) => {
         size={25}
         font={fontFamilies.semiBold}
         color="#0B8FAC"
-        textAlign='center'
+        textAlign="center"
       />
 
       <Section styles={{marginTop: 10}}>
-        <Row justifyContent='space-between'>
+        <Row justifyContent="space-between">
           <TouchableOpacity
             style={[styles.filterButton, showComplete && styles.buttonActive]}
             onPress={handleCompleteButtonClick}>
-            <TextComponent 
-             text= "Complete"
-             size = {14}
-             color='#ffffff'
-             font = 'Poppins-Medium'
-             />
+            <TextComponent
+              text="Complete"
+              size={14}
+              color="#ffffff"
+              font="Poppins-Medium"
+            />
           </TouchableOpacity>
 
           <TouchableOpacity
-          style={[styles.filterButton, showUpcoming && styles.buttonActive]}
-          onPress={handleUpcomingButtonClick}>
-          <TextComponent
-            text='Upcoming'
-            size={14}
-            color='#ffffff'
-            font = 'Poppins-Medium'
+            style={[styles.filterButton, showUpcoming && styles.buttonActive]}
+            onPress={handleUpcomingButtonClick}>
+            <TextComponent
+              text="Upcoming"
+              size={14}
+              color="#ffffff"
+              font="Poppins-Medium"
             />
-        </TouchableOpacity>
+          </TouchableOpacity>
 
-        <TouchableOpacity
-          style={[styles.filterButton, showCancel && styles.buttonActive]}
-          onPress={handleCancelButtonClick}>
-        <TextComponent
-            text='Cancelled'
-            size={14}
-            color='#ffffff'
-            font = 'Poppins-Medium'
+          <TouchableOpacity
+            style={[styles.filterButton, showCancel && styles.buttonActive]}
+            onPress={handleCancelButtonClick}>
+            <TextComponent
+              text="Canceled"
+              size={14}
+              color="#ffffff"
+              font="Poppins-Medium"
             />
-        </TouchableOpacity>
+          </TouchableOpacity>
         </Row>
       </Section>
 
       {showComplete && (
         <FlatList
-          data={appointments}
-          renderItem={({ item }) => (
-            <CompletedCard 
-            appointment={item} 
-            review={undefined} 
-            onPress={() => navigation.navigate('BookingScreen')}/>
+          data={filteredAppointments}
+          renderItem={({item}) => (
+            <CompletedCard                      
+              appointment={item}
+              patient={patients[item.patientId]}
+              onPressAddReview={() =>
+                navigation.navigate('ReviewScreen', {
+                  data: {
+                    ...item,
+                    endTime: item.endTime.getTime(), // hoặc endTime.toISOString()
+                    startTime: item.startTime.getTime(),
+                    scheduleDate: item.scheduleDate.getTime(),
+                  },
+                })
+              }
+            />
           )}
           keyExtractor={item => item.appointmentId}
           showsVerticalScrollIndicator={false}
@@ -234,13 +254,39 @@ const DoctorAppointmentScreen = (props: any) => {
 
       {showUpcoming && (
         <FlatList
-          data={appointments}
-          renderItem={({ item }) => (
-          <UpcomingCard 
-            appointment={item}
-            onPress={() => navigation.navigate('DoctorDetailScreen')}
-          />)}
-    
+          data={filteredAppointments}
+          renderItem={({item}) => (
+            <UpcomingCard
+              appointment={item}
+              patient={patients[item.patientId]}
+              onPressDetail={async () => {
+                const patient = await getPatientByAppointment(item)
+                if (patient) {
+                  navigation.navigate('DoctorReport',
+                    {
+                      patient: patient,
+                      doctor: doctor,
+                      appointment: {
+                        ...item,
+                        scheduleDate: item.scheduleDate.toISOString(),
+                        startTime: item.startTime.toISOString(),
+                        endTime: item.endTime.toISOString()
+                      }
+                    });
+                }
+              }}
+              onPressCancel={() => {
+                navigation.navigate('CancelAppointment', {
+                  data: {
+                    ...item,
+                    endTime: item.endTime.getTime(),
+                    startTime: item.startTime.getTime(),
+                    scheduleDate: item.scheduleDate.getTime(),
+                  },
+                });
+              }}
+            />
+          )}
           keyExtractor={item => item.appointmentId}
           showsVerticalScrollIndicator={false}
         />
@@ -248,21 +294,28 @@ const DoctorAppointmentScreen = (props: any) => {
 
       {showCancel && (
         <FlatList
-          data={doctors}
-          renderItem={({ item }) => (
+          data={filteredAppointments}
+          renderItem={({item}) => (
             <CancelCard
-              doctor={item}
+              appointment={item}
+              patient={patients[item.patientId]}
               onPress={() => {
-                navigation.navigate('ReviewScreen');
+                navigation.navigate('ReviewScreen', {
+                  data: {
+                    ...item,
+                    endTime: item.endTime.getTime(), // hoặc endTime.toISOString()
+                    startTime: item.startTime.getTime(),
+                    scheduleDate: item.scheduleDate.getTime(),
+                  },
+                });
               }}
             />
           )}
-          keyExtractor={item => item.doctorId}
+          keyExtractor={item => item.appointmentId}
           showsVerticalScrollIndicator={false}
         />
       )}
-
-</ContainerComponent>
+    </ContainerComponent>
   );
 };
 
@@ -325,4 +378,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default DoctorAppointmentScreen;
+export default DoctorAppointment;

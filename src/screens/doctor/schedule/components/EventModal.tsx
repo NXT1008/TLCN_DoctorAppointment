@@ -30,12 +30,12 @@ const EventModal = ({visible, event, onClose}: EventModalProps) => {
     <Modal visible={visible} transparent animationType="slide">
       <View style={styles.modalOverlay}>
         <View style={styles.modalContent}>
-          <Text style={styles.modalTitle}>Event Details</Text>
+          <Text style={styles.modalTitle}>Schedule Details</Text>
 
           {/* Thông tin event */}
           <View style={styles.eventDetails}>
             <Row justifyContent="space-between">
-              <Text style={styles.label}>Title:</Text>
+              <Text style={styles.label}>Patient:</Text>
               <Text style={styles.value}>{event.title || 'No Title'}</Text>
             </Row>
             <Row justifyContent="space-between">
@@ -57,15 +57,10 @@ const EventModal = ({visible, event, onClose}: EventModalProps) => {
               </Text>
             </Row>
             <Row justifyContent="space-between">
-              <Text style={styles.label}>Section:</Text>
+              <Text style={styles.label}>Note:</Text>
               <Text style={styles.value}>{event.section || 'None'}</Text>
             </Row>
-            <Row justifyContent="space-between">
-              <Text style={styles.label}>Group Index:</Text>
-              <Text style={styles.value}>
-                {event.groupIndex !== undefined ? event.groupIndex : 'None'}
-              </Text>
-            </Row>
+            
           </View>
 
           {/* Button đóng modal */}

@@ -1,28 +1,45 @@
-import React from 'react';
-import {View, Text, StyleSheet, TouchableOpacity, Image} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+  Alert,
+} from 'react-native';
 import {Appointment} from '../../../../models/Appointment';
 import DateDisplay from './DateDisplay';
 import TimeDisplay from './TimeDisplay';
-import {Card} from '../../../../components';
-import {NavigationProp, useNavigation} from '@react-navigation/native';
+import {Card, TextComponent} from '../../../../components';
 import {Doctor} from '../../../../models/Doctor';
+import {Specialization} from '../../../../models/Specialization';
+import firestore from '@react-native-firebase/firestore';
+import {specializations} from '../../../../data';
+import {Patient} from '../../../../models/Patient';
+import {fontFamilies} from '../../../../constants/fontFamilies';
 
 interface Props {
   appointment: Appointment;
-  onPress: () => void;
+  patient: Patient;
+  onPressDetail: () => void;
+  onPressCancel: () => void;
 }
 const UpcomingAppointmentCard = (props: Props) => {
-  const navigation = useNavigation();
-  const {appointment, onPress} = props;
+  const {appointment, onPressDetail, onPressCancel, patient} = props;
+
   return (
     <Card styles={styles.cardContainer} shadowed>
       <View style={styles.profileContainer}>
         <Image
-          source={require('../../../../assets/images/doctor.png')}
+          source={
+            patient?.image && patient.image.includes('https')
+              ? {uri: patient.image}
+              : require('../../../../assets/images/doctor.png')
+          }
           style={styles.profileImage}
         />
-        <View style={styles.patientInfo}>
-          <Text style={styles.patientName}>{appointment.patientId}</Text>
+        <View style={styles.doctorInfo}>
+          <Text style={styles.doctorName}>{patient?.name}</Text>
         </View>
       </View>
       <View style={styles.appointmentInfo}>
@@ -35,24 +52,11 @@ const UpcomingAppointmentCard = (props: Props) => {
         </>
       </View>
       <View style={styles.buttonContainer}>
-        <TouchableOpacity
-          style={styles.detailsButton}
-          onPress={
-            () => {}
-            //navigation.navigate('DoctorReport')
-          }>
+        <TouchableOpacity style={styles.detailsButton} onPress={onPressDetail}>
           <Text style={styles.buttonText}>Details</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.checkButton} onPress={() => {}}>
-          <Text style={styles.checkIcon}>✓</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.cancelButton}
-          onPress={
-            () => {}
-            //navigation.navigate('CancelAppointment', {appointment})
-          }>
-          <Text style={styles.cancelIcon}>✗</Text>
+        <TouchableOpacity style={styles.cancelButton} onPress={onPressCancel}>
+          <Text style={styles.cancelIcon}>X</Text>
         </TouchableOpacity>
       </View>
     </Card>
@@ -78,10 +82,10 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     marginRight: 10,
   },
-  patientInfo: {
+  doctorInfo: {
     flex: 1,
   },
-  patientName: {
+  doctorName: {
     fontSize: 16,
     fontWeight: '500',
     color: '#21a691',
@@ -122,7 +126,7 @@ const styles = StyleSheet.create({
   },
   detailsButton: {
     backgroundColor: '#27403e',
-    height: 27,
+    height: 30,
     width: 174,
     borderRadius: 18,
     marginTop: 9,
@@ -132,7 +136,7 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#fff',
     textAlign: 'center',
-    fontSize: 14,
+    fontSize: 13,
     fontFamily: 'Poppins-Medium',
   },
   checkButton: {
@@ -144,8 +148,8 @@ const styles = StyleSheet.create({
   },
   cancelButton: {
     backgroundColor: '#fff',
-    height: 26,
-    width: 26,
+    height: 32,
+    width: 32,
     borderRadius: 50,
     marginTop: 9,
   },
@@ -156,6 +160,7 @@ const styles = StyleSheet.create({
   },
   cancelIcon: {
     color: '#27403e',
+    fontFamily: fontFamilies.semiBold,
     fontSize: 18,
     textAlign: 'center',
   },

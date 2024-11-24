@@ -6,5 +6,10 @@ export interface Patient {
   phone: string;
   image: string;
   favoriteDoctors?: string[];
+  dateOfBirth?: Date;
   address?: string;
+  bloodPressure?: string,
+  heartRate?: string,
+  bloodSugar?: string,
+  BMI?: string
 }

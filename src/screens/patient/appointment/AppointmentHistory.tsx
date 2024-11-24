@@ -138,8 +138,6 @@ const AppointmentScreen = (props: any) => {
     }
   };
 
-  // Hủy đăng ký listener khi component unmount
-
   const handleCompleteButtonClick = () => {
     setShowUpcoming(false);
     setShowComplete(true);
@@ -158,31 +156,6 @@ const AppointmentScreen = (props: any) => {
     setShowComplete(false);
     setShowCancel(true);
     setStatusFilter('Canceled');
-  };
-
-  // Hiện tại là lấy tất cả Appointment của Patient do chưa truyền pId
-  const getAppointmentByPatientID = async () => {
-    await firestore()
-      .collection('appointments')
-      .get()
-      .then(snap => {
-        if (snap.empty) {
-          console.log('Không có appointment');
-        } else {
-          const items: Appointment[] = []; // Tạo mảng hứng dữ liệu
-          // duyệt từng item có trong snap, push vào trong list items
-          snap.forEach((item: any) =>
-            items.push({
-              id: item.id,
-              ...item.data(),
-            }),
-          );
-          setAppointmentList(items);
-        }
-      })
-      .catch(error => {
-        console.log('Lỗi khi load dữ appointment' + error.message);
-      });
   };
 
   return (
@@ -284,14 +257,14 @@ const AppointmentScreen = (props: any) => {
                 Alert.alert('Hiển thị popup xác nhận hoàn thành cuộc hẹn');
               }}
               onPressCancel={() => {
-                navigation.navigate('CancelAppointment', {
-                  data: {
-                    ...item,
-                    endTime: item.endTime.getTime(),
-                    startTime: item.startTime.getTime(),
-                    scheduleDate: item.scheduleDate.getTime(),
-                  },
-                });
+                // navigation.navigate('CancelAppointment', {
+                //   data: {
+                //     ...item,
+                //     endTime: item.endTime.getTime(),
+                //     startTime: item.startTime.getTime(),
+                //     scheduleDate: item.scheduleDate.getTime(),
+                //   },
+                // });
               }}
             />
           )}
