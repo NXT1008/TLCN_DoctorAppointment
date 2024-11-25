@@ -1,19 +1,15 @@
-import React, {useState, useEffect} from 'react';
+import firestore from '@react-native-firebase/firestore';
+import { ArrowLeft2 } from 'iconsax-react-native';
+import React, { useEffect, useState } from 'react';
 import {
-  View,
-  Text,
-  TextInput,
-  StyleSheet,
-  ScrollView,
   Image,
+  ScrollView,
+  StyleSheet,
+  Text,
   TouchableOpacity,
-  Alert,
+  View,
 } from 'react-native';
-import DateTimePicker from '../../../components/DateTimePicker';
-import {ArrowLeft2} from 'iconsax-react-native';
-import {useNavigation} from '@react-navigation/native';
-import {fontFamilies} from '../../../constants/fontFamilies';
-import Container from '../../../components/ContainerComponent';
+import { Toast } from 'toastify-react-native';
 import {
   Button,
   Card,
@@ -23,14 +19,15 @@ import {
   Space,
   TextComponent,
 } from '../../../components';
+import Container from '../../../components/ContainerComponent';
+import { fontFamilies } from '../../../constants/fontFamilies';
+import { Appointment } from '../../../models/Appointment';
+import { Doctor } from '../../../models/Doctor';
+import { Patient } from '../../../models/Patient';
+import { DateTime } from '../../../utils/DateTime';
 import DateTimePickerComponent from './components/DateTimePickerComponent';
-import {DateTime} from '../../../utils/DateTime';
-import {Patient} from '../../../models/Patient';
-import firestore from '@react-native-firebase/firestore';
-import {HealthReport} from '../../../models/HealthReports';
-import {Doctor} from '../../../models/Doctor';
-import {Appointment} from '../../../models/Appointment';
-import ToastManager, {Toast} from 'toastify-react-native';
+import ModalComponent from './components/ModalComponent';
+import ToastComponent from './components/ToastComponent';
 
 // Sample Patient Data
 const patientData = {
@@ -58,14 +55,26 @@ const DoctorReportScreen = ({navigation, route}: any) => {
   const [dischargeDate, setDischargeDate] = useState<Date>(new Date());
   const [conditionAtDischarge, setConditionAtDischarge] = useState('');
 
+  const [isModalVisible, setModalVisible] = useState(false);
+
   useEffect(() => {}, []);
 
-  const handleSubmit = async () => {
+  const handleSubmit = () => {
     if (!admissionDetails || !planTreatment || !conditionAtDischarge) {
-      Toast.success('Please filling!');
+      // Toast.error('Please filling!', 'top',);
+      Toast.error('Please fill in all information!');
+      // Alert.alert('Lỗi')
       return;
     }
+    setModalVisible(true);
+  };
 
+
+  const onClose = () => {
+    setModalVisible(false);
+  };
+
+  const onPressOK = async () => {
     const newReportData = {
       patientId: patientInfo.patientId,
       histoty: admissionDetails,
@@ -74,13 +83,15 @@ const DoctorReportScreen = ({navigation, route}: any) => {
       conditon: conditionAtDischarge,
       doctorId: doctorInfo.doctorId,
     };
+    
+    setModalVisible(false)
     // Additional code for form submission can go here
     try {
       const reportRef = await firestore()
         .collection('health_reports')
         .add(newReportData);
       const reportId = reportRef.id;
-      await reportRef.update({reportId});
+      await reportRef.update({reportId: reportId});
 
       // Update status appointment
       await firestore()
@@ -88,15 +99,26 @@ const DoctorReportScreen = ({navigation, route}: any) => {
         .doc(appointmentInfo.appointmentId)
         .update({status: 'Complete'});
 
-      Alert.alert('Success');
+      Toast.success(`The patient's medical records have been updated!`);
+      setTimeout(() => {
+        navigation.goBack();
+      }, 2000);
+
     } catch (error) {
-      console.log('🚀 ~ handleSubmit ~ error:', error);
+      console.log("🚀 ~ handleSubmit ~ error:", error)
     }
-  };
+  }
 
   return (
     <>
-      <ToastManager textStyle={{fontFamilies: fontFamilies.regular}}/>
+      <ToastComponent />
+      <ModalComponent
+        onPressCancel={onClose}
+        onPressOK={onPressOK}
+        visible={isModalVisible}
+        patientName={patientInfo.name}
+      />
+
       <Container isScroll style={{marginTop: -16}}>
         <ScrollView
           contentContainerStyle={{

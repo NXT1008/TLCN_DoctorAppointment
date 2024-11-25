@@ -361,24 +361,5 @@ const TimeTableComponent = (props: Props) => {
   );
 };
 
-const styles = StyleSheet.create({
-  header: {
-    flexDirection: 'row',
-    backgroundColor: '#f5f5f5', // Màu nền
-    borderBottomWidth: 1,
-    borderColor: '#ddd', // Đường kẻ dưới
-  },
-  headerItem: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingVertical: 10,
-  },
-  headerText: {
-    fontSize: 14,
-    color: '#333',
-    fontWeight: 'bold',
-  },
-});
 
 export default TimeTableComponent;
