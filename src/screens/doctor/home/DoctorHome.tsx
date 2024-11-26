@@ -33,6 +33,7 @@ import {
   PieChart,
   PopulationPyramid,
 } from 'react-native-gifted-charts';
+import { HandleNotification } from '../../../utils/handleNotification';
 
 const {width, height} = Dimensions.get('window');
 
@@ -93,6 +94,7 @@ const DoctorHomeScreen = (props: any) => {
       duration: 1500, // Thời gian hiệu ứng
       useNativeDriver: true,
     }).start();
+    HandleNotification.checkNotificationPermission()
   }, []);
 
   useEffect(() => {

@@ -164,6 +164,7 @@ const DoctorAppointment = (props: any) => {
     setShowUpcoming(false);
     setShowComplete(true);
     setShowCancel(false);
+    setStatusFilter('Complete');
   };
 
   const handleUpcomingButtonClick = () => {
@@ -235,16 +236,6 @@ const DoctorAppointment = (props: any) => {
             <CompletedCard                      
               appointment={item}
               patient={patients[item.patientId]}
-              onPressAddReview={() =>
-                navigation.navigate('ReviewScreen', {
-                  data: {
-                    ...item,
-                    endTime: item.endTime.getTime(), // hoặc endTime.toISOString()
-                    startTime: item.startTime.getTime(),
-                    scheduleDate: item.scheduleDate.getTime(),
-                  },
-                })
-              }
             />
           )}
           keyExtractor={item => item.appointmentId}

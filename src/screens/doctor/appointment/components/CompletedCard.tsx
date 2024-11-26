@@ -9,11 +9,12 @@ import firestore, {doc} from '@react-native-firebase/firestore';
 import {fontFamilies} from '../../../../constants/fontFamilies';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import {Patient} from '../../../../models/Patient';
+import {DateTime} from '../../../../utils/DateTime';
 
 interface Props {
   appointment: Appointment;
   patient: Patient;
-  onPressAddReview: () => void;
+  onPressAddReview?: () => void;
 }
 const CompletedAppointmentCard = (prop: Props) => {
   const {appointment, onPressAddReview, patient} = prop;
@@ -31,21 +32,18 @@ const CompletedAppointmentCard = (prop: Props) => {
         />
         <View>
           <Text style={styles.doctorName}>{patient?.name}</Text>
-          <Row
-            justifyContent="flex-start"
-            alignItems="baseline"
-            styles={{marginTop: 0, marginBottom: -5}}>
-            <FontAwesome name="star" size={16} color="#21a691" />
-            <Space width={5} />
-          </Row>
+
+          <TextComponent
+            text={`Appointment Date`}
+            font={fontFamilies.regular}
+            color="#000"
+          />
+          <TextComponent
+            text={`${DateTime.dateToDateString(appointment.scheduleDate)}`}
+            font={fontFamilies.semiBold}
+            color="#0a5dc9"
+          />
         </View>
-      </View>
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity
-          style={styles.addReviewButton}
-          onPress={onPressAddReview}>
-          <Text style={styles.buttonText}>Add Review</Text>
-        </TouchableOpacity>
       </View>
     </Card>
   );

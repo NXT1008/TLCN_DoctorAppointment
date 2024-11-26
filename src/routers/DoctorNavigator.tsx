@@ -8,6 +8,7 @@ import DoctorTabNavigator from './BottomTab/DoctorTabNavigator';
 import UpdateProfile from '../screens/doctor/profile/screens/UpdateProfile';
 import ChatScreen from '../screens/doctor/chat/ChatScreen';
 import MainChatScreen from '../screens/doctor/chat/MainChatScreen';
+import CancelAppointment from '../screens/doctor/appointment/CancelAppointment';
 
 const Stack = createNativeStackNavigator();
 
@@ -24,8 +25,11 @@ const DoctorNavigator = () => {
         name="DoctorAppointment"
         component={DoctorAppointmentScreen}
       />
+      <Stack.Screen name='CancelAppointment' component={CancelAppointment}/>
+
       <Stack.Screen name="DoctorReport" component={DoctorReportScreen} />
       <Stack.Screen name="UpdateProfile" component={UpdateProfile} />
+
       <Stack.Screen name="ChatScreen" component={ChatScreen} />
       <Stack.Screen name="MainChatScreen" component={MainChatScreen} />
     </Stack.Navigator>

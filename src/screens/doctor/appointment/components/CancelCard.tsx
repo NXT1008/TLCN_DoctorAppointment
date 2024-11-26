@@ -9,11 +9,12 @@ import {
   Alert,
 } from 'react-native';
 import {Doctor} from '../../../../models/Doctor';
-import {Card} from '../../../../components';
+import {Card, TextComponent} from '../../../../components';
 import {Appointment} from '../../../../models/Appointment';
 import {Specialization} from '../../../../models/Specialization';
 import firestore from '@react-native-firebase/firestore';
 import {Patient} from '../../../../models/Patient';
+import {fontFamilies} from '../../../../constants/fontFamilies';
 
 interface Props {
   appointment: Appointment;
@@ -22,7 +23,21 @@ interface Props {
 }
 
 const DoctorCard = (props: Props) => {
-  const {appointment, onPress, patient} = props;
+  const { appointment, onPress, patient } = props;
+  const [reason, setReason] = useState('');
+
+  useEffect(() => {
+    const unsubscribe = firestore()
+      .collection('cancellations')
+      .where('appointmentId', '==', appointment.appointmentId).onSnapshot(snap => {
+        if (!snap.empty) {
+          const data = snap.docs[0].data().cancelReason;
+          setReason(data)
+        }
+      })
+    return unsubscribe
+  }, []);
+
   return (
     <Card styles={styles.cardContainer} shadowed>
       <View style={styles.profileContainer}>
@@ -36,12 +51,13 @@ const DoctorCard = (props: Props) => {
         />
         <View style={styles.doctorInfo}>
           <Text style={styles.doctorName}>{patient?.name}</Text>
+          <TextComponent
+            text={`Reason you cancel: ${reason}`}
+            font={fontFamilies.regular}
+            numberOfLine={4}
+            size={14}
+          />
         </View>
-      </View>
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.detailsButton} onPress={onPress}>
-          <Text style={styles.buttonText}>Add Review</Text>
-        </TouchableOpacity>
       </View>
     </Card>
   );

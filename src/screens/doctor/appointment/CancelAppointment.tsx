@@ -22,6 +22,9 @@ import {fontFamilies} from '../../../constants/fontFamilies';
 import {Cancellation} from '../../../models/Cancellation';
 import {Appointment} from '../../../models/Appointment';
 import firestore from '@react-native-firebase/firestore';
+import Modal from './components/ModalComponent';
+import {Toast} from 'toastify-react-native';
+import ToastComponent from './components/ToastComponent';
 
 const CancelAppointment = ({navigation, route}: any) => {
   const {data} = route.params;
@@ -29,6 +32,7 @@ const CancelAppointment = ({navigation, route}: any) => {
   const [selectedReason, setSelectedReason] =
     useState<string>('Weather Conditions');
   const [additionalReason, setAdditionalReason] = useState<string>('');
+  const [isVisibleModal, setIsVisibleModal] = useState(false);
 
   const reasons = [
     'Rescheduling',
@@ -41,15 +45,17 @@ const CancelAppointment = ({navigation, route}: any) => {
     setSelectedReason(reason);
   };
 
-  const handleCancelAppointment = async () => {
+  const onPressOK = async () => {
     const cancellation: Cancellation = {
       cancellationId: '',
       appointmentId: appointment.appointmentId,
       cancelReason:
         selectedReason === 'Others' ? additionalReason : selectedReason,
-      cancelBy: '',
+      cancelBy: appointment.doctorId,
       cancelTime: new Date(),
     };
+
+    setIsVisibleModal(false)
 
     try {
       const cancelRef = await firestore()
@@ -57,20 +63,44 @@ const CancelAppointment = ({navigation, route}: any) => {
         .add(cancellation);
       const cancelId = cancelRef.id;
       await cancelRef.update({cancellationId: cancelId});
+
+      // Update appointment status
       await firestore()
         .collection('appointments')
         .doc(appointment.appointmentId)
         .update({status: 'Canceled'});
 
-        console.log('Add cancellation successfully');
-        navigation.goBack()
+      Toast.success(`This appointment has been cancelled!`);
+
+      setTimeout(() => {
+        navigation.goBack();
+      }, 2000);
     } catch (error) {
       console.log('Cannot cancel appointment: ' + error);
     }
   };
 
+  const onPressCancel = () => {
+    setIsVisibleModal(false);
+  };
+
+  const handleCancelAppointment = async () => {
+    if (selectedReason === 'Others' && additionalReason.trim() === '') {
+      Toast.error('Please fill the reason!');
+      return;
+    }
+    setIsVisibleModal(true);
+  };
+
   return (
     <ContainerComponent isScroll style={styles.container}>
+      <Modal
+        visible={isVisibleModal}
+        onPressCancel={onPressCancel}
+        onPressOK={onPressOK}
+      />
+      <ToastComponent />
+
       <Section styles={{marginBottom: 10}}>
         <Row justifyContent="flex-start">
           <TouchableOpacity
