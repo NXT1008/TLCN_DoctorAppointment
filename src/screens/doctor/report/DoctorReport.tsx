@@ -28,6 +28,7 @@ import { DateTime } from '../../../utils/DateTime';
 import DateTimePickerComponent from './components/DateTimePickerComponent';
 import ModalComponent from './components/ModalComponent';
 import ToastComponent from './components/ToastComponent';
+import {HandleNotification} from '../../../utils/handleNotification'
 
 // Sample Patient Data
 const patientData = {
@@ -86,6 +87,14 @@ const DoctorReportScreen = ({navigation, route}: any) => {
     
     setModalVisible(false)
     // Additional code for form submission can go here
+
+    const sendNotifications = {
+      senderId: doctorInfo.doctorId,
+      receiverId: patientInfo.patientId,
+      title: 'Appointment Success',
+      body: 'Body1'
+    }
+
     try {
       const reportRef = await firestore()
         .collection('health_reports')
@@ -98,6 +107,8 @@ const DoctorReportScreen = ({navigation, route}: any) => {
         .collection('appointments')
         .doc(appointmentInfo.appointmentId)
         .update({status: 'Complete'});
+
+      HandleNotification.sendNotificationDoctorToPatient(sendNotifications);
 
       Toast.success(`The patient's medical records have been updated!`);
       setTimeout(() => {

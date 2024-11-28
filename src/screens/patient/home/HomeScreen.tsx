@@ -1,34 +1,31 @@
+import auth from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore';
+import { Messages1 } from 'iconsax-react-native';
+import React, { useEffect, useState } from 'react';
 import {
-  View,
-  Image,
-  StyleSheet,
-  TouchableOpacity,
-  ScrollView,
-  Dimensions,
   ActivityIndicator,
+  Dimensions,
+  Image,
+  ScrollView,
+  TouchableOpacity,
+  View
 } from 'react-native';
-import React, {useCallback, useEffect, useState} from 'react';
+import Swiper from 'react-native-swiper';
 import {
-  Card,
-  Col,
   ContainerComponent,
-  Input,
   Row,
   Section,
   Space,
-  TextComponent,
+  TextComponent
 } from '../../../components';
-import auth from '@react-native-firebase/auth';
-import {fontFamilies} from '../../../constants/fontFamilies';
+import { fontFamilies } from '../../../constants/fontFamilies';
+import { Doctor } from '../../../models/Doctor';
+import { Patient } from '../../../models/Patient';
+import { Specialization } from '../../../models/Specialization';
+import { HandleNotificationPatient } from '../../../utils/handleNotification';
 import DoctorCard from './components/DoctorCard';
-import Swiper from 'react-native-swiper';
-import SwiperOne from './components/SwiperOne';
 import SpecializationComponent from './components/SpecializationComponent';
-import {Message, Messages1, Messages3} from 'iconsax-react-native';
-import firestore from '@react-native-firebase/firestore';
-import {Specialization} from '../../../models/Specialization';
-import {Doctor} from '../../../models/Doctor';
-import {Patient} from '../../../models/Patient';
+import SwiperOne from './components/SwiperOne';
 
 const HomeScreen = (props: any) => {
   const user = auth().currentUser;
@@ -39,9 +36,12 @@ const HomeScreen = (props: any) => {
   const [loadingSpecialization, setLoadingSpecialization] = useState(false);
   const [loadingDoctors, setLoadingDoctors] = useState(false);
 
-
   // Sử dụng useEffect để setup realtime listener
   useEffect(() => {
+
+    // Kiểm tra token của user đăng nhập
+    HandleNotificationPatient.checkNotificationPermission();
+
     // Tạo listener cho thông tin patient
     const unsubscribePatient = firestore()
       .collection('patients')

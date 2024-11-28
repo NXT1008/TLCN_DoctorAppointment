@@ -1,51 +1,35 @@
-import {Alert, Image, Touchable, TouchableOpacity, View} from 'react-native';
-import React, {useCallback, useEffect, useState} from 'react';
+import auth from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore';
+import { useFocusEffect } from '@react-navigation/native';
+import axios from 'axios';
 import {
-  Button,
+  ArrowLeft2,
+  Call,
+  DocumentText,
+  Edit,
+  Edit2,
+  Sms,
+  Warning2
+} from 'iconsax-react-native';
+import React, { useCallback, useState } from 'react';
+import { Alert, Image, TouchableOpacity, View } from 'react-native';
+import {
+  ImageLibraryOptions,
+  launchImageLibrary,
+} from 'react-native-image-picker';
+import {
   Col,
   ContainerComponent,
   Divider,
   Row,
   Section,
   Space,
-  TextComponent,
+  TextComponent
 } from '../../../components';
-import auth from '@react-native-firebase/auth';
-import {
-  Arrow,
-  ArrowCircleLeft,
-  ArrowLeft,
-  ArrowLeft2,
-  ArrowLeft3,
-  ArrowRight,
-  ArrowRight2,
-  Back,
-  Call,
-  CallCalling,
-  CallSlash,
-  DocumentText,
-  Edit,
-  Edit2,
-  GalleryEdit,
-  PenAdd,
-  Sms,
-  UserEdit,
-  Warning2,
-} from 'iconsax-react-native';
-import {fontFamilies} from '../../../constants/fontFamilies';
-import ProfileComponent from './components/ProfileComponent';
+import { fontFamilies } from '../../../constants/fontFamilies';
+import { Patient } from '../../../models/Patient';
 import ModalComponent from './components/ModalComponent';
-import deleteAllData from '../../../data/functions/zResetData';
-import uploadDataToFirestore from '../../../data/functions/UploadDataToFirebase';
-import firestore from '@react-native-firebase/firestore';
-import storage from '@react-native-firebase/storage';
-import {Patient} from '../../../models/Patient';
-import {useFocusEffect} from '@react-navigation/native';
-import {
-  ImageLibraryOptions,
-  launchImageLibrary,
-} from 'react-native-image-picker';
-import axios from 'axios';
+import ProfileComponent from './components/ProfileComponent';
 
 const ProfileScreen = (props: any) => {
   const patientId = auth().currentUser?.uid;

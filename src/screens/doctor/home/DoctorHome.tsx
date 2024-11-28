@@ -1,39 +1,27 @@
-import React, {useEffect, useRef, useState} from 'react';
-import {
-  View,
-  Image,
-  StyleSheet,
-  TouchableOpacity,
-  Text,
-  Dimensions,
-  ScrollView,
-  Animated,
-} from 'react-native';
-import Swiper from 'react-native-swiper';
-import {useNavigation} from '@react-navigation/native';
-import {Messages1, Scroll} from 'iconsax-react-native';
-import {
-  Section,
-  Card,
-  Row,
-  Space,
-  TextComponent,
-  Col,
-} from '../../../components';
-import {LineChart} from 'react-native-chart-kit';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
-import {fontFamilies} from '../../../constants/fontFamilies';
-import {Patient} from '../../../models/Patient';
-import {Doctor} from '../../../models/Doctor';
-import Container from '../../../components/ContainerComponent';
+import {Messages1} from 'iconsax-react-native';
+import React, {useEffect, useRef, useState} from 'react';
 import {
-  BarChart,
-  LineChart as LineChartGifted,
-  PieChart,
-  PopulationPyramid,
-} from 'react-native-gifted-charts';
+  Alert,
+  Animated,
+  Dimensions,
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import {LineChart} from 'react-native-chart-kit';
+import Swiper from 'react-native-swiper';
+import {Card, Row, Section, Space, TextComponent} from '../../../components';
+import Container from '../../../components/ContainerComponent';
+import {fontFamilies} from '../../../constants/fontFamilies';
+import {Doctor} from '../../../models/Doctor';
 import { HandleNotification } from '../../../utils/handleNotification';
+import messaging from '@react-native-firebase/messaging'
+import notifee, {AndroidImportance, AndroidStyle} from '@notifee/react-native'
 
 const {width, height} = Dimensions.get('window');
 
@@ -81,12 +69,13 @@ const chartData = {
 
 const data = [{value: 50}, {value: 80}, {value: 90}, {value: 70}];
 
-const DoctorHomeScreen = (props: any) => {
-  const navigation = props;
+const DoctorHomeScreen = ({navigation}: any) => {
+  //const navigation = useNavigation();
 
   const user = auth().currentUser;
   const [doctor, setDoctor] = useState<Doctor>();
   const animatedOpacity = useRef(new Animated.Value(0)).current; // Giá trị opacity cho animation
+
   useEffect(() => {
     // Hiệu ứng xuất hiện cho biểu đồ
     Animated.timing(animatedOpacity, {
@@ -94,9 +83,55 @@ const DoctorHomeScreen = (props: any) => {
       duration: 1500, // Thời gian hiệu ứng
       useNativeDriver: true,
     }).start();
-    HandleNotification.checkNotificationPermission()
+
+    HandleNotification.checkNotificationPermission();
+
+    // Đăng ký lắng nghe thông báo đến khi app đang mở (foreground)
+    const unsubscribeOnMessage = messaging().onMessage(async (remoteMessage : any) => {
+      console.log('Thông báo đến từ FCM: ', remoteMessage);
+      // Hiển thị thông báo trong app khi nhận được thông báo
+      Alert.alert('Thông báo mới', remoteMessage.notification.body);
+    });
+
+    // Đăng ký listener khi app mở
+    unsubscribeOnMessage()
+
+
+    const createNotificationChannel = async () => {
+      await notifee.createChannel({
+        id: 'default',
+        name: 'Default Channel',
+        importance: AndroidImportance.HIGH,
+        sound: 'default'
+      })
+    }
+    createNotificationChannel()
+
+    const unsubcribeOnMessage = messaging().onMessage(async (remoteMessage: any) => {
+
+      console.log("🚀 ~ unsubcribeOnMessage ~ remoteMessage:", remoteMessage)
+      
+      const imageUrl = remoteMessage.notification?.android?.imageUrl
+      await notifee.displayNotification({
+        title: remoteMessage.notification?.title || 'New Title',
+        body: remoteMessage.notification?.body || 'New body',
+        android: {
+          channelId: 'default',
+          importance: AndroidImportance.HIGH,
+          smallIcon: 'ic_launcher',
+          pressAction: { id: 'default' },
+          style: imageUrl ? {type: AndroidStyle.BIGPICTURE, picture: imageUrl} : undefined
+        }
+      })
+    })
+
+    return () => {
+      unsubcribeOnMessage()
+    }
+
   }, []);
 
+  // useEffect lấy thông tin doctor
   useEffect(() => {
     // Tạo listener cho thông tin doctor theo email đã login
     const unsubscribeDoctor = firestore()
@@ -118,6 +153,8 @@ const DoctorHomeScreen = (props: any) => {
       unsubscribeDoctor();
     };
   }, []);
+
+
 
   const renderArticleSlide = (item: any, index: any) => (
     <TouchableOpacity
@@ -201,7 +238,10 @@ const DoctorHomeScreen = (props: any) => {
               />
             </View>
           </Row>
-          <TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate('DoctorNotification', {doctor: doctor});
+            }}>
             <Image
               source={require('../../../assets/IconTab/notification.png')}
               style={{width: 25, height: 25}}
@@ -276,7 +316,6 @@ const DoctorHomeScreen = (props: any) => {
                   strokeWidth: 0.9,
                   stroke: 'gray',
                 },
-
               }}
               bezier
             />
@@ -284,7 +323,7 @@ const DoctorHomeScreen = (props: any) => {
         </Card>
 
         <TouchableOpacity
-          onPress={() => props.navigation.navigate('ChatScreen')}
+          onPress={() => navigation.navigate('ChatScreen')}
           style={styles.chatButton}>
           <Messages1 size="35" color="#fff" variant="Bold" />
         </TouchableOpacity>
