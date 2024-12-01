@@ -142,6 +142,7 @@ const AppointmentScreen = (props: any) => {
     setShowUpcoming(false);
     setShowComplete(true);
     setShowCancel(false);
+    setStatusFilter('Completed');
   };
 
   const handleUpcomingButtonClick = () => {
@@ -174,7 +175,7 @@ const AppointmentScreen = (props: any) => {
             style={[styles.filterButton, showComplete && styles.buttonActive]}
             onPress={handleCompleteButtonClick}>
             <TextComponent
-              text="Complete"
+              text="Completed"
               size={14}
               color="#ffffff"
               font="Poppins-Medium"
@@ -257,14 +258,14 @@ const AppointmentScreen = (props: any) => {
                 Alert.alert('Hiển thị popup xác nhận hoàn thành cuộc hẹn');
               }}
               onPressCancel={() => {
-                // navigation.navigate('CancelAppointment', {
-                //   data: {
-                //     ...item,
-                //     endTime: item.endTime.getTime(),
-                //     startTime: item.startTime.getTime(),
-                //     scheduleDate: item.scheduleDate.getTime(),
-                //   },
-                // });
+                navigation.navigate('CancelAppointment', {
+                  data: {
+                    ...item,
+                    endTime: item.endTime.getTime(),
+                    startTime: item.startTime.getTime(),
+                    scheduleDate: item.scheduleDate.getTime(),
+                  },
+                });
               }}
             />
           )}

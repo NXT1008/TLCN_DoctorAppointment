@@ -1,22 +1,19 @@
-import {View, Text, TouchableOpacity} from 'react-native';
-import React, {useEffect, useState} from 'react';
+import firestore from '@react-native-firebase/firestore';
+import { ArrowLeft2, Forbidden2, TickCircle } from 'iconsax-react-native';
+import React, { useEffect, useState } from 'react';
+import { TouchableOpacity, View } from 'react-native';
 import {
   Button,
   ContainerComponent,
   Input,
   Row,
   Section,
-  Select,
   Space,
-  TextComponent,
+  TextComponent
 } from '../../../../components';
-import {fontFamilies} from '../../../../constants/fontFamilies';
-import {ArrowLeft2, Forbidden2, TickCircle} from 'iconsax-react-native';
-import {Patient} from '../../../../models/Patient';
-import firestore from '@react-native-firebase/firestore';
-import ModalComponent from '../components/ModalComponent';
-import {updateCurrentUser} from '@react-native-firebase/auth';
+import { fontFamilies } from '../../../../constants/fontFamilies';
 import { Doctor } from '../../../../models/Doctor';
+import ModalComponent from '../components/ModalComponent';
 
 const UpdateProfile = (props: any) => {
   const {doctor} = props.route.params;

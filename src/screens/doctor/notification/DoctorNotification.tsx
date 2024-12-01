@@ -1,12 +1,21 @@
 import {ArrowLeft2} from 'iconsax-react-native';
 import React, {useEffect, useState} from 'react';
 import {View, Text, StyleSheet, Image, TouchableOpacity} from 'react-native';
-import {Card, ContainerComponent, Section} from '../../../components';
+import {
+  Card,
+  ContainerComponent,
+  Row,
+  Section,
+  TextComponent,
+} from '../../../components';
 import {useNavigation} from '@react-navigation/native';
 import {Appointment} from '../../../models/Appointment';
-import firestore from '@react-native-firebase/firestore';
+import firestore, {Timestamp} from '@react-native-firebase/firestore';
 import {Doctor} from '../../../models/Doctor';
 import {Notification} from '../../../models/Notification';
+import {FormatTime} from '../../../utils/formatTime';
+import {fontFamilies} from '../../../constants/fontFamilies';
+import ModalComponent from './components/ModalComponent';
 
 // Dữ liệu mẫu cuộc hẹn
 const appointments: Appointment[] = [
@@ -32,6 +41,17 @@ const appointments: Appointment[] = [
   },
 ];
 
+const DEFAULT_APPOINTMENT: Appointment = {
+  appointmentId: 'default',
+  scheduleDate: new Date(),
+  startTime: new Date(),
+  endTime: new Date(),
+  status: 'unknown',
+  patientId: 'default',
+  doctorId: 'default',
+  note: '',
+};
+
 interface NotificationWithAppointment {
   notification: Notification;
   appointment: Appointment;
@@ -39,77 +59,53 @@ interface NotificationWithAppointment {
 
 const NotificationScreen = ({navigation, route}: any) => {
   const {doctor} = route.params;
+  const doctorInfo = doctor as Doctor;
 
-  // Khai báo state notifications với kiểu dữ liệu Appointment
-  const [notificationsFakeData, setNotificationsFakeData] = useState<
-    Appointment[]
-  >([]);
+
   const [notifications, setNotifications] = useState<
     NotificationWithAppointment[]
   >([]);
+  const [selectedNotification, setSelectedNotification] =
+    useState<NotificationWithAppointment>();
 
-  useEffect(() => {
-    const checkUpcomingAppointments = () => {
-      const now = new Date(); // Lấy thời gian hiện tại
-
-      const newNotifications: Appointment[] = appointments.filter(
-        appointment => {
-          if (appointment.status === 'booked') {
-            const startTime = appointment.startTime; // Lấy thời gian bắt đầu
-            const timeDifference =
-              (startTime.getTime() - now.getTime()) / (60 * 1000); // Tính chênh lệch thời gian theo phút
-            return timeDifference <= 15 && timeDifference >= 0; // Chỉ hiển thị nếu trong vòng 15 phút
-          } else if (appointment.status === 'completed') {
-            const endTime = appointment.endTime; // Lấy thời gian kết thúc
-            return endTime <= now; // Nếu thời gian kết thúc đã qua
-          }
-          return false; // Trả về false nếu không thỏa mãn điều kiện
-        },
-      );
-
-      // Thêm thông báo mới vào đầu danh sách
-      setNotificationsFakeData(prevNotifications => [
-        ...newNotifications,
-        ...prevNotifications, // Các thông báo cũ vẫn được giữ lại
-      ]);
-    };
-
-    // Kiểm tra cuộc hẹn ngay khi component được tải và mỗi phút sau đó
-    checkUpcomingAppointments();
-    const interval = setInterval(checkUpcomingAppointments, 60 * 1000); // Cập nhật mỗi phút
-
-    // Xóa interval khi component bị hủy
-    return () => clearInterval(interval);
-  }, []);
+  const [isModalVisible, setModalVisible] = useState(false);
 
   // load all notifications of doctor
   useEffect(() => {
     const unsubcribeNotifications = firestore()
       .collection('notifications')
-      .where('receiverId', '==', doctor.doctorId)
+      .where('receiverId', '==', doctorInfo.doctorId)
       .onSnapshot(
         async snapshot => {
           if (!snapshot.empty) {
             const notificationDatas: Notification[] = [];
             snapshot.forEach((item: any) => {
+              const data = item.data();
+              // Chuyển đổi scheduleDate thành Date nếu cần
+              const sendAt =
+                data?.sendAt instanceof Date
+                  ? data.sendAt
+                  : (data?.sendAt as Timestamp).toDate();
               notificationDatas.push({
                 id: item.id,
-                ...item.data(),
+                ...data,
+                sendAt: sendAt,
               });
             });
 
             // Lấy thông tin appointment cho mỗi notification
             const detailNotification = await Promise.all(
-              notificationDatas.map(async (item) => {
-                const appointment = await fetchAppointmentByNotification(item)
+              notificationDatas.map(async item => {
+                const appointment = await fetchAppointmentByNotification(item);
                 return {
-                  item, appointment
-                }
-              })
-            )
-            // setNotifications(detailNotification)
-
-            console.log('🚀 ~ useEffect ~ notificationDatas:', notificationDatas);
+                  notification: item,
+                  appointment: appointment || ({} as Appointment),
+                };
+              }),
+            );
+            setNotifications(detailNotification);
+          } else {
+            console.log('🚀 ~ useEffect ~ No have notification');
           }
         },
         error => {
@@ -119,11 +115,11 @@ const NotificationScreen = ({navigation, route}: any) => {
     return () => {
       unsubcribeNotifications();
     };
-  }, []);
+  }, [doctorInfo.doctorId]);
 
   const fetchAppointmentByNotification = async (
     notification: Notification,
-  ): Promise<Appointment | null> => {
+  ): Promise<Appointment> => {
     try {
       const snap = await firestore()
         .collection('appointments')
@@ -131,60 +127,180 @@ const NotificationScreen = ({navigation, route}: any) => {
         .get();
 
       if (snap.exists) {
-        return snap.data() as Appointment;
+        const data = snap.data();
+
+        // Chuyển đổi scheduleDate thành Date nếu cần
+        const scheduleDate =
+          data?.scheduleDate instanceof Date
+            ? data.scheduleDate
+            : (data?.scheduleDate as Timestamp).toDate();
+
+        return {
+          appointmentId: snap.id,
+          ...data,
+          scheduleDate, // Thay thế scheduleDate đã chuyển đổi
+        } as Appointment;
       }
-      return null;
+      return DEFAULT_APPOINTMENT;
     } catch (error) {
       console.log('🚀 ~ fetchAppointmentByNotification ~ error:', error);
-      return null;
+      return DEFAULT_APPOINTMENT;
     }
+  };
+
+  const onPressCancel = async () => {
+    console.log("🚀 ~ onPressCancel ~ selectedNotification:", selectedNotification)
+    await firestore()
+      .collection('notifications')
+      .doc(selectedNotification?.notification.notificationId)
+      .update({isReaded: true});
+    setModalVisible(false);
+  };
+
+  // Hàm tính toán thời gian từ khi thông báo được gửi
+  const getFormattedDate = (sendAt: Date) => {
+    const now = new Date();
+    const diffTime = now.getTime() - sendAt.getTime();
+    const diffDays = Math.floor(diffTime / (1000 * 3600 * 24)); // tính số ngày chênh lệch
+
+    if (diffDays === 0) return 'Today';
+    if (diffDays === 1) return '1 day ago';
+    if (diffDays <= 6) return `${diffDays} days ago`;
+    return `${sendAt.getDate()}/${
+      sendAt.getMonth() + 1
+    }/${sendAt.getFullYear()}`; // Ngày tháng năm
+  };
+
+  // Nhóm thông báo lại theo ngày
+  const groupNotificationsByDate = (
+    notifications: NotificationWithAppointment[],
+  ) => {
+    const groups: {[key: string]: NotificationWithAppointment[]} = {};
+
+    notifications.forEach(notification => {
+      const dateKey = getFormattedDate(notification.notification.sendAt);
+      if (!groups[dateKey]) {
+        groups[dateKey] = [];
+      }
+      groups[dateKey].push(notification);
+    });
+
+    return groups;
   };
 
   return (
     <ContainerComponent style={styles.container} isScroll>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <ArrowLeft2 color="#000" />
-        </TouchableOpacity>
-        <Text style={styles.headerText}>Notification</Text>
-      </View>
-
-      {notifications.length > 0 && (
-        notifications.map( (item, index) => {
-          
-          return <></>
-        })
+      {selectedNotification && (
+        <ModalComponent
+          visible={isModalVisible}
+          notification={selectedNotification}
+          onPressCancel={onPressCancel}
+        />
       )}
+      <Section styles={styles.header}>
+        <ArrowLeft2 color="#000" onPress={() => navigation.goBack()} />
+        <Text style={styles.headerText}>Notification</Text>
+      </Section>
+      {notifications.length > 0 ? (
+        Object.entries(groupNotificationsByDate(notifications)).map(
+          ([date, groupedNotifications], index) => (
+            <Section key={index}>
+              {/* Hiển thị ngày */}
+              <Row
+                justifyContent="space-between"
+                alignItems="baseline"
+                styles={{paddingRight: 8, marginTop: -15}}>
+                <TextComponent
+                  text={date}
+                  font={fontFamilies.semiBold}
+                  size={14}
+                  styles={{marginBottom: 5}}
+                />
+                <View
+                  style={{
+                    backgroundColor: '#fcf0f0',
+                    width: 26,
+                    height: 26,
+                    borderRadius: 100,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}>
+                  <TextComponent
+                    text={groupedNotifications.length.toString()}
+                    font={fontFamilies.semiBold}
+                    color="#fc5b58"
+                    size={14}
+                  />
+                </View>
+              </Row>
 
-      {notificationsFakeData.length > 0 ? (
-        notificationsFakeData.map((entry, idx) => (
-          <Section key={idx}>
-            <Card styles={styles.notificationRow}>
-              <Image
-                source={
-                  entry.status === 'booked'
-                    ? require('../../../assets/images/present_calendar.png')
-                    : require('../../../assets/images/past_calendar.png')
-                }
-                style={styles.icon}
-              />
-              <View style={styles.notificationContent}>
-                <Text style={styles.notificationText}>
-                  {entry.status === 'booked'
-                    ? `You have an upcoming appointment on ${entry.scheduleDate.toLocaleDateString()} at ${entry.startTime.toLocaleTimeString()}` // Hiển thị ngày và giờ
-                    : `Appointment completed: ${entry.note}`}
-                </Text>
-                <Text style={styles.timeText}>
-                  {entry.status === 'booked'
-                    ? 'In less than 15 minutes'
-                    : `Completed on ${entry.endTime.toLocaleDateString()}`}
-                </Text>
-              </View>
-            </Card>
-          </Section>
-        ))
+              {groupedNotifications.map((item, idx) => (
+                <Card
+                  key={idx}
+                  onPress={() => {
+                    setSelectedNotification(item);
+                    setModalVisible(true);
+                  }}
+                  styles={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    marginBottom: 10,
+                    backgroundColor: item.notification.isReaded
+                      ? '#fff'
+                      : '#e0f6ff',
+                  }}>
+                  <Image
+                    source={
+                      item.notification.isReaded === false
+                        ? require('../../../assets/images/present_calendar.png')
+                        : require('../../../assets/images/past_calendar.png')
+                    }
+                    style={styles.icon}
+                  />
+                  <View style={{flex: 1}}>
+                    <Text
+                      style={{
+                        fontSize: 14,
+                        color: '#000',
+                        fontFamily: fontFamilies.medium,
+                      }}>
+                      {item.notification.title}
+                    </Text>
+                    <Text
+                      style={{
+                        fontSize: 12,
+                        color: '#333',
+                        fontFamily: 'Poppins-Regular',
+                      }}>
+                      {item.notification.body.slice(0, 44) + '...'}
+                    </Text>
+                    <Text
+                      style={{
+                        color: '#1b67c4',
+                        fontSize: 12,
+                        marginTop: 5,
+                        fontFamily: 'Poppins-Regular',
+                      }}>
+                      {`${FormatTime.formatAvailableDate(
+                        item.notification.sendAt,
+                      )}`}
+                    </Text>
+                  </View>
+                </Card>
+              ))}
+            </Section>
+          ),
+        )
       ) : (
-        <Text style={styles.noNotifications}>No notifications</Text>
+        <Text
+          style={{
+            textAlign: 'center',
+            color: '#999',
+            marginTop: 20,
+            fontFamily: 'Poppins-Regular',
+          }}>
+          No notifications
+        </Text>
       )}
     </ContainerComponent>
   );
@@ -194,52 +310,33 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    paddingHorizontal: 16,
+    fontFamily: 'Poppins-Regular',
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 15,
-    paddingTop: 20,
   },
   headerText: {
     flex: 1,
     textAlign: 'center',
     fontSize: 18,
     color: '#21a691',
+    alignContent: 'center',
+    justifyContent: 'center',
+    alignItems: 'center',
     fontFamily: 'Poppins-Bold',
   },
-  notificationRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 20,
-    padding: 15,
-    backgroundColor: '#f8f8f8',
-    borderRadius: 8,
-  },
   icon: {
-    width: 40,
-    height: 40,
     marginRight: 10,
-  },
-  notificationContent: {
-    flex: 1,
   },
   notificationText: {
     fontSize: 16,
     color: '#333',
     fontFamily: 'Poppins-Regular',
   },
-  timeText: {
-    color: '#555',
-    fontSize: 14,
-    marginTop: 5,
-    fontFamily: 'Poppins-Regular',
-  },
-  noNotifications: {
-    textAlign: 'center',
-    color: '#999',
-    marginTop: 20,
+  linkText: {
+    color: '#1E90FF',
     fontFamily: 'Poppins-Regular',
   },
 });

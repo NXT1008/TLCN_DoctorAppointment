@@ -5,6 +5,7 @@ import messing from '@react-native-firebase/messaging';
 import {Doctor} from '../models/Doctor';
 
 const user = auth().currentUser;
+const localhost = '192.168.1.5';
 
 export class HandleNotification {
   // Kiểm tra user có quyền gửi nhận thông báo không
@@ -62,7 +63,7 @@ export class HandleNotification {
     }
   };
 
-  // Ví dụ gửi thông báo từ thiết bị A (React Native)
+  // Gửi thông báo từ doctor cho patient
   static sendNotificationDoctorToPatient = async ({
     senderId,
     receiverId,
@@ -78,7 +79,7 @@ export class HandleNotification {
   }) => {
     try {
       const response = await fetch(
-        'http://192.168.1.4:3000/send-notification-doctor-to-patient',
+        `http://${localhost}:3000/send-notification-doctor-to-patient`,
         {
           method: 'POST',
           headers: {
@@ -171,6 +172,57 @@ export class HandleNotificationPatient {
             tokens: firestore.FieldValue.arrayUnion(token), // thêm token vào mảng tokens
           });
       }
+    }
+  };
+
+  // Gửi thông báo từ patient cho doctor
+  static sendNotificationPatientToDoctor = async ({
+    senderId,
+    receiverId,
+    title,
+    body,
+    appointmentId,
+  }: {
+    senderId: string;
+    receiverId: string;
+    title: string;
+    body: string;
+    appointmentId: string;
+  }) => {
+    try {
+      const response = await fetch(
+        `http://${localhost}:3000/send-notification-patient-to-doctor`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            senderId,
+            receiverId,
+            appointmentId,
+            title, // Tiêu đề thông báo
+            body, // Nội dung thông báo
+          }),
+        },
+      );
+
+      if (!response.ok) {
+        // Log lỗi HTTP từ server (nếu response không thành công)
+        const errorResponse = await response.text();
+        console.error(
+          `Lỗi từ server: ${response.status} - ${response.statusText}`,
+        );
+        console.error('Chi tiết lỗi từ server:', errorResponse);
+        return;
+      }
+
+      const result = await response.json();
+      console.log('Thông báo đã gửi:', result);
+    } catch (error: any) {
+      // Log chi tiết lỗi từ fetch
+      console.log('-----------------------');
+      console.error('Chi tiết lỗi:', error);
     }
   };
 }

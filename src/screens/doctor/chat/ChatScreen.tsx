@@ -172,7 +172,7 @@ const ChatScreen = (prop: any) => {
             style={styles.searchIcon}
           />
           <TextInput
-            placeholder="Search a Doctor"
+            placeholder="Search a Patient Name"
             style={styles.searchInput}
             placeholderTextColor="gray"
           />
@@ -183,20 +183,6 @@ const ChatScreen = (prop: any) => {
             style={styles.microphoneIcon}
           />
         </View>
-
-        <Text style={styles.activeNowText}>Active Now</Text>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          style={styles.activeNowContainer}>
-          {activeUsers.map(user => (
-            <ActiveUserAvatar
-              key={user.id}
-              name={user.name}
-              avatar={user.avatar}
-            />
-          ))}
-        </ScrollView>
 
         <Text style={styles.messagesText}>Messages</Text>
         <FlatList
@@ -262,7 +248,7 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     flex: 1,
-    fontSize: 16,
+    fontSize: 14,
     fontFamily: fontFamilies.regular,
     color: 'gray',
   },

@@ -102,7 +102,7 @@ const CancelAppointment = ({navigation, route}: any) => {
       <ToastComponent />
 
       <Section styles={{marginBottom: 10}}>
-        <Row justifyContent="flex-start">
+        <Row justifyContent="flex-start" styles={{marginLeft: -18}}>
           <TouchableOpacity
             onPress={() => {
               navigation.goBack();
@@ -120,9 +120,8 @@ const CancelAppointment = ({navigation, route}: any) => {
         </Row>
       </Section>
       <Text style={styles.subHeader}>
-        It is very important to take care of the patient, the patient will be
-        followed by the patient, but this time it will happen that there is a
-        lot of work and pain.
+        We prioritize your well-being above all. Sometimes changes are
+        necessary, but our commitment to your care is steadfast.
       </Text>
 
       <View style={styles.reasonList}>
@@ -146,8 +145,10 @@ const CancelAppointment = ({navigation, route}: any) => {
         inputStyles={{fontFamily: fontFamilies.regular, color: '#000'}}
         placeholder="Enter Your Comment Here..."
         placeholderColor="gray"
-        value={''}
-        onChange={() => {}}
+        value={additionalReason}
+        onChange={val => {
+          setAdditionalReason(val);
+        }}
       />
 
       <Space height={70} />

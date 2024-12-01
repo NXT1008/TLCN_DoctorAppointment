@@ -64,8 +64,7 @@ const LoginScreen = ({navigation}: any) => {
               setErrorText('Login fail! Please check your email and password');
               console.log(error);
             });
-        }
-        else {
+        } else {
           // Doctor login using Firestore
           const doctorSnapshot = await firestore()
             .collection('doctors')
@@ -101,23 +100,42 @@ const LoginScreen = ({navigation}: any) => {
   };
 
   return (
-    <ContainerComponent isScroll>
+    <ContainerComponent isScroll style={{marginTop: -16}}>
       <View style={styles.container}>
-        <TouchableOpacity
-          onPress={() => Alert.alert('Back')}
-          style={styles.backButton}>
-          <Image
-            source={require('../../../assets/images/back_arrow.png')}
-            style={styles.backImage}></Image>
-        </TouchableOpacity>
+        <Section styles={{marginTop: 40, marginBottom: -50}}>
+          <Row styles={{justifyContent: 'flex-start'}}>
+            <TouchableOpacity
+              onPress={() => Alert.alert('Back')}
+              style={styles.backButton}>
+              <Image
+                source={require('../../../assets/images/back_arrow.png')}
+                style={styles.backImage}></Image>
+            </TouchableOpacity>
 
-        <TextComponent
-          text="Welcome To App!"
-          color="#21a691"
-          size={30}
-          font={fontFamilies.medium}
-          styles={{textAlign: 'center'}}
-        />
+            <View style={{alignItems: 'center', flex: 1}}>
+              <TextComponent
+                text="Welcome To App!"
+                color="#21a691"
+                size={28}
+                font={fontFamilies.medium}
+                styles={{textAlign: 'center'}}
+              />
+            </View>
+          </Row>
+          <Space height={20} />
+          <View
+            style={{
+              paddingHorizontal: 20,
+            }}>
+            <TextComponent
+              text="Connecting you to better health, one login at a time"
+              textAlign="center"
+              font={fontFamilies.regular}
+              size={16}
+              color="#b3b3b3"
+            />
+          </View>
+        </Section>
 
         <Section
           styles={{marginHorizontal: 10, marginTop: 60, paddingBottom: 10}}>
@@ -268,10 +286,11 @@ const LoginScreen = ({navigation}: any) => {
           <TouchableOpacity
             onPress={() => {
               Alert.alert('Login with facebook');
-              // deleteAllData()
-              //uploadDataToFirestore();
             }}
-            style={styles.facebookButton}>
+            style={[
+              styles.facebookButton,
+              {marginBottom: role === 'doctor' ? 20 : 0},
+            ]}>
             <View style={styles.ortherView}>
               <Image
                 source={require('../../../assets/images/logo_facebook.png')}
@@ -281,16 +300,18 @@ const LoginScreen = ({navigation}: any) => {
           </TouchableOpacity>
         </View>
 
-        <View style={styles.signUpView}>
-          <Text style={styles.accountText}>Don't have an account?</Text>
+        {role === 'patient' && (
+          <View style={styles.signUpView}>
+            <Text style={styles.accountText}>Don't have an account?</Text>
 
-          <TouchableOpacity
-            onPress={() => {
-              navigation.navigate('SignUp');
-            }}>
-            <Text style={styles.signUpText}>Sign Up</Text>
-          </TouchableOpacity>
-        </View>
+            <TouchableOpacity
+              onPress={() => {
+                navigation.navigate('SignUp');
+              }}>
+              <Text style={styles.signUpText}>Sign Up</Text>
+            </TouchableOpacity>
+          </View>
+        )}
         <ModalComponent
           isVisible={isError}
           message={errorText}
@@ -313,10 +334,6 @@ const styles = StyleSheet.create({
   backButton: {
     height: 25,
     width: 25,
-    left: 0,
-    top: 0,
-    marginTop: 25,
-    marginLeft: 15,
   },
 
   backImage: {

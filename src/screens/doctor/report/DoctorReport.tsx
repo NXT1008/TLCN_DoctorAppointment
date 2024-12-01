@@ -1,6 +1,6 @@
 import firestore from '@react-native-firebase/firestore';
-import { ArrowLeft2 } from 'iconsax-react-native';
-import React, { useEffect, useState } from 'react';
+import {ArrowLeft2} from 'iconsax-react-native';
+import React, {useEffect, useState} from 'react';
 import {
   Image,
   ScrollView,
@@ -9,7 +9,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { Toast } from 'toastify-react-native';
+import {Toast} from 'toastify-react-native';
 import {
   Button,
   Card,
@@ -20,15 +20,15 @@ import {
   TextComponent,
 } from '../../../components';
 import Container from '../../../components/ContainerComponent';
-import { fontFamilies } from '../../../constants/fontFamilies';
-import { Appointment } from '../../../models/Appointment';
-import { Doctor } from '../../../models/Doctor';
-import { Patient } from '../../../models/Patient';
-import { DateTime } from '../../../utils/DateTime';
+import {fontFamilies} from '../../../constants/fontFamilies';
+import {Appointment} from '../../../models/Appointment';
+import {Doctor} from '../../../models/Doctor';
+import {Patient} from '../../../models/Patient';
+import {DateTime} from '../../../utils/DateTime';
 import DateTimePickerComponent from './components/DateTimePickerComponent';
 import ModalComponent from './components/ModalComponent';
 import ToastComponent from './components/ToastComponent';
-import {HandleNotification} from '../../../utils/handleNotification'
+import {HandleNotification} from '../../../utils/handleNotification';
 
 // Sample Patient Data
 const patientData = {
@@ -70,7 +70,6 @@ const DoctorReportScreen = ({navigation, route}: any) => {
     setModalVisible(true);
   };
 
-
   const onClose = () => {
     setModalVisible(false);
   };
@@ -84,16 +83,22 @@ const DoctorReportScreen = ({navigation, route}: any) => {
       conditon: conditionAtDischarge,
       doctorId: doctorInfo.doctorId,
     };
-    
-    setModalVisible(false)
+
+    setModalVisible(false);
     // Additional code for form submission can go here
 
     const sendNotifications = {
       senderId: doctorInfo.doctorId,
+      name: doctorInfo.name,
       receiverId: patientInfo.patientId,
-      title: 'Appointment Success',
-      body: 'Body1'
-    }
+      title: 'Health results are available',
+      body: `Your appointment with doctor ${
+        doctorInfo.name
+      } on ${DateTime.dateToDateString(
+        appointmentInfo.scheduleDate,
+      )} has been completed. Medical examination results have been sent. Please visit the application to see details`,
+      appointmentId: appointmentInfo.appointmentId,
+    };
 
     try {
       const reportRef = await firestore()
@@ -114,11 +119,10 @@ const DoctorReportScreen = ({navigation, route}: any) => {
       setTimeout(() => {
         navigation.goBack();
       }, 2000);
-
     } catch (error) {
-      console.log("🚀 ~ handleSubmit ~ error:", error)
+      console.log('🚀 ~ handleSubmit ~ error:', error);
     }
-  }
+  };
 
   return (
     <>

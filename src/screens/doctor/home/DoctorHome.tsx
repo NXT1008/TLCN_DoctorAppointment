@@ -70,11 +70,10 @@ const chartData = {
 const data = [{value: 50}, {value: 80}, {value: 90}, {value: 70}];
 
 const DoctorHomeScreen = ({navigation}: any) => {
-  //const navigation = useNavigation();
-
   const user = auth().currentUser;
   const [doctor, setDoctor] = useState<Doctor>();
   const animatedOpacity = useRef(new Animated.Value(0)).current; // Giá trị opacity cho animation
+  const [hasNewNotification, setHasNewNotification] = useState(false);
 
   useEffect(() => {
     // Hiệu ứng xuất hiện cho biểu đồ
@@ -84,56 +83,36 @@ const DoctorHomeScreen = ({navigation}: any) => {
       useNativeDriver: true,
     }).start();
 
-    HandleNotification.checkNotificationPermission();
-
-    // Đăng ký lắng nghe thông báo đến khi app đang mở (foreground)
-    const unsubscribeOnMessage = messaging().onMessage(async (remoteMessage : any) => {
-      console.log('Thông báo đến từ FCM: ', remoteMessage);
-      // Hiển thị thông báo trong app khi nhận được thông báo
-      Alert.alert('Thông báo mới', remoteMessage.notification.body);
-    });
-
-    // Đăng ký listener khi app mở
-    unsubscribeOnMessage()
-
-
     const createNotificationChannel = async () => {
       await notifee.createChannel({
         id: 'default',
         name: 'Default Channel',
         importance: AndroidImportance.HIGH,
-        sound: 'default'
-      })
-    }
-    createNotificationChannel()
+        sound: 'default',
+      });
+    };
+    HandleNotification.checkNotificationPermission();
+    //createNotificationChannel();
 
-    const unsubcribeOnMessage = messaging().onMessage(async (remoteMessage: any) => {
+    const unsubcribeOnMessage = messaging().onMessage(
+      async (remoteMessage: any) => {
+        const imageUrl = remoteMessage.notification?.android?.imageUrl;
+        await notifee.displayNotification({
+          title: remoteMessage.notification?.title || 'New Title',
+          body: remoteMessage.notification?.body || 'New body',
+          android: {
+            channelId: 'default',
+            importance: AndroidImportance.HIGH,
+            smallIcon: 'ic_launcher',
+            pressAction: {id: 'default'},
+            style: imageUrl
+              ? {type: AndroidStyle.BIGPICTURE, picture: imageUrl}
+              : undefined,
+          },
+        });
+      },
+    );
 
-      console.log("🚀 ~ unsubcribeOnMessage ~ remoteMessage:", remoteMessage)
-      
-      const imageUrl = remoteMessage.notification?.android?.imageUrl
-      await notifee.displayNotification({
-        title: remoteMessage.notification?.title || 'New Title',
-        body: remoteMessage.notification?.body || 'New body',
-        android: {
-          channelId: 'default',
-          importance: AndroidImportance.HIGH,
-          smallIcon: 'ic_launcher',
-          pressAction: { id: 'default' },
-          style: imageUrl ? {type: AndroidStyle.BIGPICTURE, picture: imageUrl} : undefined
-        }
-      })
-    })
-
-    return () => {
-      unsubcribeOnMessage()
-    }
-
-  }, []);
-
-  // useEffect lấy thông tin doctor
-  useEffect(() => {
-    // Tạo listener cho thông tin doctor theo email đã login
     const unsubscribeDoctor = firestore()
       .collection('doctors')
       .where('email', '==', user?.email)
@@ -147,10 +126,29 @@ const DoctorHomeScreen = ({navigation}: any) => {
         error => {
           console.error('Error listening to doctor changes:', error);
         },
-      );
-
+    );
+    
+    // Lắng nghe sự thay đổi trong Firestore để kiểm tra có thông báo mới không
+    let unsubscribeNotification: () => void = () => {}; // Đặt giá trị mặc định
+    if (doctor?.doctorId) {
+      unsubscribeNotification = firestore()
+        .collection('notifications')
+        .where('receiverId', '==', doctor.doctorId)
+        .where('isReaded', '==', false) // Kiểm tra các thông báo chưa đọc
+        .onSnapshot(snapshot => {
+          if (snapshot.empty) {
+            setHasNewNotification(false)
+          }
+          else {
+            setHasNewNotification(true)
+            console.log("aaaa")
+          }
+        });
+    }
+    
     return () => {
       unsubscribeDoctor();
+      unsubscribeNotification();
     };
   }, []);
 
@@ -242,6 +240,18 @@ const DoctorHomeScreen = ({navigation}: any) => {
             onPress={() => {
               navigation.navigate('DoctorNotification', {doctor: doctor});
             }}>
+            <View
+              style={{
+                position: 'absolute',
+                height: 9,
+                width: 9,
+                top: 1,
+                right: 1,
+                backgroundColor: hasNewNotification ? '#ff6f00' : '#fff',
+                borderRadius: 100,
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}></View>
             <Image
               source={require('../../../assets/IconTab/notification.png')}
               style={{width: 25, height: 25}}

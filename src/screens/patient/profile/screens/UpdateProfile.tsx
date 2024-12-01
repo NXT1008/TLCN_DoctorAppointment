@@ -1,26 +1,25 @@
-import {View, Text, TouchableOpacity} from 'react-native';
-import React, {useEffect, useState} from 'react';
+import firestore from '@react-native-firebase/firestore';
+import { ArrowLeft2, Forbidden2, TickCircle } from 'iconsax-react-native';
+import React, { useEffect, useState } from 'react';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import {
   Button,
   ContainerComponent,
   Input,
   Row,
   Section,
-  Select,
   Space,
-  TextComponent,
+  TextComponent
 } from '../../../../components';
-import {fontFamilies} from '../../../../constants/fontFamilies';
-import {ArrowLeft2, Forbidden2, TickCircle} from 'iconsax-react-native';
-import {Patient} from '../../../../models/Patient';
-import firestore from '@react-native-firebase/firestore';
+import { fontFamilies } from '../../../../constants/fontFamilies';
+import { Patient } from '../../../../models/Patient';
 import ModalComponent from '../components/ModalComponent';
-import {updateCurrentUser} from '@react-native-firebase/auth';
+import Toast from 'toastify-react-native'
+import ToastComponent from '../components/ToastComponent'
 
 const UpdateProfile = (props: any) => {
   const {patient} = props.route.params;
   const [name, setName] = useState('');
-  const [nickname, setNickname] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [gender, setGender] = useState('');
@@ -29,10 +28,11 @@ const UpdateProfile = (props: any) => {
   const [isShowModal, setIsShowModal] = useState(false);
   const [isError, setIsError] = useState(false);
 
+  const [role, setRole] = useState('male'); // thêm state role
+
   useEffect(() => {
     if (patient) {
       setName(patient.name);
-      setNickname(patient.nickname ? patient.nickname : '');
       setEmail(patient.email);
       setPhone(patient.phone);
       setGender(patient.gender);
@@ -41,6 +41,27 @@ const UpdateProfile = (props: any) => {
   }, []);
 
   const handleUpdateProfile = async () => {
+    if (name === '') {
+      Toast.warn('Please enter your full name');
+      return;
+    }
+    if (email === '') {
+      Toast.warn('Please enter your email');
+      return;
+    }
+    if (phone === '') {
+      Toast.warn('Please enter your phone');
+      return;
+    }
+    if (name === '') {
+      Toast.warn('Please enter your full name');
+      return;
+    }
+    if (address === '') {
+      Toast.warn('Please enter your address');
+      return;
+    }
+
     // Update patient data here
     const oldPatient: Patient = patient;
     const updatedPatient: Patient = {
@@ -49,7 +70,7 @@ const UpdateProfile = (props: any) => {
       email: email,
       phone: phone,
       gender: gender,
-      image: oldPatient.image,    
+      image: oldPatient.image,
       address: address,
     };
     await firestore()
@@ -69,6 +90,7 @@ const UpdateProfile = (props: any) => {
 
   return (
     <ContainerComponent isScroll>
+      <ToastComponent />
       <Section>
         <Row justifyContent="flex-start">
           <TouchableOpacity
@@ -156,6 +178,41 @@ const UpdateProfile = (props: any) => {
           bordered={false}
           color="#F5F5F5"
         />
+        <TextComponent
+          text="Gender"
+          font={fontFamilies.semiBold}
+          styles={{marginTop: -5, marginBottom: 5}}
+        />
+        <Row>
+          <TouchableOpacity
+            style={[
+              styles.roleButton,
+              role === 'male' && styles.roleButtonActive,
+            ]}
+            onPress={() => setRole('male')}>
+            <TextComponent
+              text="Male"
+              color={role === 'male' ? '#fff' : '#21a691'}
+              size={14}
+              font={fontFamilies.regular}
+            />
+          </TouchableOpacity>
+          <Space width={10} />
+          <TouchableOpacity
+            style={[
+              styles.roleButton,
+              role === 'female' && styles.roleButtonActive,
+            ]}
+            onPress={() => setRole('female')}>
+            <TextComponent
+              text="Female"
+              color={role === 'female' ? '#fff' : '#21a691'}
+              size={14}
+              font={fontFamilies.regular}
+            />
+          </TouchableOpacity>
+        </Row>
+        <Space height={20}/>
         <Input
           label="Address"
           labelStyleProps={{
@@ -173,7 +230,7 @@ const UpdateProfile = (props: any) => {
           bordered={false}
           color="#F5F5F5"
         />
-        <Space height={100} /> 
+        <Space height={100} />
         <Button
           title="Update"
           color="#0B8FAC"
@@ -201,5 +258,21 @@ const UpdateProfile = (props: any) => {
     </ContainerComponent>
   );
 };
+
+const styles = StyleSheet.create({
+  roleButton: {
+    flex: 1,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#21a691',
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: 40,
+  },
+
+  roleButtonActive: {
+    backgroundColor: '#21a691',
+  },
+});
 
 export default UpdateProfile;

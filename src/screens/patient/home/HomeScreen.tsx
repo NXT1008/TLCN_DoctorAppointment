@@ -1,14 +1,14 @@
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
-import { Messages1 } from 'iconsax-react-native';
-import React, { useEffect, useState } from 'react';
+import {Messages1} from 'iconsax-react-native';
+import React, {useEffect, useState} from 'react';
 import {
   ActivityIndicator,
   Dimensions,
   Image,
   ScrollView,
   TouchableOpacity,
-  View
+  View,
 } from 'react-native';
 import Swiper from 'react-native-swiper';
 import {
@@ -16,13 +16,13 @@ import {
   Row,
   Section,
   Space,
-  TextComponent
+  TextComponent,
 } from '../../../components';
-import { fontFamilies } from '../../../constants/fontFamilies';
-import { Doctor } from '../../../models/Doctor';
-import { Patient } from '../../../models/Patient';
-import { Specialization } from '../../../models/Specialization';
-import { HandleNotificationPatient } from '../../../utils/handleNotification';
+import {fontFamilies} from '../../../constants/fontFamilies';
+import {Doctor} from '../../../models/Doctor';
+import {Patient} from '../../../models/Patient';
+import {Specialization} from '../../../models/Specialization';
+import {HandleNotificationPatient} from '../../../utils/handleNotification';
 import DoctorCard from './components/DoctorCard';
 import SpecializationComponent from './components/SpecializationComponent';
 import SwiperOne from './components/SwiperOne';
@@ -35,10 +35,10 @@ const HomeScreen = (props: any) => {
   const [patient, setPatient] = useState<Patient>();
   const [loadingSpecialization, setLoadingSpecialization] = useState(false);
   const [loadingDoctors, setLoadingDoctors] = useState(false);
+  const [hasNewNotification, setHasNewNotification] = useState(false);
 
   // Sử dụng useEffect để setup realtime listener
   useEffect(() => {
-
     // Kiểm tra token của user đăng nhập
     HandleNotificationPatient.checkNotificationPermission();
 
@@ -66,7 +66,7 @@ const HomeScreen = (props: any) => {
         snapshot => {
           if (!snapshot.empty) {
             const items: Doctor[] = [];
-            snapshot.forEach((item : any) => {
+            snapshot.forEach((item: any) => {
               items.push({
                 id: item.id,
                 ...item.data(),
@@ -85,11 +85,12 @@ const HomeScreen = (props: any) => {
     // Tạo listener cho specializations
     const unsubscribeSpec = firestore()
       .collection('specializations')
+      .limit(5)
       .onSnapshot(
         snapshot => {
           if (!snapshot.empty) {
             const items: Specialization[] = [];
-            snapshot.forEach((item : any) => {
+            snapshot.forEach((item: any) => {
               items.push({
                 id: item.id,
                 ...item.data(),
@@ -105,11 +106,28 @@ const HomeScreen = (props: any) => {
         },
       );
 
+    // Lắng nghe sự thay đổi trong Firestore để kiểm tra có thông báo mới không
+    let unsubscribeNotification: () => void = () => {}; // Đặt giá trị mặc định
+    if (patient?.patientId) {
+      unsubscribeNotification = firestore()
+        .collection('notifications')
+        .where('receiverId', '==', patient?.patientId)
+        .where('isReaded', '==', false) // Kiểm tra các thông báo chưa đọc
+        .onSnapshot(snapshot => {
+          if (!snapshot.empty) {
+            setHasNewNotification(true); // Có thông báo mới
+          } else {
+            setHasNewNotification(false); // Không có thông báo mới
+          }
+        });
+    }
+
     // Cleanup listeners khi component unmount
     return () => {
       unsubscribePatient();
       unsubscribeDoctors();
       unsubscribeSpec();
+      unsubscribeNotification();
     };
   }, []);
 
@@ -146,10 +164,29 @@ const HomeScreen = (props: any) => {
                 />
               </View>
             </Row>
-            <TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                props.navigation.navigate('Notification', {patient: patient});
+              }}>
+              <View
+                style={{
+                  position: 'absolute',
+                  height: 9,
+                  width: 9,
+                  top: 1,
+                  right: 1,
+                  backgroundColor: hasNewNotification ? '#ff6f00' : '#fff',
+                  borderRadius: 100,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}></View>
               <Image
                 source={require('../../../assets/IconTab/notification.png')}
-                style={{width: 25, height: 25}}
+                style={{
+                  width: 25,
+                  height: 25,
+                  tintColor: '#404040',
+                }}
               />
             </TouchableOpacity>
           </Row>
@@ -160,8 +197,7 @@ const HomeScreen = (props: any) => {
             activeDotColor="#1399ba"
             autoplay
             autoplayTimeout={2}
-            loop
-          >
+            loop>
             <SwiperOne />
             <SwiperOne />
             <SwiperOne />
