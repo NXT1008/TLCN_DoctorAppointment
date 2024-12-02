@@ -1,34 +1,24 @@
-import React, {useState} from 'react';
+import { faCreditCard } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import React, { useState } from 'react';
 import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  ScrollView,
   Dimensions,
   Image,
-  Alert,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity
 } from 'react-native';
 import {
-  Card,
-  Col,
   ContainerComponent,
-  Row,
-  Section,
-  Space,
-  TextComponent,
+  Row
 } from '../../../../components';
-import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
-import {faCreditCard} from '@fortawesome/free-solid-svg-icons';
-import {useNavigation} from '@react-navigation/native';
-import {fontFamilies} from '../../../../constants/fontFamilies';
-import {PaymentMethod} from '../../../../models/Payment';
+import { fontFamilies } from '../../../../constants/fontFamilies';
+import { PaymentMethod } from '../../../../models/Payment';
 
 type PaymentMethods = 'Credit Card' | null;
 
 interface Props {
-  onSelectPaymentMethod: (method: PaymentMethods) => void;
-  isDisabled: boolean;
   onPressAddCard: () => void;
   data: PaymentMethod[];
 }
@@ -58,7 +48,7 @@ const cards = [
 ];
 
 const CreditCardComponent = (props: Props) => {
-  const {onSelectPaymentMethod, isDisabled, onPressAddCard, data} = props;
+  const {onPressAddCard, data} = props;
   const [selectedCardIndex, setSelectedCardIndex] = useState<number | null>(
     null,
   );
@@ -79,24 +69,6 @@ const CreditCardComponent = (props: Props) => {
     return '**** **** **** ' + cardNumber.slice(-4);
   };
 
-  const handleCardSelect = (index: number) => {
-    if (!isDisabled) {
-      onSelectPaymentMethod('Credit Card');
-    }
-    // Kiểm tra xem thẻ đang được chọn hay không
-    setSelectedCardIndex(prevIndex => {
-      const newIndex = prevIndex === index ? null : index;
-      // Nếu có thẻ được chọn thì cập nhật phương thức thanh toán
-      if (newIndex !== null) {
-        onSelectPaymentMethod(`Credit Card`);
-      } else {
-        // Nếu bỏ chọn, gửi null về parent component
-        onSelectPaymentMethod(null);
-      }
-      return newIndex;
-    });
-  };
-
   return (
     <ContainerComponent style={styles.container}>
       <Row justifyContent="space-between" styles={{marginTop: -20}}>
@@ -108,7 +80,6 @@ const CreditCardComponent = (props: Props) => {
             paddingHorizontal: 10,
           }}>
           <FontAwesomeIcon icon={faCreditCard} size={20} style={{}} />
-          <Space width={20}/>
           <Text style={styles.title}>Credit Cards</Text>
         </Row>
         <TouchableOpacity onPress={onPressAddCard}>
@@ -120,8 +91,9 @@ const CreditCardComponent = (props: Props) => {
       </Row>
       <ScrollView
         style={{
-          width: '100%', marginBottom: 20,
-          borderRadius: 10
+          width: '100%',
+          marginBottom: 20,
+          borderRadius: 10,
         }}
         horizontal
         showsHorizontalScrollIndicator={false}>
@@ -131,17 +103,19 @@ const CreditCardComponent = (props: Props) => {
             style={[
               styles.cardWrapper,
               selectedCardIndex === index && styles.selectedCard,
-            ]}
-            onPress={() => handleCardSelect(index)}
-            disabled={isDisabled}>
+            ]}>
             <Image
               source={getCardBackground(card.type)}
               style={styles.cardBackground}
             />
             <Text style={styles.cardType}>{card.type}</Text>
-            <Text style={styles.cardNumber}>{maskCardNumber(card.cardNumber)}</Text>
+            <Text style={styles.cardNumber}>
+              {maskCardNumber(card.cardNumber)}
+            </Text>
             <Text style={styles.cardHolder}>{card.cardHolder}</Text>
-            <Text style={styles.cardExpiry}>Exp: {card.expiryDate.slice(0, 2)}/{card.expiryDate.slice(2, 4)}</Text>
+            <Text style={styles.cardExpiry}>
+              Exp: {card.expiryDate.slice(0, 2)}/{card.expiryDate.slice(2, 4)}
+            </Text>
           </TouchableOpacity>
         ))}
       </ScrollView>
@@ -159,6 +133,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 20,
     marginBottom: 20,
+    height: screenHeight * 0.315, // Giới hạn chiều cao
   },
   header: {
     flexDirection: 'row',
@@ -182,7 +157,7 @@ const styles = StyleSheet.create({
     borderColor: 'transparent',
     overflow: 'hidden',
     width: screenWidth * 0.83, // Tăng từ 0.75 lên 0.85
-    height: screenHeight * 0.22, // Tăng từ 0.175 lên 0.25
+    height: screenHeight * 0.2, // Tăng từ 0.175 lên 0.25
   },
   selectedCard: {
     borderWidth: 2,

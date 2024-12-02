@@ -1,5 +1,7 @@
 export interface Payment {
   paymentId: string; // ID thanh toán
+  patientId?: string;
+  doctorId?: string;
   appointmentId: string; // Tham chiếu đến ID của lịch hẹn đã thanh toán
   amount: number; // Số tiền thanh toán
   paymentMethod: string; // Phương thức thanh toán

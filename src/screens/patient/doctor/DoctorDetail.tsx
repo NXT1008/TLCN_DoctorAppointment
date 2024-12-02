@@ -1,13 +1,13 @@
+import firestore from '@react-native-firebase/firestore';
+import {ArrowLeft2, MedalStar, Star1, UserEdit} from 'iconsax-react-native';
 import React, {useEffect, useState} from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
-  Image,
-  TouchableOpacity,
-  ScrollView,
   Alert,
   Dimensions,
+  Image,
+  StyleSheet,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import {
   Button,
@@ -16,18 +16,14 @@ import {
   ContainerComponent,
   Row,
   Section,
-  Space,
   TextComponent,
 } from '../../../components';
-import {ArrowLeft2, MedalStar, Star1, UserEdit} from 'iconsax-react-native';
-import {useNavigation} from '@react-navigation/native';
-import {Screen} from 'react-native-screens';
 import {fontFamilies} from '../../../constants/fontFamilies';
-import firestore from '@react-native-firebase/firestore';
+import {Doctor} from '../../../models/Doctor';
+import {Review} from '../../../models/Review';
 import {Specialization} from '../../../models/Specialization';
 import DoctorReviewComponent from './components/DoctorReviewComponent';
-import {Review} from '../../../models/Review';
-import {Doctor} from '../../../models/Doctor';
+import {Hospital} from '../../../models/Hospital';
 
 const DoctorDetailScreen = ({navigation, route}: any) => {
   const {width, height} = Dimensions.get('window');
@@ -35,42 +31,46 @@ const DoctorDetailScreen = ({navigation, route}: any) => {
   const doctorData = doctor as Doctor;
 
   const [spec, setSpec] = useState<Specialization>();
+  const [hospital, setHospital] = useState<Hospital>();
   const [reviewList, setReviewList] = useState<Review[]>([]);
 
   useEffect(() => {
-    getReviewsByDoctorID()
+    const unsubcribe = getReviewsByDoctorID();
+    return () => {
+      unsubcribe();
+    };
   }, []);
 
   const getReviewsByDoctorID = () => {
-    firestore()
+    return firestore()
       .collection('reviews')
       .where('doctorId', '==', doctorData.doctorId)
       .onSnapshot(snap => {
         if (snap.empty) {
           console.log('DoctorDetail.tsx : Reviews no found');
-        }
-        else {
-          const items: Review[] = []
-          snap.forEach((item : any) => {
+        } else {
+          const items: Review[] = [];
+          snap.forEach((item: any) => {
             items.push({
               id: item.id,
-              ...item.data()
-            })
-          })
-          setReviewList(items)
+              ...item.data(),
+            });
+          });
+          setReviewList(items);
         }
       });
   };
 
   useEffect(() => {
     getSpectializationByDoctorID();
+    fetchHospital();
   }, []);
 
   const getSpectializationByDoctorID = async () => {
     try {
       const specializationDoc = await firestore()
         .collection('specializations')
-        .doc(doctor.specializationId)
+        .doc(doctorData.specializationId)
         .get();
 
       if (specializationDoc.exists) {
@@ -81,6 +81,24 @@ const DoctorDetailScreen = ({navigation, route}: any) => {
       }
     } catch (error) {
       console.error('Error fetching specialization:', error);
+    }
+  };
+
+  const fetchHospital = async () => {
+    try {
+      const hospitalDoc = await firestore()
+        .collection('hospitals')
+        .doc(doctorData.hospitalId)
+        .get();
+
+      if (hospitalDoc.exists) {
+        const hospitalData = hospitalDoc.data() as Hospital;
+        setHospital(hospitalData);
+      } else {
+        console.error('Hospital document not found');
+      }
+    } catch (error) {
+      console.error('Error fetching Hospital:', error);
     }
   };
   return (
@@ -211,7 +229,10 @@ const DoctorDetailScreen = ({navigation, route}: any) => {
                   }}>
                   <Star1 color="#ffa936" />
                 </View>
-                <TextComponent text={`${doctorData.ratingAverage?.toFixed(1)}`} font={fontFamilies.semiBold} />
+                <TextComponent
+                  text={`${doctorData.ratingAverage?.toFixed(1)}`}
+                  font={fontFamilies.semiBold}
+                />
                 <TextComponent
                   text="Ratings"
                   font={fontFamilies.regular}
@@ -231,8 +252,7 @@ const DoctorDetailScreen = ({navigation, route}: any) => {
             font="Poppins-Bold"
           />
           <TextComponent
-            text="Dr. Bellamy Nicholas is a top specialist at London Bridge Hospital at London. He has achieved several awards and recognition for his contribution and service in his own field.
-                    He is available for private consultation."
+            text={`${doctorData.name} is a top specialist at ${hospital?.name} at ${hospital?.address}. He has achieved several awards and recognition for his contribution and service in his own field. He is available for private consultation.`}
             font="Poppins-Regular"
             textAlign="justify"
             color="#555"
@@ -263,7 +283,9 @@ const DoctorDetailScreen = ({navigation, route}: any) => {
           />
           <TouchableOpacity
             style={styles.communicationMethod}
-            onPress={() => { navigation.navigate('MainChatScreen', {data: doctorData})}}>
+            onPress={() => {
+              navigation.navigate('MainChatScreen', {data: doctorData});
+            }}>
             <Image
               source={require('../../../assets/images/message.png')}
               style={styles.communicationIcon}
@@ -349,9 +371,9 @@ const DoctorDetailScreen = ({navigation, route}: any) => {
             </TouchableOpacity>
           </Row>
           <View>
-            {reviewList.slice(0,3).map((item, index) => (
-              <DoctorReviewComponent key={index} data={item}/>
-            )) }
+            {reviewList.slice(0, 3).map((item, index) => (
+              <DoctorReviewComponent key={index} data={item} />
+            ))}
           </View>
         </Section>
       </ContainerComponent>

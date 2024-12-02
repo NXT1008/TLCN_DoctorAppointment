@@ -1,14 +1,16 @@
+import auth from '@react-native-firebase/auth';
+import firestore, {Timestamp} from '@react-native-firebase/firestore';
+import {Picker} from '@react-native-picker/picker';
+import {ArrowLeft2} from 'iconsax-react-native';
 import React, {useEffect, useState} from 'react';
 import {
-  View,
-  Text,
-  TouchableOpacity,
-  TextInput,
-  StyleSheet,
-  ScrollView,
-  Alert,
   ActivityIndicator,
   Dimensions,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import {
   ContainerComponent,
@@ -18,20 +20,13 @@ import {
   Space,
   TextComponent,
 } from '../../../components';
-import {ArrowLeft2} from 'iconsax-react-native';
-import {useNavigation} from '@react-navigation/native';
-import {fontFamilies} from '../../../constants/fontFamilies';
-import {Picker} from '@react-native-picker/picker';
-import DateTime from '../../../components/DateTimePicker';
 import DateTimePickerComponent from '../../../components/DateTimePickerComponent';
-import firestore, {Timestamp} from '@react-native-firebase/firestore';
+import {fontFamilies} from '../../../constants/fontFamilies';
 import {Doctor} from '../../../models/Doctor';
-import {formatDate} from 'date-fns';
 import {Schedule} from '../../../models/Schedule';
-import {Appointment} from '../../../models/Appointment';
-import auth from '@react-native-firebase/auth';
-import { FormatTime } from '../../../utils/formatTime';
-
+import {FormatTime} from '../../../utils/formatTime';
+import Toast from 'toastify-react-native';
+import ToastComponent from './components/ToastComponent';
 
 const BookingScreen = ({navigation, route}: any) => {
   const {width, height} = Dimensions.get('window');
@@ -48,7 +43,7 @@ const BookingScreen = ({navigation, route}: any) => {
   const [scheduleDate, setScheduleDate] = useState<Date>(new Date()); // ngày được chọn
   const [timeSlots, setTimeSlots] = useState<Schedule[]>([]); // Tất cả timeslot trong 1 ngày
   const [isLoading, setIsLoading] = useState(false);
-  const [bookingFor, setBookingFor] = useState('you'); // State to track selection
+  const [bookingFor, setBookingFor] = useState('you');
 
   const ageRanges = [
     '18 - 25',
@@ -60,6 +55,18 @@ const BookingScreen = ({navigation, route}: any) => {
   ];
 
   const handleAddNewAppointment = async () => {
+    if (bookingFor !== 'you') {
+      if (fullName === '') {
+        Toast.warn('Please enter yor relative name');
+        return;
+      }
+    }
+
+    if (!scheduleChoosen) {
+      Toast.warn('Please choose time!');
+      return;
+    }
+
     const appointment = {
       doctorId: doctor.doctorId,
       patientId: patientId,
@@ -68,286 +75,310 @@ const BookingScreen = ({navigation, route}: any) => {
       endTime: scheduleChoosen?.endTime,
       note: problem,
       status: 'Upcoming',
-      scheduleId: scheduleChoosen?.scheduleId
+      scheduleId: scheduleChoosen?.scheduleId,
     };
-    navigation.navigate('Payment', {appointment: appointment, schedule: scheduleChoosen});
+    navigation.navigate('Payment', {
+      appointment: appointment,
+      schedule: scheduleChoosen,
+    });
   };
 
   useEffect(() => {
-    getStartTimeByDate();
-  }, [scheduleDate]);
+    if (!doctor) return;
 
-  // lấy timeslot dựa vào ngày
-  const getStartTimeByDate = async () => {
-    if (!doctor) {
-      return;
-    }
+    // Hàm để xử lý dữ liệu onSnapshot
+    const handleSnapshot = (snap: any) => {
+      if (snap.empty) {
+        console.log(doctor.doctorId + ' No time slots in this day');
+      } else {
+        const inputDate = new Date(scheduleDate.setHours(0, 0, 0, 0));
+        const inputYear = inputDate.getFullYear();
+        const inputMonth = inputDate.getMonth(); // Tháng bắt đầu từ 0
+        const inputDay = inputDate.getDate();
 
-    // Chuyển đổi availableDate thành đối tượng Date
-    const inputDate = new Date(scheduleDate.setHours(0, 0, 0, 0)); // Đặt giờ, phút, giây về 0
-    const inputYear = inputDate.getFullYear();
-    const inputMonth = inputDate.getMonth(); // Tháng bắt đầu từ 0
-    const inputDay = inputDate.getDate();
+        const items: Schedule[] = [];
+        snap.forEach((doc: any) => {
+          const data = doc.data();
 
-    await firestore()
+          const availableDateTimestamp = data.availableDate; // type: timestamp
+          const availableDateObject = new Date(
+            availableDateTimestamp.seconds * 1000,
+          ); // Chuyển đổi seconds thành milliseconds
+
+          // Lấy ngày, tháng, năm từ availableDateObject
+          const availableYear = availableDateObject.getFullYear() as number;
+          const availableMonth = availableDateObject.getMonth(); // Tháng bắt đầu từ 0
+          const availableDay = availableDateObject.getDate();
+
+          // So sánh năm, tháng, ngày
+          if (
+            inputYear === availableYear &&
+            inputMonth === availableMonth &&
+            inputDay === availableDay
+          ) {
+            // console.log(data)
+            // const start = data.startTime
+            // console.log("🚀 ~ snap.forEach ~ start:", start)
+
+            items.push({
+              id: doc.id,
+              ...data,
+            });
+          }
+        });
+        setTimeSlots(items);
+      }
+    };
+
+    // Gọi firestore onSnapshot
+    const unsubscribe = firestore()
       .collection('schedules')
       .where('doctorId', '==', doctor.doctorId)
-      .get()
-      .then(snap => {
-        if (snap.empty) {
-          console.log(doctor.doctorId + ' No time slots in this day');
-        } else {
-          const items: Schedule[] = [];
-          snap.forEach((doc: any) => {
-            const data = doc.data();
-            const tmp = data as Schedule;
-            const availableDateTimestamp = data.availableDate; // type: timestamp
-            const availableDateObject = new Date(
-              availableDateTimestamp.seconds * 1000,
-            ); // Chuyển đổi seconds thành milliseconds
-
-            // Lấy ngày, tháng, năm từ availableDateObject
-            const availableYear = availableDateObject.getFullYear() as number;
-            const availableMonth = availableDateObject.getMonth(); // Tháng bắt đầu từ 0
-            const availableDay = availableDateObject.getDate();
-
-            // So sánh năm, tháng, ngày
-            if (
-              inputYear === availableYear &&
-              inputMonth === availableMonth &&
-              inputDay === availableDay
-            ) {
-              items.push({
-                id: doc.id,
-                ...data,
-              });
-            }
-          });
-          setTimeSlots(items);
-        }
-      })
-      .catch(error => {
+      .onSnapshot(handleSnapshot, error => {
         console.error('Error fetching data: ', error);
       });
-  };
+
+    // Cleanup khi unmount hoặc thay đổi
+    return () => unsubscribe();
+  }, [doctor, scheduleDate]);
 
   return (
-    <ContainerComponent isScroll>
-      <Section styles={styles.header}>
-        <Row justifyContent="space-around">
-          <ArrowLeft2 color="#000" onPress={() => navigation.goBack()} />
-          <Text style={styles.headerText}>New Appointment</Text>
-        </Row>
-      </Section>
-
-      <Section>
-        <DateTimePickerComponent
-          type="date"
-          title="Choose Day"
-          placeholder="Choice"
-          selected={scheduleDate}
-          onSelect={val => {
-            setScheduleDate(val);
-          }}
-        />
-      </Section>
-
-      <Section styles={styles.timeSection}>
-        <TextComponent text="Available Time" font="Poppins-Medium" size={20} />
-        <View style={styles.timeRow}>
-          {timeSlots.length > 0 ? (
-            timeSlots.map((item, index) => (
-              <TouchableOpacity
-                key={`${item.doctorId}/${index}`}
-                style={[
-                  styles.timeBox,
-                  selectedTime ===
-                    FormatTime.formatAvailableDate(item.startTime) &&
-                    styles.selectedBox,
-                ]}
-                onPress={() => {
-                  setSelectedTime(
-                    FormatTime.formatAvailableDate(item.startTime),
-                  );
-                  setScheduleChoosen(item);
-                }}>
-                <TextComponent
-                  styles={[
-                    styles.timeText,
-                    selectedTime ===
-                      FormatTime.formatAvailableDate(item.startTime) &&
-                      styles.selectedBoxText,
-                  ]}
-                  text={FormatTime.formatAvailableDate(item.startTime)}
-                />
-              </TouchableOpacity>
-            ))
-          ) : (
-            <TextComponent
-              text="Dont have time"
-              font={fontFamilies.regular}
-              styles={{textAlign: 'center'}}
-            />
-          )}
-        </View>
-      </Section>
-      <>
-        <Section>
-          <TextComponent text="Book For" font={fontFamilies.medium} size={18} />
-          <View>
-            <View style={styles.genderRow}>
-              <TouchableOpacity
-                style={[
-                  styles.genderButton,
-                  bookingFor === 'you' && styles.selectedBox,
-                ]}
-                onPress={() => setBookingFor('you')}>
-                <Text
-                  style={[
-                    styles.genderText,
-                    bookingFor === 'you' && styles.selectedBoxText,
-                  ]}>
-                  You
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[
-                  styles.genderButton,
-                  bookingFor === 'relative' && styles.selectedBox,
-                ]}
-                onPress={() => setBookingFor('relative')}>
-                <Text
-                  style={[
-                    styles.genderText,
-                    bookingFor === 'relative' && styles.selectedBoxText,
-                  ]}>
-                  Your Relative
-                </Text>
-              </TouchableOpacity>
-            </View>
-          </View>
+    <>
+      <ToastComponent />
+      <ContainerComponent isScroll style={{marginTop: -16}}>
+        <Space height={15} />
+        <Section styles={styles.header}>
+          <Row justifyContent="space-around">
+            <ArrowLeft2 color="#000" onPress={() => navigation.goBack()} />
+            <Text style={styles.headerText}>New Appointment</Text>
+          </Row>
         </Section>
 
-        {/* Render Patient Details section only if 'your relative' is selected */}
-        {bookingFor === 'relative' && (
-          <Section styles={styles.patientDetails}>
-            <TextComponent
-              text="Patient Details"
-              font="Poppins-Medium"
-              size={20}
-            />
+        <Section>
+          <DateTimePickerComponent
+            type="date"
+            title="Choose Day"
+            placeholder="Choice"
+            selected={scheduleDate}
+            onSelect={val => {
+              setScheduleDate(val);
+            }}
+          />
+        </Section>
 
-            <TextComponent
-              text="Full Name"
-              font="Poppins-Regular"
-              color="#000"
-              size={14}
-            />
-            <Input
-              clear
-              styles={styles.input}
-              value={fullName}
-              onChange={text => setFullName(text)}
-              placeholder="Full Name"
-              placeholderColor="gray"
-              inputStyles={{fontFamily: fontFamilies.regular, fontSize: 12}}
-            />
-
-            <View style={styles.pickerContainer}>
-              <TextComponent
-                text="Age"
-                font="Poppins-Regular"
-                color="#000"
-                size={14}
-              />
-              <View style={styles.pickerWrapper}>
-                <Picker
-                  mode="dialog"
-                  selectedValue={age}
-                  dropdownIconColor={'#000'}
-                  dropdownIconRippleColor={'#21a691'}
+        <Section styles={styles.timeSection}>
+          <TextComponent
+            text="Available Time"
+            font="Poppins-Medium"
+            size={18}
+          />
+          <View style={styles.timeRow}>
+            {timeSlots.length > 0 ? (
+              timeSlots.map((item, index) => (
+                <TouchableOpacity
+                  key={`${item.doctorId}/${index}`}
                   style={[
-                    styles.picker,
-                    {fontFamily: fontFamilies.bold, color: '#000'},
+                    styles.timeBox,
+                    selectedTime ===
+                      FormatTime.formatAvailableDate(item.startTime) &&
+                      styles.selectedBox,
                   ]}
-                  itemStyle={{color: 'red', fontFamily: fontFamilies.bold}}
-                  onValueChange={itemValue => setAge(itemValue)}>
-                  {ageRanges.map((range, index) => (
-                    <Picker.Item
-                      label={range}
-                      value={range}
-                      key={index}
-                      style={{fontFamily: fontFamilies.regular, color: '#fff'}}
-                    />
-                  ))}
-                </Picker>
-              </View>
-            </View>
+                  onPress={() => {
+                    setSelectedTime(
+                      FormatTime.formatAvailableDate(item.startTime),
+                    );
 
-            <View>
+                    setScheduleChoosen(item);
+                  }}>
+                  <TextComponent
+                    styles={[
+                      styles.timeText,
+                      selectedTime ===
+                        FormatTime.formatAvailableDate(item.startTime) &&
+                        styles.selectedBoxText,
+                    ]}
+                    text={FormatTime.formatAvailableDate(item.startTime)}
+                  />
+                </TouchableOpacity>
+              ))
+            ) : (
               <TextComponent
-                text="Gender"
-                font="Poppins-Regular"
-                color="#000"
-                size={14}
+                text="Dont have time"
+                font={fontFamilies.regular}
+                styles={{textAlign: 'center'}}
               />
+            )}
+          </View>
+        </Section>
+        <>
+          <Section>
+            <TextComponent
+              text="Book For"
+              font={fontFamilies.medium}
+              size={18}
+            />
+            <View>
               <View style={styles.genderRow}>
                 <TouchableOpacity
                   style={[
                     styles.genderButton,
-                    gender === 'Male' && styles.selectedBox,
+                    bookingFor === 'you' && styles.selectedBox,
                   ]}
-                  onPress={() => setGender('Male')}>
+                  onPress={() => setBookingFor('you')}>
                   <Text
                     style={[
                       styles.genderText,
-                      gender === 'Male' && styles.selectedBoxText,
+                      bookingFor === 'you' && styles.selectedBoxText,
                     ]}>
-                    Male
+                    You
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={[
                     styles.genderButton,
-                    gender === 'Female' && styles.selectedBox,
+                    bookingFor === 'relative' && styles.selectedBox,
                   ]}
-                  onPress={() => setGender('Female')}>
+                  onPress={() => setBookingFor('relative')}>
                   <Text
                     style={[
                       styles.genderText,
-                      gender === 'Female' && styles.selectedBoxText,
+                      bookingFor === 'relative' && styles.selectedBoxText,
                     ]}>
-                    Female
+                    Your Relative
                   </Text>
                 </TouchableOpacity>
               </View>
             </View>
-
-            <Space height={10} />
-            <TextInput
-              style={styles.problemInput}
-              value={problem}
-              onChangeText={text => setProblem(text)}
-              placeholder="Write your problem"
-              multiline
-              placeholderTextColor={'gray'}
-            />
           </Section>
-        )}
-      </>
-      {bookingFor === 'you' && <Space height={height * 0.28} />}
-      <Section styles={{alignItems: 'center'}}>
-        <TouchableOpacity
-          style={styles.setAppointmentButton}
-          onPress={handleAddNewAppointment}>
-          {isLoading ? (
-            <ActivityIndicator color={'gray'} />
-          ) : (
-            <Text style={styles.setAppointmentButtonText}>Set Appointment</Text>
+
+          {/* Render Patient Details section only if 'your relative' is selected */}
+          {bookingFor === 'relative' && (
+            <Section styles={styles.patientDetails}>
+              <TextComponent
+                text="Patient Details"
+                font="Poppins-Medium"
+                size={20}
+              />
+
+              <TextComponent
+                text="Full Name"
+                font="Poppins-Regular"
+                color="#000"
+                size={14}
+              />
+              <Input
+                clear
+                styles={styles.input}
+                value={fullName}
+                onChange={text => setFullName(text)}
+                placeholder="Full Name"
+                placeholderColor="gray"
+                inputStyles={{fontFamily: fontFamilies.regular, fontSize: 12}}
+              />
+
+              <View style={styles.pickerContainer}>
+                <TextComponent
+                  text="Age"
+                  font="Poppins-Regular"
+                  color="#000"
+                  size={14}
+                />
+                <View style={styles.pickerWrapper}>
+                  <Picker
+                    mode="dialog"
+                    selectedValue={age}
+                    dropdownIconColor={'#000'}
+                    dropdownIconRippleColor={'#21a691'}
+                    style={[
+                      styles.picker,
+                      {fontFamily: fontFamilies.bold, color: '#000'},
+                    ]}
+                    itemStyle={{color: 'red', fontFamily: fontFamilies.bold}}
+                    onValueChange={itemValue => setAge(itemValue)}>
+                    {ageRanges.map((range, index) => (
+                      <Picker.Item
+                        label={range}
+                        value={range}
+                        key={index}
+                        style={{
+                          fontFamily: fontFamilies.regular,
+                          color: '#fff',
+                        }}
+                      />
+                    ))}
+                  </Picker>
+                </View>
+              </View>
+
+              <View>
+                <TextComponent
+                  text="Gender"
+                  font="Poppins-Regular"
+                  color="#000"
+                  size={14}
+                />
+                <View style={styles.genderRow}>
+                  <TouchableOpacity
+                    style={[
+                      styles.genderButton,
+                      gender === 'Male' && styles.selectedBox,
+                    ]}
+                    onPress={() => setGender('Male')}>
+                    <Text
+                      style={[
+                        styles.genderText,
+                        gender === 'Male' && styles.selectedBoxText,
+                      ]}>
+                      Male
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[
+                      styles.genderButton,
+                      gender === 'Female' && styles.selectedBox,
+                    ]}
+                    onPress={() => setGender('Female')}>
+                    <Text
+                      style={[
+                        styles.genderText,
+                        gender === 'Female' && styles.selectedBoxText,
+                      ]}>
+                      Female
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+
+              <Space height={10} />
+            </Section>
           )}
-        </TouchableOpacity>
-      </Section>
-    </ContainerComponent>
+        </>
+        <Section>
+          <TextInput
+            style={styles.problemInput}
+            value={problem}
+            onChangeText={text => setProblem(text)}
+            placeholder="Write your problem"
+            multiline
+            placeholderTextColor={'gray'}
+          />
+        </Section>
+        {bookingFor === 'you' && <Space height={height * 0.18} />}
+        <Section styles={{alignItems: 'center'}}>
+          <TouchableOpacity
+            style={styles.setAppointmentButton}
+            onPress={handleAddNewAppointment}>
+            {isLoading ? (
+              <ActivityIndicator color={'gray'} />
+            ) : (
+              <Text style={styles.setAppointmentButtonText}>
+                Set Appointment
+              </Text>
+            )}
+          </TouchableOpacity>
+        </Section>
+      </ContainerComponent>
+    </>
   );
 };
 
@@ -368,7 +399,7 @@ const styles = StyleSheet.create({
   headerText: {
     flex: 1,
     textAlign: 'center',
-    fontSize: 18,
+    fontSize: 20,
     color: '#21a691',
     alignContent: 'center',
     justifyContent: 'center',

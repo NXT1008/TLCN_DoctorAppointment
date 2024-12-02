@@ -19,6 +19,7 @@ import MainChatScreen from '../screens/patient/chat/MainChatScreen';
 import ReviewScreen from '../screens/patient/appointment/ReviewAppointment';
 import CancelAppointment from '../screens/patient/appointment/CancelAppointment';
 import ChangePassword from '../screens/patient/profile/screens/ChangePassword';
+import PaymentHistory from '../screens/patient/profile/screens/PaymentMethodScreen';
 
 const MainNavigator = () => {
   const Stack = createNativeStackNavigator();
@@ -45,6 +46,7 @@ const MainNavigator = () => {
       <Stack.Screen name="ReviewScreen" component={ReviewScreen} />
       <Stack.Screen name="CancelAppointment" component={CancelAppointment} />
       <Stack.Screen name="ChangePassword" component={ChangePassword} />
+      <Stack.Screen name="PaymentHistory" component={PaymentHistory} />
     </Stack.Navigator>
   );
 };

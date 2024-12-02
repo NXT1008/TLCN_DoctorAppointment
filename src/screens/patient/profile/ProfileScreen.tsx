@@ -31,7 +31,7 @@ import { Patient } from '../../../models/Patient';
 import ModalComponent from './components/ModalComponent';
 import ProfileComponent from './components/ProfileComponent';
 
-const ProfileScreen = (props: any) => {
+const ProfileScreen = ({navigation, route}: any) => {
   const patientId = auth().currentUser?.uid;
 
   const [patient, setPatient] = useState<Patient>();
@@ -153,7 +153,7 @@ const ProfileScreen = (props: any) => {
           />
           <TouchableOpacity
             onPress={() => {
-              props.navigation.navigate('UpdateProfile', {patient});
+              navigation.navigate('UpdateProfile', {patient});
             }}>
             <Edit color="#000" size={26} />
           </TouchableOpacity>
@@ -246,40 +246,40 @@ const ProfileScreen = (props: any) => {
           text="My Report"
           icon={<DocumentText color="#0B8FAC" />}
           onPress={() => {
-            props.navigation.navigate('ReportScreen');
+            navigation.navigate('ReportScreen');
           }}
         />
         <ProfileComponent
-          text="Payment Methods"
+          text="Payment History"
           icon={<DocumentText color="#0B8FAC" />}
-          onPress={() => {}}
+          onPress={() => {navigation.navigate('PaymentHistory');}}
         />
         <ProfileComponent
           text="My Favorites Doctors"
           icon={<DocumentText color="#0B8FAC" />}
           onPress={() => {
-            props.navigation.navigate('MyfavoritesDoctor');
+            navigation.navigate('MyfavoritesDoctor');
           }}
         />
         <ProfileComponent
           text="Privacy Polices"
           icon={<DocumentText color="#0B8FAC" />}
           onPress={() => {
-            props.navigation.navigate('PrivacyPolicyScreen');
+            navigation.navigate('PrivacyPolicyScreen');
           }}
         />
         <ProfileComponent
           text="Settings"
           icon={<DocumentText color="#0B8FAC" />}
           onPress={() => {
-            props.navigation.navigate('SettingScreen');
+            navigation.navigate('SettingScreen');
           }}
         />
         <ProfileComponent
           text="FAQs"
           icon={<DocumentText color="#0B8FAC" />}
           onPress={() => {
-            props.navigation.navigate('FAQsScreen');
+            navigation.navigate('FAQsScreen');
           }}
         />
         <ProfileComponent

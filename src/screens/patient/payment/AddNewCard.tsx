@@ -69,8 +69,13 @@ const AddNewCard = ({navigation, route}: any) => {
 
   return (
     <View style={styles.container}>
-      <Section styles={styles.header}>
-        <Row justifyContent="space-around">
+      <Section
+        styles={{
+          alignItems: 'center',
+          marginBottom: 10,
+          paddingHorizontal: 0,
+        }}>
+        <Row justifyContent="space-around" styles={{paddingHorizontal: 0}}>
           <ArrowLeft2 color="#000" onPress={() => navigation.goBack()} />
           <Text style={styles.headerText}>Add New Card</Text>
         </Row>
@@ -205,11 +210,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
   },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 10,
-  },
   headerText: {
     flex: 1,
     textAlign: 'center',
@@ -226,7 +226,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 10,
     marginBottom: 10,
-    fontSize: 16,
+    fontSize: 14,
     width: '100%',
     fontFamily: 'Poppins-Regular',
     color: '#000',

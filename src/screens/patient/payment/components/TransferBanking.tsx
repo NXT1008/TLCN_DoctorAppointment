@@ -11,7 +11,7 @@ import {
   UIManager,
   Dimensions,
 } from 'react-native';
-import {Card, ContainerComponent, Section} from '../../../../components';
+import {Card, ContainerComponent, Section, Space} from '../../../../components';
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
 import {faBuilding} from '@fortawesome/free-solid-svg-icons';
 import Container from '../../../../components/ContainerComponent';
@@ -78,6 +78,7 @@ const BankTransferComponent = ({onSelectPaymentMethod, isDisabled}: props) => {
         style={styles.dropdownHeader}>
         <View style={styles.iconAndText}>
           <FontAwesomeIcon icon={faBuilding} size={20} style={styles.icon} />
+          <Space width={10} />
           <Text style={styles.title}>Bank Transfer</Text>
         </View>
         <Text style={styles.toggleText}>{isExpanded ? '●' : '○'}</Text>
@@ -138,6 +139,7 @@ const styles = StyleSheet.create({
   iconAndText: {
     flexDirection: 'row',
     alignItems: 'center',
+    paddingLeft: 10
   },
   icon: {
     marginRight: 10,
@@ -167,7 +169,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginBottom: 15,
     paddingHorizontal: 15,
-    fontSize: 16,
+    fontSize: 14,
     fontFamily: fontFamilies.regular,
     backgroundColor: '#f9f9f9',
   },

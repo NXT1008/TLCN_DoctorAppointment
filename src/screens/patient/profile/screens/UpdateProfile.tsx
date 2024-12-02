@@ -1,5 +1,5 @@
 import firestore from '@react-native-firebase/firestore';
-import { ArrowLeft2, Forbidden2, TickCircle } from 'iconsax-react-native';
+import { ArrowLeft2, Forbidden2, PasswordCheck, TickCircle } from 'iconsax-react-native';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import {
@@ -22,13 +22,12 @@ const UpdateProfile = (props: any) => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
-  const [gender, setGender] = useState('');
+  const [gender, setGender] = useState('Male');
   const [address, setAddress] = useState('');
   const [infoUpdate, setInfoUpdate] = useState('');
   const [isShowModal, setIsShowModal] = useState(false);
   const [isError, setIsError] = useState(false);
 
-  const [role, setRole] = useState('male'); // thêm state role
 
   useEffect(() => {
     if (patient) {
@@ -53,8 +52,8 @@ const UpdateProfile = (props: any) => {
       Toast.warn('Please enter your phone');
       return;
     }
-    if (name === '') {
-      Toast.warn('Please enter your full name');
+    if (phone.length !== 10 && phone.length !== 11) {
+      Toast.warn('Phone must be exactly 10 or 11 digits');
       return;
     }
     if (address === '') {
@@ -161,58 +160,41 @@ const UpdateProfile = (props: any) => {
           bordered={false}
           color="#F5F5F5"
         />
-        <Input
-          label="Gender"
-          labelStyleProps={{
-            paddingHorizontal: 5,
-            fontFamily: fontFamilies.semiBold,
-            fontSize: 14,
-          }}
-          styles={{marginTop: -5, marginBottom: 10, borderRadius: 15}}
-          value={gender}
-          onChange={setGender}
-          placeholder="Enter your gender"
-          placeholderColor="gray"
-          inputStyles={{fontFamily: fontFamilies.regular, fontSize: 14}}
-          prefix
-          bordered={false}
-          color="#F5F5F5"
-        />
         <TextComponent
           text="Gender"
           font={fontFamilies.semiBold}
-          styles={{marginTop: -5, marginBottom: 5}}
+          styles={{marginTop: -5, marginBottom: 5, paddingLeft: 5}}
         />
-        <Row>
+        <Row styles={{paddingHorizontal: 5}}>
           <TouchableOpacity
             style={[
               styles.roleButton,
-              role === 'male' && styles.roleButtonActive,
+              gender === 'Male' && styles.roleButtonActive,
             ]}
-            onPress={() => setRole('male')}>
+            onPress={() => setGender('Male')}>
             <TextComponent
               text="Male"
-              color={role === 'male' ? '#fff' : '#21a691'}
+              color={gender === 'Male' ? '#fff' : '#0ea6c7'}
               size={14}
-              font={fontFamilies.regular}
+              font={fontFamilies.medium}
             />
           </TouchableOpacity>
           <Space width={10} />
           <TouchableOpacity
             style={[
               styles.roleButton,
-              role === 'female' && styles.roleButtonActive,
+              gender === 'Female' && styles.roleButtonActive,
             ]}
-            onPress={() => setRole('female')}>
+            onPress={() => setGender('Female')}>
             <TextComponent
               text="Female"
-              color={role === 'female' ? '#fff' : '#21a691'}
+              color={gender === 'Female' ? '#fff' : '#0ea6c7'}
               size={14}
-              font={fontFamilies.regular}
+              font={fontFamilies.medium}
             />
           </TouchableOpacity>
         </Row>
-        <Space height={20}/>
+        <Space height={20} />
         <Input
           label="Address"
           labelStyleProps={{
@@ -264,14 +246,14 @@ const styles = StyleSheet.create({
     flex: 1,
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: '#21a691',
+    borderColor: '#0ea6c7',
     alignItems: 'center',
     justifyContent: 'center',
     height: 40,
   },
 
   roleButtonActive: {
-    backgroundColor: '#21a691',
+    backgroundColor: '#0db4d9',
   },
 });
 

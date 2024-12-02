@@ -59,9 +59,6 @@ const UpcomingAppointmentCard = (props: Props) => {
         <TouchableOpacity style={styles.detailsButton} onPress={onPressDetail}>
           <Text style={styles.buttonText}>Details</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.checkButton} onPress={onPressOK}>
-          <Text style={styles.checkIcon}>✓</Text>
-        </TouchableOpacity>
         <TouchableOpacity style={styles.cancelButton} onPress={onPressCancel}>
           <Text style={styles.cancelIcon}>✗</Text>
         </TouchableOpacity>

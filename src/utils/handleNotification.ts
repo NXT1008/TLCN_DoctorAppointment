@@ -2,10 +2,12 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import messing from '@react-native-firebase/messaging';
-import {Doctor} from '../models/Doctor';
+import { Doctor } from '../models/Doctor';
+import {config} from '../constants/config'
 
 const user = auth().currentUser;
-const localhost = '192.168.1.5';
+
+const localhost = config.localhost
 
 export class HandleNotification {
   // Kiểm tra user có quyền gửi nhận thông báo không
