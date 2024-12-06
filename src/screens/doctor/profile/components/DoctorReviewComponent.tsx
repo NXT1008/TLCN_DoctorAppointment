@@ -39,11 +39,7 @@ const DoctorReviewComponent = (props: Props) => {
     <Card styles={{borderRadius: 20}} color="#F6F6F6">
       <Row>
         <Image
-          source={
-            patientReview
-              ? {uri: patientReview.image}
-              : require('../../../../assets/IconTab/profile.png')
-          }
+          source={require('../../../../assets/IconTab/profile.png')}
           style={{width: 50, height: 50, borderRadius: 100}}
         />
         <Space width={15} />

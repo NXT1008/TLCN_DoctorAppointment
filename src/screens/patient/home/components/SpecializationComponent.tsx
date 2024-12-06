@@ -1,6 +1,6 @@
 import {View, Text, Image} from 'react-native';
 import React, {ReactNode} from 'react';
-import {Card, TextComponent} from '../../../../components';
+import {Card, Space, TextComponent} from '../../../../components';
 import {fontFamilies} from '../../../../constants/fontFamilies';
 import {Specialization} from '../../../../models/Specialization';
 
@@ -27,12 +27,13 @@ const SpecializationComponent = (props: Props) => {
         icon
       ) : (
         <Image
-          source={require('../../../../assets/IconTab/doctor.png')}
+          source={{uri: data.image}}
           resizeMode="contain"
           resizeMethod="resize"
-          style={{width: 30, height: 30}}
+          style={{width: 25, height: 25}}
         />
       )}
+      <Space width={5}/>
       <TextComponent
         styles={{flexShrink: 1}}
         text={data.name ? data.name : ''}

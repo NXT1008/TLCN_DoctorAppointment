@@ -8,7 +8,8 @@ import {
   Edit,
   Edit2,
   Sms,
-  Warning2
+  Warning2,
+  Star1
 } from 'iconsax-react-native';
 import React, { useEffect, useState } from 'react';
 import { Alert, Image, TouchableOpacity, View } from 'react-native';
@@ -216,13 +217,7 @@ const ProfileScreen = (props: any) => {
             text={
               doctor
                 ? doctor.phone
-                  ? doctor.phone.slice(0, 4) +
-                    '-' +
-                    doctor.phone.slice(4, 7) +
-                    '-' +
-                    doctor.phone.slice(7)
                   : `Don't have`
-                : ''
             }
             size={12}
             font={fontFamilies.regular}
@@ -242,6 +237,13 @@ const ProfileScreen = (props: any) => {
         <Divider />
       </Section>
       <Section styles={{paddingHorizontal: 20, marginTop: -10}}>
+        <ProfileComponent
+          text="My Reviews"
+          icon={<Star1 color="#0B8FAC" />}
+          onPress={() => {
+            props.navigation.navigate('DoctorReviews');
+          }}
+        />
         <ProfileComponent
           text="Privacy Polices"
           icon={<DocumentText color="#0B8FAC" />}
@@ -263,6 +265,7 @@ const ProfileScreen = (props: any) => {
             props.navigation.navigate('FAQsScreen');
           }}
         />
+
         <ProfileComponent
           text="Logout"
           icon={<DocumentText color="#0B8FAC" />}

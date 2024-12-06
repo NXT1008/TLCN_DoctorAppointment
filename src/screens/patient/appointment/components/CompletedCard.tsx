@@ -23,10 +23,7 @@ const CompletedAppointmentCard = (prop: Props) => {
   return (
     <Card styles={styles.appointmentContainer} shadowed>
       <View style={styles.profileInfo}>
-        <Image
-          source={require('../../../../assets/images/doctor.png')}
-          style={styles.profileImage}
-        />
+        <Image source={{uri: doctor.image}} style={styles.profileImage} />
         <View>
           <Text style={styles.doctorName}>{doctor?.name}</Text>
           <Text style={styles.specialty}>{specialization?.name}</Text>

@@ -1,7 +1,7 @@
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
-import { ArrowLeft2 } from 'iconsax-react-native';
-import React, { useEffect, useState } from 'react';
+import {ArrowLeft2} from 'iconsax-react-native';
+import React, {useEffect, useState} from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -11,7 +11,7 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
-  View
+  View,
 } from 'react-native';
 import {
   Card,
@@ -20,27 +20,37 @@ import {
   Row,
   Section,
   Space,
-  TextComponent
+  TextComponent,
 } from '../../../components';
 import PopUpAnimation from '../../../components/PopUpAmination';
-import { fontFamilies } from '../../../constants/fontFamilies';
-import { Payment, PaymentMethod } from '../../../models/Payment';
-import { Schedule } from '../../../models/Schedule';
+import {fontFamilies} from '../../../constants/fontFamilies';
+import {Payment, PaymentMethod} from '../../../models/Payment';
+import {Schedule} from '../../../models/Schedule';
 import CreditCardComponent from './components/CreditCard';
 import BankTransferComponent from './components/TransferBanking';
-import Toast from 'toastify-react-native'
+import Toast from 'toastify-react-native';
 import ToastComponent from './components/ToastComponent';
 import axios from 'axios';
-import { config } from '../../../constants/config';
+import {config} from '../../../constants/config';
 import queryString from 'query-string';
+import PopUpAnimationLoading from './components/PopUpAminationLoading';
+import {DateTime} from '../../../utils/DateTime';
+import {Patient} from '../../../models/Patient';
+import {
+  HandleNotification,
+  HandleNotificationPatient,
+} from '../../../utils/handleNotification';
+import {FormatTime} from '../../../utils/formatTime';
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
 type PaymentMethods = 'Credit Card' | 'Bank Transfer' | null;
 
 const PaymentMethodComponent = ({navigation, route}: any) => {
-  const {appointment, schedule} = route.params;
+  const {appointment, schedule, doctor} = route.params;
   const scheduleChoosen = schedule as Schedule;
+
+  const [patient, setPatient] = useState<Patient>();
 
   const [selectedPaymentMethod, setSelectedPaymentMethod] =
     useState<PaymentMethods | null>(null);
@@ -60,9 +70,25 @@ const PaymentMethodComponent = ({navigation, route}: any) => {
     setIsMomoPayment(false);
   };
 
-  const [showPopup, setShowPopup] = useState(false);
+  const [showPopupSuccess, setShowPopupSuccess] = useState(false);
+  const [showPopupLoading, setShowPopupLoading] = useState(false);
 
   useEffect(() => {
+    // Tạo listener cho thông tin patient
+    const unsubscribePatient = firestore()
+      .collection('patients')
+      .doc(auth().currentUser?.uid)
+      .onSnapshot(
+        snapshot => {
+          if (snapshot.exists) {
+            setPatient(snapshot.data() as Patient);
+          }
+        },
+        error => {
+          console.error('Error listening to patient changes:', error);
+        },
+      );
+
     const unsubscribe = firestore()
       .collection('paymentMethods')
       .where('patientId', '==', auth().currentUser?.uid)
@@ -108,73 +134,20 @@ const PaymentMethodComponent = ({navigation, route}: any) => {
   }, []);
 
   const navigateToPaymentSuccessScreen = () => {
-    handleShowPopup();
+    handleShowPopupSuccess();
     setTimeout(() => {
       navigation.navigate('HomeScreen', {status: 'success'});
     }, 3000); // Điều hướng sau khi popup đã hiển thị
   };
 
   const handlePayNow = async () => {
+    if (!selectedPaymentMethod && !isMomoPayment) {
+      Toast.error('Please choose Payment method!');
+      return;
+    }
 
-    // if (!selectedPaymentMethod && !isMomoPayment) {
-    //   Toast.error('Please choose Payment method!')
-    //   return
-    // }
-
-    // setIsLoading(true); // Bắt đầu quá trình loading
-
-    // let appointmentId = ''; // Khai báo biến để lưu appointmentId
-    // // 1. Tiến hành tạo appointment trong firestore
-    // try {
-    //   const appointmentRef = await firestore()
-    //     .collection('appointments')
-    //     .add(appointment);
-    //   appointmentId = appointmentRef.id; // Lấy ID appointment mà Firestore đã tự động tạo ra
-    //   await appointmentRef.update({appointmentId}); // Cập nhật lại appointment với appointmentId
-    //   console.log('Appointment added successfully');
-    // } catch (error) {
-    //   console.log('Error creating appointment: ', error);
-    //   setIsLoading(false);
-    //   return; // Kết thúc hàm nếu có lỗi
-    // }
-
-    // // 2. Tiến hành cập nhật lại schedule trong firestore
-    // try {
-    //   await firestore()
-    //     .collection('schedules')
-    //     .doc(scheduleChoosen?.scheduleId)
-    //     .update({
-    //       isBook: true,
-    //     });
-    //   console.log('Schedule updated successfully');
-    // } catch (error) {
-    //   console.log('Error updating schedule: ', error);
-    //   setIsLoading(false);
-    //   return; // Kết thúc hàm nếu có lỗi
-    // }
-
-    // // 3. Tạo paymentId và payment object
-    // const paymentId = `pay_${new Date().getTime()}`; // Tạo ID thanh toán duy nhất
-    // const newPayment: Payment = {
-    //   paymentId,
-    //   appointmentId: appointmentId, // Sử dụng appointmentId vừa tạo
-    //   amount: 3000000, // Thay đổi giá trị này nếu cần
-    //   paymentMethod: selectedPaymentMethod as string,
-    //   status: 'paid',
-    //   timestamp: new Date(),
-    // };
-
-    // // 4. Tiến hành tạo payment trong firestore
-    // try {
-    //   await firestore().collection('payments').doc(paymentId).set(newPayment);
-    //   // Alert.alert('Payment successful', 'Your payment has been processed.');
-    //   // navigation.goBack(); // Quay lại màn hình trước đó
-    // } catch (error) {
-    //   console.error('Error processing payment: ', error);
-    //   Alert.alert('Payment failed', 'Please try again later.');
-    // } finally {
-    //   setIsLoading(false); // Kết thúc quá trình loading
-    // }
+    setIsLoading(true); // Bắt đầu quá trình loading
+    handleShowPopupLoading();
 
     if (isMomoPayment) {
       try {
@@ -182,44 +155,132 @@ const PaymentMethodComponent = ({navigation, route}: any) => {
           `http://${config.localhost}:3000/payment`,
           {
             //amount: newPayment.amount,
-            amount: 3000000
+            amount: 3000000,
           },
         );
-        
 
         const {payUrl} = response.data; // MoMo trả về URL thanh toán
         if (payUrl) {
           // Điều hướng tới trình duyệt để thanh toán MoMo
-          Alert.alert('Redirecting...', 'You will be redirected to MoMo');
-
           // Sử dụng Linking để mở URL
           Linking.openURL(payUrl);
         } else {
           Alert.alert('Error', 'Failed to get payment URL');
+          return;
         }
       } catch (error) {
-        console.error(error);
+        //console.error(error);
         Alert.alert('Error', 'Payment failed');
+        return;
       }
     }
+
+    let appointmentId = ''; // Khai báo biến để lưu appointmentId
+    // 1. Tiến hành tạo appointment trong firestore
+    try {
+      const appointmentRef = await firestore()
+        .collection('appointments')
+        .add(appointment);
+      appointmentId = appointmentRef.id; // Lấy ID appointment mà Firestore đã tự động tạo ra
+      await appointmentRef.update({appointmentId}); // Cập nhật lại appointment với appointmentId
+      console.log('Appointment added successfully');
+    } catch (error) {
+      console.log('Error creating appointment: ', error);
+      setIsLoading(false);
+      return; // Kết thúc hàm nếu có lỗi
+    }
+
+    // 2. Tiến hành cập nhật lại schedule trong firestore
+    try {
+      await firestore()
+        .collection('schedules')
+        .doc(scheduleChoosen?.scheduleId)
+        .update({
+          isBook: true,
+        });
+      console.log('Schedule updated successfully');
+    } catch (error) {
+      console.log('Error updating schedule: ', error);
+      setIsLoading(false);
+      return; // Kết thúc hàm nếu có lỗi
+    }
+
+    // 3. Tạo paymentId và payment object
+    const paymentId = `pay_${new Date().getTime()}`; // Tạo ID thanh toán duy nhất
+    const newPayment: Payment = {
+      paymentId,
+      appointmentId: appointmentId, // Sử dụng appointmentId vừa tạo
+      amount: 500000, // Thay đổi giá trị này nếu cần
+      paymentMethod: isMomoPayment ? 'MoMo' : (selectedPaymentMethod as string),
+      status: 'paid',
+      timestamp: new Date(),
+      patientId: auth().currentUser?.uid,
+      doctorId: doctor.doctorId,
+      name: doctor.name,
+    };
+
+    const sendNotifications = {
+      senderId: auth().currentUser?.uid as string,
+      name: patient?.name ? patient.name : '',
+      receiverId: doctor.doctorId,
+      title: `You have a new appointment from ${patient?.name}`,
+      body: `You have a new appointment booked by ${
+        patient?.name
+      } at ${FormatTime.formatAvailableDate(
+        new Date(appointment.startTime.seconds * 1000),
+      )} on ${FormatTime.getShortFormattedDate(
+        new Date(appointment.scheduleDate.seconds * 1000),
+      )}.
+Please check the details to prepare for your appointment.`,
+      appointmentId: appointmentId,
+    };
+
+    // 4. Tiến hành tạo payment trong firestore
+    try {
+      await firestore().collection('payments').doc(paymentId).set(newPayment);
+      // Alert.alert('Payment successful', 'Your payment has been processed.');
+      // navigation.goBack(); // Quay lại màn hình trước đó
+      HandleNotificationPatient.sendNotificationPatientToDoctor(
+        sendNotifications,
+      );
+    } catch (error) {
+      console.error('Error processing payment: ', error);
+      Alert.alert('Payment failed', 'Please try again later.');
+    } finally {
+      setIsLoading(false); // Kết thúc quá trình loading
+    }
+
+    setIsLoading(false);
   };
 
-  const handleShowPopup = () => {
-    setShowPopup(true);
+  const handleShowPopupSuccess = () => {
+    setShowPopupSuccess(true);
 
     // Ẩn popup sau 3 giây
     setTimeout(() => {
-      setShowPopup(false);
+      setShowPopupSuccess(false);
     }, 3000);
+  };
+
+  const handleShowPopupLoading = () => {
+    setShowPopupLoading(true);
+    setTimeout(() => {
+      setShowPopupLoading(false);
+    }, 5000);
   };
 
   return (
     <>
-      <ToastComponent/>
+      <ToastComponent />
       <PopUpAnimation
-        visible={showPopup}
+        visible={showPopupSuccess}
         onComplete={() => console.log('Animation Completed')}
         content="Payment Success!"
+      />
+      <PopUpAnimationLoading
+        visible={showPopupLoading}
+        onComplete={() => console.log('Animation Waiting')}
+        content="Wating!"
       />
       <ContainerComponent isScroll style={{marginTop: -16}}>
         <Section
@@ -282,7 +343,7 @@ const PaymentMethodComponent = ({navigation, route}: any) => {
               height: 40,
             }}
           />
-          <Space width={20}/>
+          <Space width={20} />
           <TextComponent
             text="Pay with momo e-wallet"
             font={fontFamilies.semiBold}
@@ -331,7 +392,7 @@ const PaymentMethodComponent = ({navigation, route}: any) => {
                 Amount:{' '}
               </Text>
               {/* Thay amount vô nha */}
-              <Text style={styles.text}>$100</Text>
+              <Text style={styles.text}>$20</Text>
             </View>
           </Col>
           <TouchableOpacity style={styles.payButton} onPress={handlePayNow}>

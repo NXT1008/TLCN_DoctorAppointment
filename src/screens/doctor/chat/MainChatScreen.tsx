@@ -48,9 +48,11 @@ const MainChatScreen = ({navigation, route}: any) => {
       // Get doctor document using doctorId from conversation
       const {doctorId, patientId} = conversationSnap.data() as Conversation;
       const doctorSnap = await firestore()
-        .collection('doctors')
-        .doc(doctorId)
-        .get();
+      .collection('doctors')
+      .doc(doctorId)
+      .get();
+      
+      console.log("🚀 ~ getDoctorByConversationId ~ doctorSnap:", doctorSnap.data())
 
       if (doctorSnap.exists) {
         setDoctor(doctorSnap.data() as Doctor);

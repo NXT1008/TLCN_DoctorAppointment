@@ -25,7 +25,10 @@ const App = () => {
         } else {
           setUserRole('patient');
         }
-        setIsLogin(true);
+        // Delay 1.5 giây trước khi chuyển màn hình
+        setTimeout(() => {
+          setIsLogin(true);
+        }, 1500);
       } else {
         setIsLogin(false);
         setUserRole(null);

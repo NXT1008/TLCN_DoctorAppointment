@@ -28,19 +28,21 @@ const {width, height} = Dimensions.get('window');
 // Dummy data for articles
 const articles = [
   {
-    title:
-      'AI outperforms doctors in diagnostics but falls short as a clinical assistant',
-    description: 'This is a description for medical article 1.',
+    title: 'Quick and Convenient',
+    description:
+      'With just a few simple steps, you can schedule an appointment with a specialist. Take care of your health today',
     url: 'https://www.news-medical.net/news/20241106/AI-outperforms-doctors-in-diagnostics-but-falls-short-as-a-clinical-assistant.aspx',
   },
   {
-    title: 'Medical Article 2',
-    description: 'This is a description for medical article 2.',
+    title: 'Comprehensive Healthcare at Your Fingertips',
+    description:
+      'Easily consult a doctor online, no need to travel. Schedule your appointment quickly and get results fast.',
     url: 'https://example.com/article2',
   },
   {
-    title: 'Medical Article 3',
-    description: 'This is a description for medical article 3.',
+    title: 'Your Health is Our Priority',
+    description:
+      'Book a doctor’s appointment in minutes. Receive professional and dedicated healthcare anytime, anywhere.',
     url: 'https://example.com/article3',
   },
 ];
@@ -63,6 +65,7 @@ const chartData = {
   datasets: [
     {
       data: [20, 45, 30, 60, 80, 43, 25, 40, 63, 49, 60],
+      color: (opacity = 1) => `rgba(134, 65, 244, ${opacity})`, // optional
     },
   ],
 };
@@ -74,6 +77,7 @@ const DoctorHomeScreen = ({navigation}: any) => {
   const [doctor, setDoctor] = useState<Doctor>();
   const animatedOpacity = useRef(new Animated.Value(0)).current; // Giá trị opacity cho animation
   const [hasNewNotification, setHasNewNotification] = useState(false);
+  const [monthlyAppointments, setMonthlyAppointments] = useState(Array(12).fill(0));
 
   useEffect(() => {
     // Hiệu ứng xuất hiện cho biểu đồ
@@ -141,28 +145,64 @@ const DoctorHomeScreen = ({navigation}: any) => {
           }
           else {
             setHasNewNotification(true)
-            console.log("aaaa")
           }
         });
     }
     
+    // Add new listener for appointments
+    let unsubscribeAppointments: () => void = () => {};
+    if (doctor?.doctorId) {
+      unsubscribeAppointments = firestore()
+        .collection('appointments')
+        .where('doctorId', '==', doctor.doctorId)
+        .onSnapshot(snapshot => {
+          // Initialize array with zeros for each month
+          const monthCounts = Array(12).fill(0);
+          
+          snapshot.forEach(doc => {
+            const appointment = doc.data();
+
+            //console.log("🚀 ~ useEffect ~ appointment:", appointment)
+            
+            // Get month from scheduleDate (assuming it's a timestamp or date string)
+            const month = new Date(appointment.scheduleDate.seconds * 1000).getMonth();
+            monthCounts[month]++;
+          });
+          
+          setMonthlyAppointments(monthCounts);
+        });
+    }
+
     return () => {
       unsubscribeDoctor();
       unsubscribeNotification();
+      unsubscribeAppointments();
     };
   }, []);
 
-
+  // Update chartData to use real data
+  const chartData = {
+    labels: [
+      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+    ],
+    datasets: [
+      {
+        data: monthlyAppointments,
+      },
+    ],
+  };
 
   const renderArticleSlide = (item: any, index: any) => (
     <TouchableOpacity
       key={index}
       style={{
-        backgroundColor: '#f0f0f0',
+        backgroundColor: '#1399ba',
         borderRadius: 8,
         padding: 20,
         marginHorizontal: 10,
         width: width * 0.8,
+        height: 150,
         alignSelf: 'center', // Căn giữa
         shadowColor: '#000',
         shadowOffset: {width: 0, height: 2},
@@ -173,36 +213,28 @@ const DoctorHomeScreen = ({navigation}: any) => {
       <TextComponent
         text={item.title}
         size={16}
-        color="#000"
+        color="#fff"
         font={fontFamilies.semiBold}
       />
       <TextComponent
         text={item.description}
         size={12}
-        color="#000"
+        color="#fff"
         font={fontFamilies.regular}
       />
-      {/* <Card styles={{height: 170}} color="#1399ba">
-        <Row styles={{justifyContent: 'space-between'}}>
-          <Col>
-            <TextComponent
-              text="Medical Center"
-              size={18}
-              color="#fff"
-              styles={{fontFamily: fontFamilies.bold}}
-            />
-            <TextComponent
-              text="Yorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac aliquet odio mattis."
-              size={10}
-              color="#fff"
-              numberOfLine={4}
-              styles={{fontFamily: fontFamilies.regular}}
-            />
-          </Col>
-        </Row>
-      </Card> */}
     </TouchableOpacity>
   );
+
+  const chartConfig = {
+    backgroundGradientFrom: '#1E2923',
+    backgroundGradientFromOpacity: 0,
+    backgroundGradientTo: '#08130D',
+    backgroundGradientToOpacity: 0.5,
+    color: (opacity = 1) => `rgba(26, 255, 146, ${opacity})`,
+    strokeWidth: 2, // optional, default 3
+    barPercentage: 0.5,
+    useShadowColorFromDataset: false, // optional
+  };
 
   return (
     <Container isScroll style={{marginTop: -16}}>
@@ -264,7 +296,7 @@ const DoctorHomeScreen = ({navigation}: any) => {
           <Swiper
             paginationStyle={{
               position: 'absolute',
-              bottom: -10, // Khoảng cách cố định từ dưới lên
+              bottom: -15, // Khoảng cách cố định từ dưới lên
               left: 0,
               right: 0,
             }}
@@ -289,7 +321,7 @@ const DoctorHomeScreen = ({navigation}: any) => {
               xLabelsOffset={10}
               chartConfig={{
                 backgroundGradientFrom: '#fff',
-                backgroundGradientTo: 'gray',
+                backgroundGradientTo: '#fff',
                 decimalPlaces: 0,
                 color: (opacity = 1) => `rgba(0, 0, 128, ${opacity})`,
                 labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
@@ -316,8 +348,6 @@ const DoctorHomeScreen = ({navigation}: any) => {
                 backgroundGradientFromOpacity: 0.4, // background gradient from opacity
                 backgroundGradientToOpacity: 0.4, // background gradient to opacity
                 fillShadowGradientOpacity: 0.5, // fill shadow gradient opacity
-                fillShadowGradientFrom: 'blue', // fill shadow gradient from
-                fillShadowGradientTo: 'red', // fill shadow gradient to
                 fillShadowGradientFromOpacity: 0.5, // fill shadow gradient from opacity
                 fillShadowGradientToOpacity: 0.5, // fill shadow gradient to opacity
                 fillShadowGradientFromOffset: 0.6, // fill shadow gradient from offset
@@ -326,8 +356,8 @@ const DoctorHomeScreen = ({navigation}: any) => {
                   strokeWidth: 0.9,
                   stroke: 'gray',
                 },
+                
               }}
-              bezier
             />
           </ScrollView>
         </Card>
@@ -406,9 +436,11 @@ const styles = StyleSheet.create({
   chartContainer: {
     marginTop: 10,
     padding: 0,
+    marginLeft: -20,
     justifyContent: 'center',
     width: '100%',
     alignItems: 'center', // Căn giữa biểu đồ
+    paddingRight: 20
   },
   chatButton: {
     position: 'absolute',

@@ -1,4 +1,4 @@
-import {View, Text, TouchableOpacity, Dimensions} from 'react-native';
+import {View, Text, TouchableOpacity, Dimensions, Alert} from 'react-native';
 import React, {useState} from 'react';
 import Container from '../../../../components/ContainerComponent';
 import {
@@ -12,14 +12,57 @@ import {
 import {fontFamilies} from '../../../../constants/fontFamilies';
 import {ArrowLeft2} from 'iconsax-react-native';
 import {height} from '@fortawesome/free-solid-svg-icons/fa0';
+import auth from '@react-native-firebase/auth';
 
 const ChangePassword = ({navigation}: any) => {
   const {width, height} = Dimensions.get('window');
   const [password, setpassword] = useState('');
   const [newPassword, setnewPassword] = useState('');
   const [confimPassword, setconfimPassword] = useState('');
+
+  const handleResetPassword = async () => {
+    let user = auth().currentUser
+    if (!password) {
+      Alert.alert('Please enter password we sent you in your email');
+      return;
+    }
+    if (newPassword.length < 6) {
+      Alert.alert('Password must be at least 6 characters long');
+      return;
+    }
+    if (newPassword !== confimPassword) {
+      Alert.alert('Passwords do not match');
+      return;
+    }
+
+    if (user && user.email) {
+      try {
+        await auth().signInWithEmailAndPassword(user.email, password);
+        user = auth().currentUser;
+        console.log(user);
+
+        const credential = auth.EmailAuthProvider.credential(
+          user?.email as string,
+          password,
+        );
+        await user?.reauthenticateWithCredential(credential);
+
+        await user?.updatePassword(newPassword);
+        Alert.alert(
+          'Password Changed',
+          'Your password has been updated successfully.',
+        );
+        // Đăng xuất sau khi đổi mật khẩu thành công
+        await auth().signOut();
+      } catch (error) {
+        console.error(error);
+        Alert.alert('Error', 'Failed to change password. Please try again.');
+      }
+    }
+  };
+
   return (
-    <Container>
+    <Container isScroll>
       <Section>
         <Row justifyContent="flex-start">
           <TouchableOpacity
@@ -107,7 +150,7 @@ const ChangePassword = ({navigation}: any) => {
       <Section styles={{alignItems: 'center'}}>
         <Button
           title="Confirm"
-          onPress={() => {}}
+          onPress={handleResetPassword}
           styles={{width: '70%', borderRadius: 15}}
           color="#18A0FB"
           textStyleProps={{fontFamily: fontFamilies.semiBold}}

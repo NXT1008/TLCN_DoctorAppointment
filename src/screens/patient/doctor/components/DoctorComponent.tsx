@@ -47,8 +47,14 @@ const DoctorComponent = (props: Props) => {
   }, []);
 
   useEffect(() => {
-    getSpectializationByDoctorID();
-    getHospitalByDoctorID()
+    const unsubscribeSpec = getSpectializationByDoctorID();
+    const unsubscribeHospital = getHospitalByDoctorID();
+
+    // Cleanup subscriptions when component unmounts
+    return () => {
+      unsubscribeSpec();
+      unsubscribeHospital();
+    };
   }, []);
 
   //Xử lý khi patient nhấn vào trái tim
@@ -76,8 +82,8 @@ const DoctorComponent = (props: Props) => {
     }
   };
 
-  const getSpectializationByDoctorID = async () => {
-    const subscriber = await firestore()
+  const getSpectializationByDoctorID = () => {
+    const subscriber = firestore()
       .collection('specializations')
       .doc(doctor.specializationId)
       .onSnapshot(docSnap => {
@@ -88,11 +94,11 @@ const DoctorComponent = (props: Props) => {
           console.error('Specialization document not found');
         }
       });
-    return () => subscriber;
+    return subscriber;
   };
 
-  const getHospitalByDoctorID = async () => {
-    const subscriber = await firestore()
+  const getHospitalByDoctorID = () => {
+    const subscriber = firestore()
       .collection('hospitals')
       .doc(doctor.hospitalId)
       .onSnapshot(docSnap => {
@@ -103,14 +109,14 @@ const DoctorComponent = (props: Props) => {
           console.error('Hospital document not found');
         }
       });
-    return () => subscriber;
+    return subscriber;
   };
 
   return (
     <Card styles={{marginHorizontal: 5, borderRadius: 20}} shadowed>
       <Row styles={{justifyContent: 'flex-start'}} flex={1}>
         <Image
-          source={require('../../../../assets/images/doctor.png')}
+          source={{uri: data.image}}
           style={{
             width: 100,
             height: 100,
@@ -124,7 +130,7 @@ const DoctorComponent = (props: Props) => {
           <Row justifyContent="space-between">
             <TextComponent
               text={data.name}
-              size={16}
+              size={14}
               font={fontFamilies.semiBold}
             />
             <TouchableOpacity onPress={handleUpdateFavorite}>
@@ -199,7 +205,10 @@ const DoctorComponent = (props: Props) => {
             />
           </Row>
           <Space height={5} />
-          <Row justifyContent="flex-start" alignItems="flex-start" styles={{flex: 1}}>
+          <Row
+            justifyContent="flex-start"
+            alignItems="flex-start"
+            styles={{flex: 1}}>
             <Location color="#000" size={16} />
             <Space width={5} />
             <TextComponent

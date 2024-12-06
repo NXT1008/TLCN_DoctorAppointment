@@ -1,14 +1,13 @@
-import {useNavigation} from '@react-navigation/native';
-import React, {useState} from 'react';
+import firestore from '@react-native-firebase/firestore';
+import { ArrowLeft2 } from 'iconsax-react-native';
+import React, { useEffect, useState } from 'react';
 import {
-  View,
+  StyleSheet,
   Text,
   TouchableOpacity,
-  TextInput,
-  StyleSheet,
-  ScrollView,
-  Image,
+  View
 } from 'react-native';
+import { Toast } from 'toastify-react-native';
 import {
   ContainerComponent,
   Input,
@@ -17,16 +16,20 @@ import {
   Space,
   TextComponent,
 } from '../../../components';
-import {ArrowLeft2} from 'iconsax-react-native';
-import {fontFamilies} from '../../../constants/fontFamilies';
-import {Cancellation} from '../../../models/Cancellation';
-import {Appointment} from '../../../models/Appointment';
-import firestore from '@react-native-firebase/firestore';
+import { fontFamilies } from '../../../constants/fontFamilies';
+import { Appointment } from '../../../models/Appointment';
+import { Cancellation } from '../../../models/Cancellation';
 import ModalComponent from './components/ModalComponent';
-import {Toast} from 'toastify-react-native';
 import ToastComponent from './components/ToastComponent';
+import auth from '@react-native-firebase/auth'
+import { Patient } from '../../../models/Patient';
+import { FormatTime } from '../../../utils/formatTime';
+import { HandleNotificationPatient } from '../../../utils/handleNotification';
 
-const CancelAppointment = ({navigation, route}: any) => {
+const CancelAppointment = ({ navigation, route }: any) => {
+  const user = auth().currentUser?.uid
+  const [patient, setPatient] = useState<Patient>();
+
   const {data} = route.params;
   const appointment = data as Appointment;
   const [selectedReason, setSelectedReason] =
@@ -40,6 +43,23 @@ const CancelAppointment = ({navigation, route}: any) => {
     'Unexpected Work',
     'Others',
   ];
+
+  useEffect(() => {
+    // Tạo listener cho thông tin patient
+    const unsubscribePatient = firestore()
+      .collection('patients')
+      .doc(user)
+      .onSnapshot(
+        snapshot => {
+          if (snapshot.exists) {
+            setPatient(snapshot.data() as Patient);
+          }
+        },
+        error => {
+          console.error('Error listening to patient changes:', error);
+        },
+      );
+  }, []);
 
   const handleReasonSelect = (reason: string) => {
     setSelectedReason(reason);
@@ -65,11 +85,33 @@ const CancelAppointment = ({navigation, route}: any) => {
       const cancelId = cancelRef.id;
       await cancelRef.update({cancellationId: cancelId});
 
+      const sendNotifications = {
+        senderId: auth().currentUser?.uid as string,
+        name: patient?.name ? patient.name : '',
+        receiverId: data.doctorId,
+        title: `Confirm cancellation of medical appointment from ${patient?.name}`,
+        body: `The appointment with patient ${
+          patient?.name
+        } at ${FormatTime.formatAvailableDate(
+          new Date(data.startTime.seconds * 1000),
+        )} on ${FormatTime.getShortFormattedDate(
+          new Date(data.scheduleDate.seconds * 1000),
+        )} has been canceled. Reason: ${
+          selectedReason === 'Others' ? additionalReason : selectedReason
+        }. Please check the information.`,
+        appointmentId: data.appointmentId,
+      };
+
       // Update appointment status
       await firestore()
         .collection('appointments')
         .doc(appointment.appointmentId)
         .update({status: 'Canceled'});
+
+      // send notification
+      HandleNotificationPatient.sendNotificationPatientToDoctor(
+        sendNotifications,
+      );
 
       Toast.success(`This appointment has been cancelled!`);
 

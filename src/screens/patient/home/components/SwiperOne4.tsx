@@ -1,40 +1,48 @@
-import { Image } from 'react-native'
-import React from 'react'
-import { Card, Col, ContainerComponent, Row, TextComponent } from '../../../../components';
-import { fontFamilies } from '../../../../constants/fontFamilies';
+import {Image} from 'react-native';
+import React from 'react';
+import {
+  Card,
+  Col,
+  ContainerComponent,
+  Row,
+  Space,
+  TextComponent,
+} from '../../../../components';
+import {fontFamilies} from '../../../../constants/fontFamilies';
 
 interface Props {
   title?: string;
   body?: string;
-  image?:string,
+  image?: string;
 }
 
-const SwiperOne = (props: Props) => {
-  const {title, body, image} = props
+const SwiperOne4 = (props: Props) => {
+  const {title, body, image} = props;
   return (
     <ContainerComponent>
       <Card styles={{height: 170, borderRadius: 5}} color="#1399ba">
         <Row styles={{justifyContent: 'space-between'}}>
           <Col>
             <TextComponent
-              text={`Easy scheduling, no more waiting!`}
+              text={`Health care, anytime, anywhere!`}
               size={18}
               color="#fff"
               styles={{fontFamily: fontFamilies.bold}}
             />
             <TextComponent
               text={
-                'Medical examination has never been easier - Schedule an appointment with just a few steps!'
+                'Connect to a specialist quickly, no matter where you are. Your health is always guaranteed'
               }
-              size={12}
+              size={10}
               color="#fff"
               numberOfLine={4}
               styles={{fontFamily: fontFamilies.regular}}
             />
           </Col>
+          <Space width={5} />
           <Image
             source={{
-              uri: 'https://res.cloudinary.com/xuanthe/image/upload/v1733329368/zvadqdfdoyrdhhbtjs2d.jpg',
+              uri: 'https://res.cloudinary.com/xuanthe/image/upload/v1733329379/bwhi1kyhy0j0w5v8vaxo.jpg',
             }}
             style={{
               width: 128,
@@ -47,6 +55,6 @@ const SwiperOne = (props: Props) => {
       </Card>
     </ContainerComponent>
   );
-}
+};
 
-export default SwiperOne
+export default SwiperOne4;

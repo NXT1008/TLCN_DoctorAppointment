@@ -17,7 +17,7 @@ import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
 import {faSearch, faMicrophone} from '@fortawesome/free-solid-svg-icons';
 import ActiveUserAvatar from './components/ActiveUser';
 import MessageItem from './components/MessageItem';
-import {Row, Section} from '../../../components';
+import {Row, Section, Space} from '../../../components';
 import {ArrowLeft2} from 'iconsax-react-native';
 import {fontFamilies} from '../../../constants/fontFamilies';
 import firestore from '@react-native-firebase/firestore';
@@ -87,7 +87,7 @@ const ChatScreen = (prop: any) => {
               doctorName: doctorData?.name || 'Unknown Doctor',
               lastMessage: data.lastMessage || '',
               timestamp: data.lastMessageTimestamp?.toDate() || new Date(),
-              avatar: require('../../../assets/images/doctor.png'), // Default avatar
+              avatar: doctorData?.image, // Default avatar
               unReadCount: data.unReadCount || 0,
             };
           } catch (error) {
@@ -157,20 +157,7 @@ const ChatScreen = (prop: any) => {
           />
         </View>
 
-        <Text style={styles.activeNowText}>Active Now</Text>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          style={styles.activeNowContainer}>
-          {activeUsers.map(user => (
-            <ActiveUserAvatar
-              key={user.id}
-              name={user.name}
-              avatar={user.avatar}
-            />
-          ))}
-        </ScrollView>
-
+        <Space height={20}/>
         <Text style={styles.messagesText}>Messages</Text>
         <FlatList
           data={conversations}
@@ -228,7 +215,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     paddingVertical: 10,
     paddingHorizontal: 10,
-    marginBottom: 20,
   },
   searchIcon: {
     marginRight: 10,
@@ -254,7 +240,8 @@ const styles = StyleSheet.create({
   },
   messagesText: {
     fontSize: 18,
-    fontWeight: 'bold',
+    color: 'gray',
+    fontFamily: fontFamilies.semiBold,
     marginBottom: 10,
     top: -10,
   },

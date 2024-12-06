@@ -14,7 +14,11 @@ const MessageItem  = (message: MessageItemProps) => {
   return (
     <View style={styles.container}>
       <Image
-        source={require('../../../../assets/images/doctor.png')}
+        source={
+          message.avatar
+            ? {uri: message.avatar}
+            : require('../../../../assets/images/doctor.png')
+        }
         style={styles.avatar}
       />
       <View style={styles.messageDetails}>

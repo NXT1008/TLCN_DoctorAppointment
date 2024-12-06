@@ -2,12 +2,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import messing from '@react-native-firebase/messaging';
-import { Doctor } from '../models/Doctor';
-import {config} from '../constants/config'
+import {Doctor} from '../models/Doctor';
+import {config} from '../constants/config';
 
-const user = auth().currentUser;
-
-const localhost = config.localhost
+const localhost = config.localhost;
 
 export class HandleNotification {
   // Kiểm tra user có quyền gửi nhận thông báo không
@@ -25,12 +23,10 @@ export class HandleNotification {
 
   static getFcmToken = async () => {
     // lấy tokent từ Storage
+    await AsyncStorage.removeItem('fcmtoken');
     const fcmoken = await AsyncStorage.getItem('fcmtoken');
 
-    // kiểm tra token đã được lưu trên storage chưa
-    // nếu chưa thì sẽ lấy từ messing của firebase
     if (!fcmoken) {
-      // lấy fcmtoken
       const token = await messing().getToken();
 
       // Nếu lấy được token thì lưu vào storage
@@ -44,6 +40,7 @@ export class HandleNotification {
 
   // Cập nhật token vào firestore
   static updateToken = async (token: string) => {
+    const user = auth().currentUser;
     const doctorData = await firestore()
       .collection('doctors')
       .where('email', '==', user?.email)
@@ -51,16 +48,14 @@ export class HandleNotification {
 
     if (!doctorData.empty) {
       const data: any = doctorData.docs[0].data();
+      console.log(data);
 
       // nếu data không có token thì sẽ cập nhật
       if (!data.tokens || !data.tokens.includes(token)) {
-        console.log('Không có tokens');
-        await firestore()
-          .collection('doctors')
-          .doc(data.doctorId)
-          .update({
-            tokens: firestore.FieldValue.arrayUnion(token), // thêm token vào mảng tokens
-          });
+        await firestore().collection('doctors').doc(data.doctorId).update({
+          //tokens: firestore.FieldValue.arrayUnion(token), // thêm token vào mảng tokens
+          tokens: token,
+        });
       }
     }
   };
@@ -68,12 +63,14 @@ export class HandleNotification {
   // Gửi thông báo từ doctor cho patient
   static sendNotificationDoctorToPatient = async ({
     senderId,
+    name,
     receiverId,
     title,
     body,
     appointmentId,
   }: {
     senderId: string;
+    name: string;
     receiverId: string;
     title: string;
     body: string;
@@ -89,6 +86,7 @@ export class HandleNotification {
           },
           body: JSON.stringify({
             senderId,
+            name,
             receiverId,
             appointmentId,
             title, // Tiêu đề thông báo
@@ -140,16 +138,12 @@ export class HandleNotificationPatient {
     await AsyncStorage.removeItem('fcmTokenPatient');
     const fcmoken = await AsyncStorage.getItem('fcmTokenPatient');
 
-    // kiểm tra token đã được lưu trên storage chưa
-    // nếu chưa thì sẽ lấy từ messing của firebase
     if (!fcmoken) {
-      // lấy fcmTokenPatient
       const token = await messing().getToken();
 
-      // Nếu lấy được token thì lưu vào storage
       if (token) {
         await AsyncStorage.setItem('fcmTokenPatient', token);
-        // Cập nhật token vào firestore
+
         this.updateToken(token);
       }
     }
@@ -157,6 +151,7 @@ export class HandleNotificationPatient {
 
   // Cập nhật token vào firestore
   static updateToken = async (token: string) => {
+    const user = auth().currentUser;
     const patientData = await firestore()
       .collection('patients')
       .doc(user?.uid)
@@ -167,12 +162,10 @@ export class HandleNotificationPatient {
 
       // nếu data không có token thì sẽ cập nhật
       if (!data.tokens || !data.tokens.includes(token)) {
-        await firestore()
-          .collection('patients')
-          .doc(user?.uid)
-          .update({
-            tokens: firestore.FieldValue.arrayUnion(token), // thêm token vào mảng tokens
-          });
+        await firestore().collection('patients').doc(user?.uid).update({
+          //tokens: firestore.FieldValue.arrayUnion(token), // thêm token vào mảng tokens
+          tokens: token,
+        });
       }
     }
   };
@@ -180,17 +173,20 @@ export class HandleNotificationPatient {
   // Gửi thông báo từ patient cho doctor
   static sendNotificationPatientToDoctor = async ({
     senderId,
+    name,
     receiverId,
     title,
     body,
     appointmentId,
   }: {
     senderId: string;
+    name: string;
     receiverId: string;
     title: string;
     body: string;
     appointmentId: string;
-  }) => {
+    }) => {
+    
     try {
       const response = await fetch(
         `http://${localhost}:3000/send-notification-patient-to-doctor`,
@@ -201,6 +197,7 @@ export class HandleNotificationPatient {
           },
           body: JSON.stringify({
             senderId,
+            name,
             receiverId,
             appointmentId,
             title, // Tiêu đề thông báo
@@ -208,6 +205,12 @@ export class HandleNotificationPatient {
           }),
         },
       );
+      // Log response status và URL
+      console.log(
+        'Request URL:',
+        `http://${localhost}:3000/send-notification-patient-to-doctor`,
+      );
+      console.log('Response status:', response.status);
 
       if (!response.ok) {
         // Log lỗi HTTP từ server (nếu response không thành công)
@@ -223,8 +226,12 @@ export class HandleNotificationPatient {
       console.log('Thông báo đã gửi:', result);
     } catch (error: any) {
       // Log chi tiết lỗi từ fetch
-      console.log('-----------------------');
-      console.error('Chi tiết lỗi:', error);
+      console.error('Error sending notification:', {
+        message: error.message,
+        stack: error.stack,
+        // Nếu là network error, log thêm thông tin
+        networkError: error.cause,
+      });
     }
   };
 }

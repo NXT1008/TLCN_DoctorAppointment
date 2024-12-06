@@ -74,14 +74,14 @@ const DoctorCard = (props: Props) => {
           justifyContent: 'space-between',
         }}>
         <Image
-          source={require('../../../../assets/images/doctor.png')}
-          style={{width: 120, height: 130}}
+          source={{uri: data.image}}
+          style={{width: 120, height: 130, borderRadius: 10}}
         />
         <Col flex={1} styles={{paddingLeft: 15, marginTop: 10}}>
           <Row justifyContent="space-between">
             <TextComponent
               text={data.name}
-              size={16}
+              size={14}
               font={fontFamilies.semiBold}
             />
             <TouchableOpacity onPress={handleUpdateFavorite}>
@@ -93,9 +93,10 @@ const DoctorCard = (props: Props) => {
             </TouchableOpacity>
           </Row>
           <TextComponent
-            text="Jorem ipsum dolor, consectetur adipiscing elit. Nunc v libero et velit interdum, ac  mattis."
+            text={`${doctor.about}`}
             size={10}
             font={fontFamilies.regular}
+            numberOfLine={3}
           />
           <Space height={10} />
           <Row

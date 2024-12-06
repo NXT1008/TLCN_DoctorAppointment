@@ -17,7 +17,7 @@ import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
 import {faSearch, faMicrophone} from '@fortawesome/free-solid-svg-icons';
 import ActiveUserAvatar from './components/ActiveUser';
 import MessageItem from './components/MessageItem';
-import {Row, Section} from '../../../components';
+import {Row, Section, Space} from '../../../components';
 import {ArrowLeft2} from 'iconsax-react-native';
 import {fontFamilies} from '../../../constants/fontFamilies';
 import firestore from '@react-native-firebase/firestore';
@@ -52,7 +52,6 @@ const activeUsers = [
   },
 ];
 
-
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
 
@@ -84,18 +83,20 @@ const ChatScreen = (prop: any) => {
     };
   }, []);
 
-
   // lấy toàn bộ conversations
   useEffect(() => {
     if (!doctor?.doctorId) return;
-
     const unsubscribe = firestore()
       .collection('conversations')
       .where('doctorId', '==', doctor.doctorId)
-      .orderBy('lastMessageTimestamp', 'desc')
+      //.orderBy('lastMessageTimestamp', 'desc')
       .onSnapshot(async snapshot => {
-        if (!snapshot) return;
+        //console.log("a", snapshot.docs[0].data());
 
+        if (!snapshot) {
+          console.log('no');
+          return;
+        }
         // Sử dụng Promise.all để đợi toàn bộ dữ liệu bác sĩ được tải
         const conversationsPromises = snapshot.docs.map(async doc => {
           const data = doc.data();
@@ -183,7 +184,7 @@ const ChatScreen = (prop: any) => {
             style={styles.microphoneIcon}
           />
         </View>
-
+        <Space height={20} />
         <Text style={styles.messagesText}>Messages</Text>
         <FlatList
           data={conversations}
@@ -241,7 +242,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     paddingVertical: 10,
     paddingHorizontal: 10,
-    marginBottom: 20,
   },
   searchIcon: {
     marginRight: 10,

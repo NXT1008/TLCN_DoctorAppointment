@@ -80,6 +80,7 @@ const BookingScreen = ({navigation, route}: any) => {
     navigation.navigate('Payment', {
       appointment: appointment,
       schedule: scheduleChoosen,
+      doctor: doctor
     });
   };
 
@@ -142,6 +143,18 @@ const BookingScreen = ({navigation, route}: any) => {
     return () => unsubscribe();
   }, [doctor, scheduleDate]);
 
+  const handleDateSelection = (val: Date) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    if (val < today) {
+      Toast.warn('Cannot select past dates');
+      return;
+    }
+
+    setScheduleDate(val);
+  };
+
   return (
     <>
       <ToastComponent />
@@ -160,9 +173,7 @@ const BookingScreen = ({navigation, route}: any) => {
             title="Choose Day"
             placeholder="Choice"
             selected={scheduleDate}
-            onSelect={val => {
-              setScheduleDate(val);
-            }}
+            onSelect={handleDateSelection}
           />
         </Section>
 
@@ -174,33 +185,40 @@ const BookingScreen = ({navigation, route}: any) => {
           />
           <View style={styles.timeRow}>
             {timeSlots.length > 0 ? (
-              timeSlots.map((item, index) => (
-                <TouchableOpacity
-                  key={`${item.doctorId}/${index}`}
-                  style={[
-                    styles.timeBox,
-                    selectedTime ===
-                      FormatTime.formatAvailableDate(item.startTime) &&
-                      styles.selectedBox,
-                  ]}
-                  onPress={() => {
-                    setSelectedTime(
-                      FormatTime.formatAvailableDate(item.startTime),
-                    );
-
-                    setScheduleChoosen(item);
-                  }}>
-                  <TextComponent
-                    styles={[
-                      styles.timeText,
-                      selectedTime ===
-                        FormatTime.formatAvailableDate(item.startTime) &&
-                        styles.selectedBoxText,
-                    ]}
-                    text={FormatTime.formatAvailableDate(item.startTime)}
-                  />
-                </TouchableOpacity>
-              ))
+              timeSlots.map(
+                (item, index) =>
+                  item.isBook === false && (
+                    <TouchableOpacity
+                      key={`${item.doctorId}/${index}`}
+                      style={[
+                        styles.timeBox,
+                        selectedTime ===
+                          FormatTime.formatAvailableDate(item.startTime) &&
+                          styles.selectedBox,
+                        item.isBook && styles.disabledBox,
+                      ]}
+                      onPress={() => {
+                        if (!item.isBook) {
+                          setSelectedTime(
+                            FormatTime.formatAvailableDate(item.startTime),
+                          );
+                          setScheduleChoosen(item);
+                        }
+                      }}
+                      disabled={item.isBook}>
+                      <TextComponent
+                        styles={[
+                          styles.timeText,
+                          selectedTime ===
+                            FormatTime.formatAvailableDate(item.startTime) &&
+                            styles.selectedBoxText,
+                          item.isBook && styles.disabledText,
+                        ]}
+                        text={FormatTime.formatAvailableDate(item.startTime)}
+                      />
+                    </TouchableOpacity>
+                  ),
+              )
             ) : (
               <TextComponent
                 text="Dont have time"
@@ -520,6 +538,12 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontSize: 16,
     fontFamily: fontFamilies.medium,
+  },
+  disabledBox: {
+    backgroundColor: '#ddd',
+  },
+  disabledText: {
+    color: '#999',
   },
 });
 

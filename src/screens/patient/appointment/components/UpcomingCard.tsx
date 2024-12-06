@@ -38,7 +38,11 @@ const UpcomingAppointmentCard = (props: Props) => {
     <Card styles={styles.cardContainer} shadowed>
       <View style={styles.profileContainer}>
         <Image
-          source={require('../../../../assets/images/doctor.png')}
+          source={
+            doctor
+              ? {uri: doctor.image}
+              : require('../../../../assets/images/doctor.png')
+          }
           style={styles.profileImage}
         />
         <View style={styles.doctorInfo}>

@@ -23,12 +23,13 @@ import {changeLanguage} from 'i18next';
 const MainChatScreen = ({navigation, route}: any) => {
   const patientId = auth().currentUser?.uid;
 
-  const { data, conv_Id } = route.params;
-  
+  const {data, conv_Id} = route.params;
+
   //const doctor = data as Doctor;
   const [doctor, setDoctor] = useState<Doctor | null>(data || null);
 
-  const conversationId = conv_Id || (doctor ? `conv_${patientId}_${doctor.doctorId}` : null);
+  const conversationId =
+    conv_Id || (doctor ? `conv_${patientId}_${doctor.doctorId}` : null);
 
   // Hàm lấy doctor bằng conversationId nếu data chưa có
   const getDoctorByConversationId = async () => {
@@ -68,6 +69,7 @@ const MainChatScreen = ({navigation, route}: any) => {
   // State lưu trữ cuộc trò chuyện và tin nhắn
   const [conversation, setConversation] = useState<Conversation | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
+  const flatListRef = useRef<FlatList>(null); // Thêm ref cho FlatList
 
   useEffect(() => {
     const unSubscribeConversation = firestore()
@@ -113,19 +115,37 @@ const MainChatScreen = ({navigation, route}: any) => {
     };
   }, [conversationId]);
 
+  // useEffect để tự động cuộn xuống khi có tin nhắn mới
+  useEffect(() => {
+    if (messages.length > 0) {
+      flatListRef.current?.scrollToIndex({
+        index: messages.length - 1, // Cuộn đến tin nhắn cuối cùng
+        animated: true,
+      });
+    }
+  }, [messages]); // Theo dõi sự thay đổi của messages
+
+  // useEffect để cuộn xuống khi giao diện được tải
+  useEffect(() => {
+    flatListRef.current?.scrollToEnd({animated: true}); // Cuộn xuống khi giao diện được tải
+  }, []); // Chỉ chạy một lần khi component được mount
+
   const sendMessage = async (newMessageContent: any) => {
     try {
       // First update conversation
-      await firestore().collection('conversations').doc(conversationId).set(
-        {
-          patientId: patientId,
-          doctorId: doctor?.doctorId || '',
-          lastMessage: newMessageContent,
-          lastMessageTimestamp: firestore.FieldValue.serverTimestamp(),
-          updateAt: firestore.FieldValue.serverTimestamp(),
-        },
-        {merge: true},
-      );
+      await firestore()
+        .collection('conversations')
+        .doc(conversationId)
+        .set(
+          {
+            patientId: patientId,
+            doctorId: doctor?.doctorId || '',
+            lastMessage: newMessageContent,
+            lastMessageTimestamp: firestore.FieldValue.serverTimestamp(),
+            updateAt: firestore.FieldValue.serverTimestamp(),
+          },
+          {merge: true},
+        );
 
       // Then add message
       await firestore()
@@ -175,6 +195,14 @@ const MainChatScreen = ({navigation, route}: any) => {
           renderItem={renderItem}
           keyExtractor={item => item.messageId}
           contentContainerStyle={styles.messageList}
+          initialScrollIndex={messages.length > 0 ? messages.length - 1 : 0} // Cuộn đến tin nhắn cuối
+          onScrollToIndexFailed={info => {
+            // Xử lý lỗi nếu chỉ mục cuộn không hợp lệ
+            flatListRef.current?.scrollToOffset({
+              offset: info.averageItemLength * info.index,
+              animated: true,
+            });
+          }}
         />
 
         <InputBar onSend={sendMessage} />

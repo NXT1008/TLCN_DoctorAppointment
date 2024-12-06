@@ -59,7 +59,7 @@ const DoctorScreen = (props: any) => {
     const unsubscribe = getAllDoctors();
     getAllSpecializations();
     return () => {
-      if (unsubscribe) unsubscribe();
+      unsubscribe();
     };
   }, []);
 

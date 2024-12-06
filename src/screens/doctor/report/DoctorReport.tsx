@@ -29,6 +29,7 @@ import DateTimePickerComponent from './components/DateTimePickerComponent';
 import ModalComponent from './components/ModalComponent';
 import ToastComponent from './components/ToastComponent';
 import {HandleNotification} from '../../../utils/handleNotification';
+import { slice } from 'lodash';
 
 // Sample Patient Data
 const patientData = {
@@ -47,7 +48,7 @@ const patientData = {
 
 const DoctorReportScreen = ({navigation, route}: any) => {
   const {patient, doctor, appointment} = route.params;
-  const patientInfo = patient as Patient;
+  const patientInfo = patient;
   const doctorInfo = doctor as Doctor;
   const appointmentInfo = appointment as Appointment;
 
@@ -194,7 +195,9 @@ const DoctorReportScreen = ({navigation, route}: any) => {
               />
               <Text style={styles.cardValue}>
                 {patientInfo?.dateOfBirth
-                  ? DateTime.dateToDateString(patientInfo.dateOfBirth)
+                  ? DateTime.dateToDateString(
+                      new Date(patientInfo.dateOfBirth.seconds * 1000),
+                    )
                   : DateTime.dateToDateString(new Date())}
               </Text>
             </View>
@@ -209,21 +212,37 @@ const DoctorReportScreen = ({navigation, route}: any) => {
               <Text style={styles.cardValue}>
                 {patientInfo.dateOfBirth
                   ? new Date().getFullYear() -
-                    patientInfo.dateOfBirth.getFullYear()
+                    new Date(
+                      patientInfo.dateOfBirth.seconds * 1000,
+                    ).getFullYear()
                   : '18'}
               </Text>
             </View>
             <Divider styles={{marginTop: -10, marginBottom: -10}} />
 
-            <View style={styles.cardRow}>
+            <View
+              style={{
+                flexDirection: 'row',
+                marginBottom: -6,
+                justifyContent: 'space-between',
+                paddingHorizontal: 8,
+              }}>
               <TextComponent
                 text="Address:"
                 font={fontFamilies.semiBold}
                 color="#333"
+                
               />
-              <Text style={styles.cardValue}>
-                {patient.address ? patientInfo.address : patientData.address}
-              </Text>
+              <TextComponent
+                styles={{
+                  fontFamily: fontFamilies.regular,
+                  color: '#333',
+                }}
+                textAlign='right'
+                text={
+                  patient.address ? patientInfo.address.toString().slice(0,25) : patientData.address
+                }
+              />
             </View>
             <Divider styles={{marginTop: -10, marginBottom: -10}} />
 
@@ -404,6 +423,7 @@ const styles = StyleSheet.create({
   cardValue: {
     fontFamily: fontFamilies.regular,
     color: '#333',
+    width: 'auto',
   },
   sectionTitle: {
     fontSize: 16,

@@ -1,52 +1,61 @@
-import { Image } from 'react-native'
-import React from 'react'
-import { Card, Col, ContainerComponent, Row, TextComponent } from '../../../../components';
-import { fontFamilies } from '../../../../constants/fontFamilies';
+import {Image} from 'react-native';
+import React from 'react';
+import {
+  Card,
+  Col,
+  ContainerComponent,
+  Row,
+  Space,
+  TextComponent,
+} from '../../../../components';
+import {fontFamilies} from '../../../../constants/fontFamilies';
 
 interface Props {
   title?: string;
   body?: string;
-  image?:string,
+  image?: string;
 }
 
-const SwiperOne = (props: Props) => {
-  const {title, body, image} = props
+const SwiperOne3 = (props: Props) => {
+  const {title, body, image} = props;
   return (
     <ContainerComponent>
       <Card styles={{height: 170, borderRadius: 5}} color="#1399ba">
         <Row styles={{justifyContent: 'space-between'}}>
           <Col>
             <TextComponent
-              text={`Easy scheduling, no more waiting!`}
-              size={18}
+              text={`Modern medical solutions at your fingertips!`}
+              size={16}
               color="#fff"
               styles={{fontFamily: fontFamilies.bold}}
             />
             <TextComponent
               text={
-                'Medical examination has never been easier - Schedule an appointment with just a few steps!'
+                'Easily look up information, book an appointment and receive online consultation. All just on your phone.'
               }
-              size={12}
+              size={10}
               color="#fff"
               numberOfLine={4}
               styles={{fontFamily: fontFamilies.regular}}
             />
           </Col>
+          <Space width={5} />
           <Image
             source={{
-              uri: 'https://res.cloudinary.com/xuanthe/image/upload/v1733329368/zvadqdfdoyrdhhbtjs2d.jpg',
+              uri: 'https://res.cloudinary.com/xuanthe/image/upload/v1733330809/yzvolnhikgogelji8r1i.png',
             }}
             style={{
               width: 128,
               height: 128,
               resizeMode: 'contain',
               borderRadius: 10,
+              backgroundColor: '#b7daed',
             }}
           />
         </Row>
       </Card>
     </ContainerComponent>
   );
-}
+};
 
-export default SwiperOne
+export default SwiperOne3;

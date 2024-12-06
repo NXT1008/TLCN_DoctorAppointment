@@ -1,4 +1,4 @@
-import {View, Text, TouchableOpacity} from 'react-native';
+import {View, Text, TouchableOpacity, Image} from 'react-native';
 import React, {ReactNode} from 'react';
 import {Row, Space, TextComponent} from '../../../../components';
 import {ArrowRight2, DocumentText} from 'iconsax-react-native';
@@ -6,12 +6,12 @@ import {fontFamilies} from '../../../../constants/fontFamilies';
 
 interface Props {
   text: string;
-  icon: ReactNode;
+  image: any
   onPress: () => void;
 }
 
 const ProfileComponent = (props: Props) => {
-  const {text, icon, onPress,} = props;
+  const {text, onPress, image} = props;
 
   return (
       <Row justifyContent="space-between" styles={{marginBottom: 15}} onPress={onPress}>
@@ -25,7 +25,7 @@ const ProfileComponent = (props: Props) => {
               alignItems: 'center',
               borderRadius: 100,
             }}>
-            {icon}
+          <Image source={image} style={{width: 25, height: 25}} />
           </View>
           <Space width={12} />
           <TextComponent text={text} font={fontFamilies.medium} size={16} />

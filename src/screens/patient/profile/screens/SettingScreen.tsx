@@ -56,7 +56,7 @@ const SettingScreen = (props: any) => {
         </Row>
       </Section>
       <Section>
-        <Row justifyContent="space-between" styles={{paddingVertical: 10}}>
+        {/* <Row justifyContent="space-between" styles={{paddingVertical: 10}}>
           <TextComponent
             text="Dark Mode"
             size={16}
@@ -103,7 +103,7 @@ const SettingScreen = (props: any) => {
               setIsDarkTheme(val);
             }}
           />
-        </Row>
+        </Row> */}
         <TouchableOpacity
           onPress={() => {
             props.navigation.navigate('ChangePassword');

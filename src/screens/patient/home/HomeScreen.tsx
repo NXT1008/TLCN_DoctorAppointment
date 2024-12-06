@@ -26,6 +26,12 @@ import {HandleNotificationPatient} from '../../../utils/handleNotification';
 import DoctorCard from './components/DoctorCard';
 import SpecializationComponent from './components/SpecializationComponent';
 import SwiperOne from './components/SwiperOne';
+import notifee, { AndroidImportance, AndroidStyle } from '@notifee/react-native';
+import messaging from '@react-native-firebase/messaging'
+import SwiperOne2 from './components/SwiperOne2';
+import SwiperOne3 from './components/SwiperOne3';
+import SwiperOne4 from './components/SwiperOne4';
+import updateDoctorRating from '../../../data/functions/UpdateRating';
 
 const HomeScreen = (props: any) => {
   const user = auth().currentUser;
@@ -114,6 +120,8 @@ const HomeScreen = (props: any) => {
         .where('receiverId', '==', patient?.patientId)
         .where('isReaded', '==', false) // Kiểm tra các thông báo chưa đọc
         .onSnapshot(snapshot => {
+          console.log("vào")
+          //console.log(snapshot.docs[0].data())
           if (!snapshot.empty) {
             setHasNewNotification(true); // Có thông báo mới
           } else {
@@ -131,6 +139,42 @@ const HomeScreen = (props: any) => {
     };
   }, []);
 
+  useEffect(() => {
+    const createNotificationChannel = async () => {
+      await notifee.createChannel({
+        id: 'default',
+        name: 'Default Channel',
+        importance: AndroidImportance.HIGH,
+        sound: 'default',
+      });
+    };
+
+
+    const unsubcribeOnMessage = messaging().onMessage(
+      async (remoteMessage: any) => {
+        const imageUrl = remoteMessage.notification?.android?.imageUrl;
+        await notifee.displayNotification({
+          title: remoteMessage.notification?.title || 'New Title',
+          body: remoteMessage.notification?.body || 'New body',
+          android: {
+            channelId: 'default',
+            importance: AndroidImportance.HIGH,
+            smallIcon: 'ic_launcher',
+            pressAction: {id: 'default'},
+            style: imageUrl
+              ? {type: AndroidStyle.BIGPICTURE, picture: imageUrl}
+              : undefined,
+          },
+        });
+      },
+    );
+
+    return () => {
+      createNotificationChannel()
+      unsubcribeOnMessage()
+    }
+  }, []);
+
   return (
     <>
       <ContainerComponent isScroll style={{marginTop: -16}}>
@@ -143,14 +187,18 @@ const HomeScreen = (props: any) => {
               width: '100%',
             }}>
             <Row>
-              <Image
-                source={
-                  patient?.image
-                    ? {uri: patient.image}
-                    : require('../../../assets/IconTab/profile.png')
-                }
-                style={{width: 50, height: 50, borderRadius: 100}}
-              />
+              <TouchableOpacity onPress={() => {
+                //updateDoctorRating()
+              }}>
+                <Image
+                  source={
+                    patient?.image
+                      ? {uri: patient.image}
+                      : require('../../../assets/IconTab/profile.png')
+                  }
+                  style={{width: 50, height: 50, borderRadius: 100}}
+                />
+              </TouchableOpacity>
               <Space width={15} />
               <View>
                 <TextComponent
@@ -196,12 +244,12 @@ const HomeScreen = (props: any) => {
             style={{marginTop: 20}}
             activeDotColor="#1399ba"
             autoplay
-            autoplayTimeout={2}
+            autoplayTimeout={3.5}
             loop>
+            <SwiperOne2 />
             <SwiperOne />
-            <SwiperOne />
-            <SwiperOne />
-            <SwiperOne />
+            <SwiperOne3 />
+            <SwiperOne4 />
           </Swiper>
           <Section>
             <Row justifyContent="space-between">
@@ -210,11 +258,16 @@ const HomeScreen = (props: any) => {
                 size={20}
                 font={fontFamilies.semiBold}
               />
-              <TextComponent
-                text="See All"
-                font={fontFamilies.regular}
-                size={12}
-              />
+              <TouchableOpacity
+                onPress={() => {
+                  props.navigation.navigate('DoctorScreen');
+                }}>
+                <TextComponent
+                  text="See All"
+                  font={fontFamilies.regular}
+                  size={12}
+                />
+              </TouchableOpacity>
             </Row>
           </Section>
           <Section>
@@ -239,11 +292,16 @@ const HomeScreen = (props: any) => {
                 font={fontFamilies.semiBold}
                 size={20}
               />
-              <TextComponent
-                text="See All"
-                font={fontFamilies.regular}
-                size={12}
-              />
+              <TouchableOpacity
+                onPress={() => {
+                  props.navigation.navigate('DoctorScreen');
+                }}>
+                <TextComponent
+                  text="See All"
+                  font={fontFamilies.regular}
+                  size={12}
+                />
+              </TouchableOpacity>
             </Row>
             <Space height={10} />
             {loadingDoctors ? (

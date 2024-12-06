@@ -97,11 +97,11 @@ const SignUpScreen = ({navigation}: any) => {
   return (
     <ContainerComponent isScroll>
       <View style={styles.container}>
-        <TouchableOpacity onPress={() => {}} style={styles.backButton}>
+        {/* <TouchableOpacity onPress={() => {}} style={styles.backButton}>
           <Image
             source={require('../../../assets/images/back_arrow.png')}
             style={styles.backImage}></Image>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
 
         {/* <Text style={styles.welcomeText}>Register Your New Account!</Text> */}
         <TextComponent

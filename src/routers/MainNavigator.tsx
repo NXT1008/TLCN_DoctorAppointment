@@ -11,7 +11,7 @@ import SettingScreen from '../screens/patient/profile/screens/SettingScreen';
 import ReviewAllDoctors from '../screens/patient/doctor/ReviewAllDoctors';
 import BookingScreen from '../screens/patient/booking/BookingScreen';
 import DoctorDetail from '../screens/patient/doctor/DoctorDetail';
-import { NotificationScreen } from '../screens/patient';
+import { DoctorScreen, NotificationScreen } from '../screens/patient';
 import PaymentScreen from '../screens/patient/payment/PaymentScreen';
 import AddNewCardScreen from '../screens/patient/payment/AddNewCard';
 import ChatScreen from '../screens/patient/chat/ChatScreen';
@@ -20,6 +20,7 @@ import ReviewScreen from '../screens/patient/appointment/ReviewAppointment';
 import CancelAppointment from '../screens/patient/appointment/CancelAppointment';
 import ChangePassword from '../screens/patient/profile/screens/ChangePassword';
 import PaymentHistory from '../screens/patient/profile/screens/PaymentMethodScreen';
+import HealthReportScreen from '../screens/patient/profile/screens/HealthReport';
 
 const MainNavigator = () => {
   const Stack = createNativeStackNavigator();
@@ -32,6 +33,7 @@ const MainNavigator = () => {
       <Stack.Screen name="DoctorDetail" component={DoctorDetail} />
       <Stack.Screen name="FAQsScreen" component={FAQsScreen} />
       <Stack.Screen name="ReportScreen" component={ReportScreen} />
+      <Stack.Screen name="HealthReportScreen" component={HealthReportScreen} />
       <Stack.Screen
         name="PrivacyPolicyScreen"
         component={PrivacyPolicyScreen}

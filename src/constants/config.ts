@@ -1,3 +1,3 @@
 export const config = {
-  localhost: '192.168.1.7',
+  localhost: '192.168.211.246',
 };

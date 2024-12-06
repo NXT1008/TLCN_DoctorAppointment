@@ -95,6 +95,7 @@ const ScheduleScreen = () => {
               const data = doc.data();
               const date = data.availableDate; // type: timestamp
               const dateObject = new Date(date.seconds * 1000);
+              console.log("🚀 ~ snapshot.forEach ~ dateObject:", dateObject)
 
               // Lấy ngày, tháng, năm từ đối tượng ngày
               const availableDate = dateObject.getDate();
@@ -114,6 +115,7 @@ const ScheduleScreen = () => {
               }
             });
             setScheduleList(items);
+            console.log(items)
           },
           error => {
             console.log('Error fetching schedules: ', error);

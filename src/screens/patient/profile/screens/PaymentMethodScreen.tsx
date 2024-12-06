@@ -11,17 +11,18 @@ import {
 } from '../../../../components';
 import {ArrowLeft2, Call, Scan} from 'iconsax-react-native';
 import {fontFamilies} from '../../../../constants/fontFamilies';
-import firestore from '@react-native-firebase/firestore';
-import {PaymentMethod} from '../../../../models/Payment';
+import firestore, {Timestamp} from '@react-native-firebase/firestore';
+import {Payment, PaymentMethod} from '../../../../models/Payment';
 import auth from '@react-native-firebase/auth';
 import CreditCardComponent from '../components/CreditCard';
 import {FormatTime} from '../../../../utils/formatTime';
 
 const PaymentHistory = ({navigation}: any) => {
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
+  const [payment, setPayment] = useState<Payment[]>([]);
 
   useEffect(() => {
-    const unsubscribe = firestore()
+    const unsubscribePaymentMethods = firestore()
       .collection('paymentMethods')
       .where('patientId', '==', auth().currentUser?.uid)
       .onSnapshot(querySnapshot => {
@@ -35,8 +36,28 @@ const PaymentHistory = ({navigation}: any) => {
         setPaymentMethods(items);
       });
 
+    const unsubscribePaymentHistory = firestore()
+      .collection('payments')
+      .where('patientId', '==', auth().currentUser?.uid)
+      .onSnapshot(querySnapshot => {
+        const items: Payment[] = [];
+        querySnapshot.forEach((doc: any) => {
+          const data = doc.data();
+          const timestamp = (data.timestamp as Timestamp).toDate();
+          items.push({
+            methodId: doc.id,
+            ...doc.data(),
+            timestamp: timestamp,
+          });
+        });
+        setPayment(items);
+      });
+
     // Cleanup listener on unmount
-    return () => unsubscribe();
+    return () => {
+      unsubscribePaymentMethods();
+      unsubscribePaymentHistory();
+    };
   }, []);
 
   return (
@@ -79,7 +100,7 @@ const PaymentHistory = ({navigation}: any) => {
         />
         <Space height={10} />
         <Section styles={{paddingHorizontal: 0}}>
-          {Array.from({length: 5}).map((_, index) => (
+          {payment.map((item, index) => (
             <Card
               key={index}
               onPress={() => {}}
@@ -89,21 +110,23 @@ const PaymentHistory = ({navigation}: any) => {
               <Space width={16} />
               <Col>
                 <TextComponent
-                  text="Title Payment"
+                  text={`${item.name}`}
                   font={fontFamilies.semiBold}
                   color="#444444"
                 />
                 <TextComponent
                   text={`${FormatTime.getShortFormattedDate(
-                    new Date(),
-                  )}, ${FormatTime.convertTo12HourFormat(new Date())}`}
+                    item.timestamp ? item.timestamp : new Date(),
+                  )}, ${FormatTime.convertTo12HourFormat(
+                    item.timestamp ? item.timestamp : new Date(),
+                  )}`}
                   font={fontFamilies.regular}
                   size={12}
                   color="#8f8f8f"
                 />
               </Col>
               <TextComponent
-                text="- 400,000 VND"
+                text={`- ${item.amount / 25000} $`}
                 font={fontFamilies.semiBold}
                 size={13}
                 color="#c71c1c"

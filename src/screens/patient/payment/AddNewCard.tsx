@@ -51,7 +51,6 @@ const AddNewCard = ({navigation, route}: any) => {
       cvv,
       cardHolder: cardHolderName,
       type: cardType,
-      paymentType: 'Credit Card',
     };
 
     try {

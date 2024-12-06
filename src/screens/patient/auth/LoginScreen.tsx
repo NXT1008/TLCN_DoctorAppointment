@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {View, TouchableOpacity, Image, Alert} from 'react-native';
 import {StyleSheet} from 'react-native';
 import {
@@ -16,11 +16,17 @@ import {colors} from '../../../constants/colors';
 import {Text} from 'react-native';
 import auth from '@react-native-firebase/auth';
 import ModalComponent from './components/ModalComponent';
-import firestore from '@react-native-firebase/firestore';
+import firestore, { waitForPendingWrites } from '@react-native-firebase/firestore';
 import {Patient} from '../../../models/Patient';
 import deleteAllData from '../../../data/functions/zResetData';
 import uploadDataToFirestore from '../../../data/functions/UploadDataToFirebase';
-import {Doctor} from '../../../models/Doctor';
+import { Doctor } from '../../../models/Doctor';
+import {
+  GoogleSignin,
+  GoogleSigninButton,
+  statusCodes,
+} from '@react-native-google-signin/google-signin';
+import PopUpAnimation from '../home/components/PopUpAnimation';
 
 const LoginScreen = ({navigation}: any) => {
   const [email, setEmail] = useState('');
@@ -29,6 +35,7 @@ const LoginScreen = ({navigation}: any) => {
   const [isError, setIsError] = useState(false);
   const [errorText, setErrorText] = useState('');
   const [role, setRole] = useState('patient'); // thêm state role
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
 
   const handleLogin = async () => {
     const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
@@ -57,6 +64,7 @@ const LoginScreen = ({navigation}: any) => {
             .then(userCredential => {
               const user = userCredential.user;
               setIsLoading(false);
+              setShowSuccessPopup(true);
             })
             .catch(error => {
               setIsLoading(false);
@@ -65,19 +73,32 @@ const LoginScreen = ({navigation}: any) => {
               console.log(error);
             });
         } else {
-          // Doctor login using Firestore
+          // // Doctor login using Firestore
+          // const doctorSnapshot = await firestore()
+          //   .collection('doctors')
+          //   .where('email', '==', email)
+          //   .get();
+
+          // if (doctorSnapshot.empty) {
+          //   throw new Error('Doctor not found');
+          // }
+
+          // Đăng nhập qua Firebase Auth trước
+          const userCredential = await auth().signInWithEmailAndPassword(
+            email,
+            password,
+          );
+
+          // Sau đó kiểm tra thông tin bác sĩ trong Firestore
           const doctorSnapshot = await firestore()
             .collection('doctors')
             .where('email', '==', email)
             .get();
 
           if (doctorSnapshot.empty) {
+            // Nếu không tìm thấy thông tin bác sĩ trong Firestore, đăng xuất khỏi Auth
+            await auth().signOut();
             throw new Error('Doctor not found');
-          }
-
-          const doctorData = doctorSnapshot.docs[0].data() as Doctor;
-          if (doctorData.password !== password) {
-            throw new Error('Invalid password');
           }
 
           // Update doctor's login status if needed
@@ -87,9 +108,10 @@ const LoginScreen = ({navigation}: any) => {
             .update({isLogin: true});
 
           // Tạo một session cho bác sĩ trong Firebase Auth
-          await auth().signInWithEmailAndPassword(email, password);
+          // await auth().signInWithEmailAndPassword(email, password);
 
           setIsLoading(false);
+          setShowSuccessPopup(true);
         }
       } catch (error) {
         setIsLoading(false);
@@ -98,19 +120,78 @@ const LoginScreen = ({navigation}: any) => {
       }
     }
   };
+  const latinizeName = (name: string) => {
+    return name.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  };
+
+  useEffect(() => {
+    GoogleSignin.configure({
+      webClientId:
+        '215292160069-9au6ucuumdv0tl0tgul03dphqtu2lkeu.apps.googleusercontent.com',
+    });
+  }, [])
+
+  const loginWithGoogle = async () => {
+    try {
+      await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
+      const user = await GoogleSignin.signIn();
+      
+      if (!user.data?.idToken) {
+        throw new Error('No ID token present');
+      }
+
+      // Create Firebase credential
+      const googleCredential = auth.GoogleAuthProvider.credential(user.data.idToken);
+      
+      // Sign in to Firebase
+      const userCredential = await auth().signInWithCredential(googleCredential);
+      
+      // Check if patient already exists
+      const patientDoc = await firestore()
+        .collection('patients')
+        .doc(userCredential.user.uid)
+        .get();
+
+      // If patient doesn't exist, create new patient profile
+      if (!patientDoc.exists) {
+        const newPatient: Patient = {
+          patientId: userCredential.user.uid,
+          name: user.data.user.name
+            ? latinizeName(user.data.user.name)
+            : 'Name',
+          email: user.data.user.email || '',
+          gender: '',
+          phone: '',
+          image: user.data.user.photo || '',
+          address: '',
+        };
+
+        await firestore()
+          .collection('patients')
+          .doc(userCredential.user.uid)
+          .set(newPatient);
+      }
+      return userCredential;
+    } catch (error) {
+      console.error('Google Sign-In Error:', error);
+      setIsError(true);
+      setErrorText('Google sign in failed. Please try again.');
+      throw error;
+    }
+  };
 
   return (
     <ContainerComponent isScroll style={{marginTop: -16}}>
       <View style={styles.container}>
         <Section styles={{marginTop: 40, marginBottom: -50}}>
           <Row styles={{justifyContent: 'flex-start'}}>
-            <TouchableOpacity
+            {/* <TouchableOpacity
               onPress={() => Alert.alert('Back')}
               style={styles.backButton}>
               <Image
                 source={require('../../../assets/images/back_arrow.png')}
                 style={styles.backImage}></Image>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
 
             <View style={{alignItems: 'center', flex: 1}}>
               <TextComponent
@@ -223,11 +304,11 @@ const LoginScreen = ({navigation}: any) => {
         <Section styles={{marginTop: 0, marginVertical: 25, paddingBottom: 0}}>
           <Row>
             <Row>
-              <TickSquare size={20} variant="Bold" color={colors.gray} />
+              <TickSquare size={20} variant="Bold" color={colors.white} />
               <Space width={8} />
               <TextComponent
                 text="Remember me"
-                color={colors.gray}
+                color={colors.white}
                 size={13}
                 font={fontFamilies.regular}
               />
@@ -239,7 +320,7 @@ const LoginScreen = ({navigation}: any) => {
                 title="Forgot password"
                 type="link"
                 textStyleProps={{
-                  color: '#21a691',
+                  color: '#fff',
                   fontSize: 12,
                   fontFamily: 'Poppins-Regular',
                 }}
@@ -273,7 +354,7 @@ const LoginScreen = ({navigation}: any) => {
 
         <View>
           <TouchableOpacity
-            onPress={() => Alert.alert('Login with google')}
+            onPress={loginWithGoogle}
             style={styles.googleButton}>
             <View style={styles.ortherView}>
               <Image
@@ -318,6 +399,11 @@ const LoginScreen = ({navigation}: any) => {
           onConfirm={() => setIsError(false)}
           type="one-button"
           icon={<Forbidden2 color="red" size={30} />}
+        />
+        <PopUpAnimation
+          visible={showSuccessPopup}
+          onComplete={() => setShowSuccessPopup(false)}
+          content="Login Successful!"
         />
       </View>
     </ContainerComponent>

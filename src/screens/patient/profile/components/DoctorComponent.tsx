@@ -67,7 +67,7 @@ const DoctorComponent = (props: Props) => {
     <Card styles={{marginHorizontal: 5, borderRadius: 20}} shadowed>
       <Row justifyContent="flex-start" alignItems="flex-start" flex={1}>
         <Image
-          source={require('../../../../assets/images/doctor.png')}
+          source={{uri: data.image}}
           style={{
             width: 100,
             height: 100,

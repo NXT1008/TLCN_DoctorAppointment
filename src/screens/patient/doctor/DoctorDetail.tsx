@@ -33,6 +33,7 @@ const DoctorDetailScreen = ({navigation, route}: any) => {
   const [spec, setSpec] = useState<Specialization>();
   const [hospital, setHospital] = useState<Hospital>();
   const [reviewList, setReviewList] = useState<Review[]>([]);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   useEffect(() => {
     const unsubcribe = getReviewsByDoctorID();
@@ -101,6 +102,11 @@ const DoctorDetailScreen = ({navigation, route}: any) => {
       console.error('Error fetching Hospital:', error);
     }
   };
+
+  const toggleExpanded = () => {
+    setIsExpanded(!isExpanded);
+  };
+
   return (
     <View style={styles.container}>
       <ContainerComponent isScroll styleHeader={{marginTop: -16}}>
@@ -120,7 +126,7 @@ const DoctorDetailScreen = ({navigation, route}: any) => {
             </TouchableOpacity>
           </View>
           <Image
-            source={require('../../../assets/images/doctor.png')}
+            source={{uri: doctorData.image}}
             style={{
               width: 120,
               height: 120,
@@ -133,7 +139,7 @@ const DoctorDetailScreen = ({navigation, route}: any) => {
           />
           <TextComponent
             text={doctor.name}
-            size={20}
+            size={18}
             font={fontFamilies.semiBold}
             textAlign="center"
           />
@@ -252,12 +258,20 @@ const DoctorDetailScreen = ({navigation, route}: any) => {
             font="Poppins-Bold"
           />
           <TextComponent
-            text={`${doctorData.name} is a top specialist at ${hospital?.name} at ${hospital?.address}. He has achieved several awards and recognition for his contribution and service in his own field. He is available for private consultation.`}
+            text={`${doctorData.about}`}
             font="Poppins-Regular"
             textAlign="justify"
             color="#555"
             lineHeight={24}
+            numberOfLine={isExpanded ? undefined : 4}
           />
+          <TouchableOpacity onPress={toggleExpanded}>
+            <TextComponent
+              text={isExpanded ? 'Hide less' : 'Read more'}
+              font="Poppins-Regular"
+              color="#007BFF"
+            />
+          </TouchableOpacity>
         </Section>
 
         <Section styles={styles.workingTimeSection}>

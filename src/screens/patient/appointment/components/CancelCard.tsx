@@ -26,10 +26,7 @@ const DoctorCard = (props: Props) => {
   return (
     <Card styles={styles.cardContainer} shadowed>
       <View style={styles.profileContainer}>
-        <Image
-          source={require('../../../../assets/images/doctor.png')}
-          style={styles.profileImage}
-        />
+        <Image source={{uri: doctor.image}} style={styles.profileImage} />
         <View style={styles.doctorInfo}>
           <Text style={styles.doctorName}>{doctor?.name}</Text>
           <Text style={styles.specialty}>{specialization?.name}</Text>

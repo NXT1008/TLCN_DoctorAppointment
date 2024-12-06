@@ -255,7 +255,9 @@ const DoctorAppointment = (props: any) => {
                 if (patient) {
                   navigation.navigate('DoctorReport',
                     {
-                      patient: patient,
+                      patient: {
+                        ...patient,
+                      },
                       doctor: doctor,
                       appointment: {
                         ...item,

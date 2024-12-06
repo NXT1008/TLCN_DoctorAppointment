@@ -253,7 +253,11 @@ const AppointmentScreen = (props: any) => {
               specialization={
                 specializationsMap[doctorsMap[item.doctorId]?.specializationId]
               }
-              onPressDetail={() => Alert.alert('Cập nhật Detail Appointment')}
+              onPressDetail={() =>
+                Alert.alert(
+                  'Please wait for the doctor to send you the appointment results!',
+                )
+              }
               onPressOK={() => {
                 Alert.alert('Hiển thị popup xác nhận hoàn thành cuộc hẹn');
               }}

@@ -51,13 +51,14 @@ const SpecializationModalComponent = (props: Props) => {
           <ScrollView>
             {/* Component "All" */}
             <SpecializationComponent
-              data={{specializationId: 'All', name: 'All'}} // Đặt dữ liệu tên là "All" cho component
+              data={{specializationId: 'All', name: 'All', image: ''}} // Đặt dữ liệu tên là "All" cho component
               onPress={() => {
                 setSelectedId('All');
                 if (onSelectSpecialization) {
                   onSelectSpecialization({
                     specializationId: 'All',
                     name: 'All',
+                    image: '',
                   }); // Truyền 'All' để xác định chọn tất cả
                 }
               }}

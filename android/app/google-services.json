@@ -2,7 +2,7 @@
   "project_info": {
     "project_number": "215292160069",
     "project_id": "doctorappointment-6f3a7",
-    "storage_bucket": "doctorappointment-6f3a7.appspot.com"
+    "storage_bucket": "doctorappointment-6f3a7.firebasestorage.app"
   },
   "client": [
     {
@@ -12,7 +12,20 @@
           "package_name": "com.doctorappointment"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "215292160069-e18ll9snf7apopeokc20puobq8b84gn9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.doctorappointment",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "215292160069-9au6ucuumdv0tl0tgul03dphqtu2lkeu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyCr7jzfJYTVQ1m8zqhYTtx3C3rjModRmbc"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "215292160069-9au6ucuumdv0tl0tgul03dphqtu2lkeu.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

@@ -1,31 +1,35 @@
-import { Image } from 'react-native'
-import React from 'react'
-import { Card, Col, ContainerComponent, Row, TextComponent } from '../../../../components';
-import { fontFamilies } from '../../../../constants/fontFamilies';
+import {Image} from 'react-native';
+import React from 'react';
+import {
+  Card,
+  Col,
+  ContainerComponent,
+  Row,
+  TextComponent,
+} from '../../../../components';
+import {fontFamilies} from '../../../../constants/fontFamilies';
 
 interface Props {
   title?: string;
   body?: string;
-  image?:string,
+  image?: string;
 }
 
-const SwiperOne = (props: Props) => {
-  const {title, body, image} = props
+const SwiperOne2 = (props: Props) => {
+  const {title, body, image} = props;
   return (
     <ContainerComponent>
       <Card styles={{height: 170, borderRadius: 5}} color="#1399ba">
         <Row styles={{justifyContent: 'space-between'}}>
           <Col>
             <TextComponent
-              text={`Easy scheduling, no more waiting!`}
+              text={`Your health is our priority!`}
               size={18}
               color="#fff"
               styles={{fontFamily: fontFamilies.bold}}
             />
             <TextComponent
-              text={
-                'Medical examination has never been easier - Schedule an appointment with just a few steps!'
-              }
+              text={`The application helps you access top specialists. We always accompany you for your health`}
               size={12}
               color="#fff"
               numberOfLine={4}
@@ -34,7 +38,7 @@ const SwiperOne = (props: Props) => {
           </Col>
           <Image
             source={{
-              uri: 'https://res.cloudinary.com/xuanthe/image/upload/v1733329368/zvadqdfdoyrdhhbtjs2d.jpg',
+              uri: 'https://res.cloudinary.com/xuanthe/image/upload/v1733329372/j2a8izwd4smzybtz9vug.jpg',
             }}
             style={{
               width: 128,
@@ -47,6 +51,6 @@ const SwiperOne = (props: Props) => {
       </Card>
     </ContainerComponent>
   );
-}
+};
 
-export default SwiperOne
+export default SwiperOne2;

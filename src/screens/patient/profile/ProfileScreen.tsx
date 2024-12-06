@@ -30,6 +30,7 @@ import { fontFamilies } from '../../../constants/fontFamilies';
 import { Patient } from '../../../models/Patient';
 import ModalComponent from './components/ModalComponent';
 import ProfileComponent from './components/ProfileComponent';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
 const ProfileScreen = ({navigation, route}: any) => {
   const patientId = auth().currentUser?.uid;
@@ -133,7 +134,8 @@ const ProfileScreen = ({navigation, route}: any) => {
 
   const handleConfirm = async () => {
     setAlertVisible(false);
-    auth().signOut();
+    await auth().signOut();
+    await GoogleSignin.signOut();
   };
 
   const handleCancel = () => {
@@ -141,7 +143,7 @@ const ProfileScreen = ({navigation, route}: any) => {
   };
 
   return (
-    <ContainerComponent>
+    <ContainerComponent isScroll>
       <Section>
         <Row justifyContent="space-between">
           <ArrowLeft2 color="#fff" />
@@ -166,7 +168,7 @@ const ProfileScreen = ({navigation, route}: any) => {
               source={
                 patient?.image
                   ? {uri: patient.image}
-                  : require('../../../assets/images/doctor.png')
+                  : require('../../../assets/IconTab/profile.png')
               }
               style={{
                 width: 80,
@@ -243,48 +245,57 @@ const ProfileScreen = ({navigation, route}: any) => {
       </Section>
       <Section styles={{paddingHorizontal: 20, marginTop: -10}}>
         <ProfileComponent
-          text="My Report"
-          icon={<DocumentText color="#0B8FAC" />}
+          text="My Health Indicator"
+          image={require('../../../assets/IconTab/health_indicator.png')}
           onPress={() => {
             navigation.navigate('ReportScreen');
           }}
         />
         <ProfileComponent
+          text="Health Reports"
+          image={require('../../../assets/IconTab/diagnosis.png')}
+          onPress={() => {
+            navigation.navigate('HealthReportScreen');
+          }}
+        />
+        <ProfileComponent
           text="Payment History"
-          icon={<DocumentText color="#0B8FAC" />}
-          onPress={() => {navigation.navigate('PaymentHistory');}}
+          image={require('../../../assets/IconTab/atm-card.png')}
+          onPress={() => {
+            navigation.navigate('PaymentHistory', {patient: patient});
+          }}
         />
         <ProfileComponent
           text="My Favorites Doctors"
-          icon={<DocumentText color="#0B8FAC" />}
+          image={require('../../../assets/IconTab/favourite.png')}
           onPress={() => {
             navigation.navigate('MyfavoritesDoctor');
           }}
         />
         <ProfileComponent
           text="Privacy Polices"
-          icon={<DocumentText color="#0B8FAC" />}
+          image={require('../../../assets/IconTab/privacy.png')}
           onPress={() => {
             navigation.navigate('PrivacyPolicyScreen');
           }}
         />
         <ProfileComponent
           text="Settings"
-          icon={<DocumentText color="#0B8FAC" />}
+          image={require('../../../assets/IconTab/settings.png')}
           onPress={() => {
             navigation.navigate('SettingScreen');
           }}
         />
         <ProfileComponent
           text="FAQs"
-          icon={<DocumentText color="#0B8FAC" />}
+          image={require('../../../assets/IconTab/faq.png')}
           onPress={() => {
             navigation.navigate('FAQsScreen');
           }}
         />
         <ProfileComponent
           text="Logout"
-          icon={<DocumentText color="#0B8FAC" />}
+          image={require('../../../assets/IconTab/logout.png')}
           onPress={showAlert}
         />
 
