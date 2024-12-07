@@ -29,6 +29,8 @@ import DateTimePickerComponent from './components/DateTimePickerComponent';
 import ModalComponent from './components/ModalComponent';
 import ToastComponent from './components/ToastComponent';
 import { HandleNotification } from '../../../utils/handleNotification';
+import { Picker } from '@react-native-picker/picker';
+import { Problems } from '../../../models/Problems';
 
 
 const DoctorReportScreen = ({ navigation, route }: any) => {
@@ -43,6 +45,40 @@ const DoctorReportScreen = ({ navigation, route }: any) => {
   const [conditionAtDischarge, setConditionAtDischarge] = useState('');
 
   const [isModalVisible, setModalVisible] = useState(false);
+  const [problemList, setProblemList] = useState<Problems[]>([]);
+  const [selectedDiagnosis, setSelectedDiagnosis] = useState<string | undefined>(undefined);
+  const [selectedProblem, setSelectedProblem] = useState({});
+  const [treatmentPlan, setTreatmentPlan] = useState('');
+  // const fetchProblemData = async () => {
+  //   try {
+  //     const snapshot = await firestore().collection("problems").get();
+  //     const data = snapshot.docs.map(doc => doc.data() as Problems); // Chuyển đổi dữ liệu từ Firestore
+  //     setProblemList(data);
+  //   } catch (error) {
+  //     console.error("Error fetching problem data:", error);
+  //   }
+  // };
+
+  const fetchProblemData = async () => {
+    try {
+      const specialty = doctorInfo.specializationId; // Lấy chuyên khoa của bác sĩ
+
+      const snapshot = await firestore().collection("problems").get();
+      const data = snapshot.docs.map(doc => doc.data() as Problems); // Chuyển đổi dữ liệu từ Firestore
+
+      // Lọc dữ liệu bệnh dựa trên chuyên khoa của bác sĩ
+      const filteredData = data.filter(problem => problem.specId === specialty);
+
+      setProblemList(filteredData);
+    } catch (error) {
+      console.error("Error fetching problem data:", error);
+    }
+  };
+
+  // Lấy dữ liệu khi component mount
+  useEffect(() => {
+    fetchProblemData();
+  }, []);
 
 
   const handleSubmit = () => {
@@ -107,6 +143,8 @@ const DoctorReportScreen = ({ navigation, route }: any) => {
       console.log('🚀 ~ handleSubmit ~ error:', error);
     }
   };
+
+
 
   return (
     <>
@@ -281,84 +319,73 @@ const DoctorReportScreen = ({ navigation, route }: any) => {
               font={fontFamilies.semiBold}
               size={16}
               color="#1c77ff"
-              text="Clinical Summary"
+              text="Diagnosis and Treatment Plan"
               textAlign="center"
               styles={{ marginBottom: 10 }}
             />
 
+            {/* ComboBox chọn loại bệnh */}
             <TextComponent
-              text="History and Physical Assessment"
+              text="Select Diagnosis"
               font={fontFamilies.medium}
               color="#333"
               size={14}
             />
             <Space height={5} />
-            <Input
-              value={admissionDetails}
-              onChange={setAdmissionDetails}
-              rows={5}
-              radius={10}
-              placeholder="Enter history and assessment details..."
-              placeholderColor="#bbb"
-              inputStyles={{ fontFamily: fontFamilies.regular, fontSize: 13 }}
-            />
-
-            <Space height={10} />
-
-            <TextComponent
-              text="Plan for"
-              font={fontFamilies.medium}
-              color="#333"
-              size={14}
-            />
-            <Space height={5} />
-            <Input
-              value={planTreatment}
-              onChange={setPlamTreatment}
-              rows={5}
-              radius={10}
-              placeholder="Enter treatment plan details..."
-              placeholderColor="#bbb"
-              inputStyles={{ fontFamily: fontFamilies.regular, fontSize: 13 }}
-            />
-          </Card>
-
-          {/* Discharge Details Section */}
-          <Card styles={{ marginHorizontal: 0 }}>
-            <TextComponent
-              font={fontFamilies.semiBold}
-              size={16}
-              color="#1c77ff"
-              text="Discharge Details"
-              textAlign="center"
-              styles={{ marginBottom: 10 }}
-            />
-
-            <DateTimePickerComponent
-              type="date"
-              title="Date of Discharge"
-              placeholder="Choice"
-              selected={dischargeDate}
-              onSelect={val => {
-                setDischargeDate(val);
+            <Picker
+              selectedValue={selectedDiagnosis}
+              onValueChange={value => {
+                setSelectedDiagnosis(value);
+                const problem = problemList.find(item => item.problemId === value);
+                if (problem) {
+                  setTreatmentPlan(problem.plan);
+                }
               }}
-            />
+              style={{
+                borderWidth: 1,
+                borderColor: "#ddd",
+                borderRadius: 5,
+                padding: 10,
+                fontFamily: fontFamilies.regular,
+                fontSize: 13,
+                color: "#333",
+                width: "100%",
+              }}
+            >
+              {problemList.map(item => (
+                <Picker.Item label={item.problemName} value={item.problemId} key={item.problemId} />
+              ))}
+            </Picker>
+
             <Space height={10} />
 
+            {/* Khung text hiển thị hoặc nhập kế hoạch điều trị */}
             <TextComponent
-              text="Condition at Discharge"
-              font={fontFamilies.semiBold}
+              text="Treatment Plan"
+              font={fontFamilies.medium}
               color="#333"
-              styles={{ marginBottom: 6 }}
+              size={14}
             />
+            <Space height={5} />
             <Input
-              value={conditionAtDischarge}
-              onChange={setConditionAtDischarge}
-              placeholder="Enter condition at discharge..."
-              radius={5}
-              inputStyles={{ fontFamily: fontFamilies.regular, fontSize: 13 }}
+              value={treatmentPlan}
+              onChange={setTreatmentPlan}
+              rows={5}
+              radius={10}
+              placeholder="Enter or update the treatment plan..."
+              placeholderColor="#bbb"
+              inline
+              inputStyles={{
+                fontFamily: fontFamilies.regular,
+                fontSize: 13,
+                textAlignVertical: "top",
+                flexWrap: "wrap-reverse",
+
+              }}
+              disable
             />
           </Card>
+
 
           {/* <Button title="Submit" onPress={handleSubmit} /> */}
           <Button
