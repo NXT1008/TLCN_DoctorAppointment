@@ -1,6 +1,6 @@
-import {ArrowLeft2} from 'iconsax-react-native';
-import React, {useEffect, useState} from 'react';
-import {View, Text, StyleSheet, Image, TouchableOpacity} from 'react-native';
+import { ArrowLeft2 } from 'iconsax-react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import {
   Card,
   ContainerComponent,
@@ -8,13 +8,13 @@ import {
   Section,
   TextComponent,
 } from '../../../components';
-import {useNavigation} from '@react-navigation/native';
-import {Appointment} from '../../../models/Appointment';
-import firestore, {Timestamp} from '@react-native-firebase/firestore';
-import {Doctor} from '../../../models/Doctor';
-import {Notification} from '../../../models/Notification';
-import {FormatTime} from '../../../utils/formatTime';
-import {fontFamilies} from '../../../constants/fontFamilies';
+import { useNavigation } from '@react-navigation/native';
+import { Appointment } from '../../../models/Appointment';
+import firestore, { Timestamp } from '@react-native-firebase/firestore';
+import { Doctor } from '../../../models/Doctor';
+import { Notification } from '../../../models/Notification';
+import { FormatTime } from '../../../utils/formatTime';
+import { fontFamilies } from '../../../constants/fontFamilies';
 import ModalComponent from './components/ModalComponent';
 
 // Dữ liệu mẫu cuộc hẹn
@@ -57,8 +57,8 @@ interface NotificationWithAppointment {
   appointment: Appointment;
 }
 
-const NotificationScreen = ({navigation, route}: any) => {
-  const {doctor} = route.params;
+const NotificationScreen = ({ navigation, route }: any) => {
+  const { doctor } = route.params;
   const doctorInfo = doctor as Doctor;
 
 
@@ -71,6 +71,52 @@ const NotificationScreen = ({navigation, route}: any) => {
   const [isModalVisible, setModalVisible] = useState(false);
 
   // load all notifications of doctor
+  // useEffect(() => {
+  //   const unsubcribeNotifications = firestore()
+  //     .collection('notifications')
+  //     .where('receiverId', '==', doctorInfo.doctorId)
+  //     .onSnapshot(
+  //       async snapshot => {
+  //         if (!snapshot.empty) {
+  //           const notificationDatas: Notification[] = [];
+  //           snapshot.forEach((item: any) => {
+  //             const data = item.data();
+  //             // Chuyển đổi scheduleDate thành Date nếu cần
+  //             const sendAt =
+  //               data?.sendAt instanceof Date
+  //                 ? data.sendAt
+  //                 : (data?.sendAt as Timestamp).toDate();
+  //             notificationDatas.push({
+  //               id: item.id,
+  //               ...data,
+  //               sendAt: sendAt,
+  //             });
+  //           });
+
+  //           // Lấy thông tin appointment cho mỗi notification
+  //           const detailNotification = await Promise.all(
+  //             notificationDatas.map(async item => {
+  //               const appointment = await fetchAppointmentByNotification(item);
+  //               return {
+  //                 notification: item,
+  //                 appointment: appointment || ({} as Appointment),
+  //               };
+  //             }),
+  //           );
+  //           setNotifications(detailNotification);
+  //         } else {
+  //           console.log('🚀 ~ useEffect ~ No have notification');
+  //         }
+  //       },
+  //       error => {
+  //         console.log('🚀 ~ useEffect ~ error:', error);
+  //       },
+  //     );
+  //   return () => {
+  //     unsubcribeNotifications();
+  //   };
+  // }, [doctorInfo.doctorId]);
+
   useEffect(() => {
     const unsubcribeNotifications = firestore()
       .collection('notifications')
@@ -103,6 +149,9 @@ const NotificationScreen = ({navigation, route}: any) => {
                 };
               }),
             );
+
+            // Sắp xếp thông báo mới nhất ở trên và thông báo cũ ở dưới
+            detailNotification.sort((a, b) => b.notification.sendAt.getTime() - a.notification.sendAt.getTime());
             setNotifications(detailNotification);
           } else {
             console.log('🚀 ~ useEffect ~ No have notification');
@@ -116,7 +165,6 @@ const NotificationScreen = ({navigation, route}: any) => {
       unsubcribeNotifications();
     };
   }, [doctorInfo.doctorId]);
-
   const fetchAppointmentByNotification = async (
     notification: Notification,
   ): Promise<Appointment> => {
@@ -153,7 +201,7 @@ const NotificationScreen = ({navigation, route}: any) => {
     await firestore()
       .collection('notifications')
       .doc(selectedNotification?.notification.notificationId)
-      .update({isReaded: true});
+      .update({ isReaded: true });
     setModalVisible(false);
   };
 
@@ -166,16 +214,15 @@ const NotificationScreen = ({navigation, route}: any) => {
     if (diffDays === 0) return 'Today';
     if (diffDays === 1) return '1 day ago';
     if (diffDays <= 6) return `${diffDays} days ago`;
-    return `${sendAt.getDate()}/${
-      sendAt.getMonth() + 1
-    }/${sendAt.getFullYear()}`; // Ngày tháng năm
+    return `${sendAt.getDate()}/${sendAt.getMonth() + 1
+      }/${sendAt.getFullYear()}`; // Ngày tháng năm
   };
 
   // Nhóm thông báo lại theo ngày
   const groupNotificationsByDate = (
     notifications: NotificationWithAppointment[],
   ) => {
-    const groups: {[key: string]: NotificationWithAppointment[]} = {};
+    const groups: { [key: string]: NotificationWithAppointment[] } = {};
 
     notifications.forEach(notification => {
       const dateKey = getFormattedDate(notification.notification.sendAt);
@@ -209,12 +256,12 @@ const NotificationScreen = ({navigation, route}: any) => {
               <Row
                 justifyContent="space-between"
                 alignItems="baseline"
-                styles={{paddingRight: 8, marginTop: -15}}>
+                styles={{ paddingRight: 8, marginTop: -15 }}>
                 <TextComponent
                   text={date}
                   font={fontFamilies.semiBold}
                   size={14}
-                  styles={{marginBottom: 5}}
+                  styles={{ marginBottom: 5 }}
                 />
                 <View
                   style={{
@@ -257,7 +304,7 @@ const NotificationScreen = ({navigation, route}: any) => {
                     }
                     style={styles.icon}
                   />
-                  <View style={{flex: 1}}>
+                  <View style={{ flex: 1 }}>
                     <Text
                       style={{
                         fontSize: 14,

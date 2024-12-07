@@ -1,5 +1,5 @@
-import {View, Text, TouchableOpacity} from 'react-native';
-import React, {useEffect, useState} from 'react';
+import { View, Text, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState } from 'react';
 import Container from '../../../../components/ContainerComponent';
 import {
   Card,
@@ -9,62 +9,83 @@ import {
   Space,
   TextComponent,
 } from '../../../../components';
-import {ArrowLeft2, Call, Scan} from 'iconsax-react-native';
-import {fontFamilies} from '../../../../constants/fontFamilies';
-import firestore, {Timestamp} from '@react-native-firebase/firestore';
-import {Payment, PaymentMethod} from '../../../../models/Payment';
+import { ArrowLeft2, Call, Scan } from 'iconsax-react-native';
+import { fontFamilies } from '../../../../constants/fontFamilies';
+import firestore, { Timestamp } from '@react-native-firebase/firestore';
+import { Payment, PaymentMethod } from '../../../../models/Payment';
 import auth from '@react-native-firebase/auth';
 import CreditCardComponent from '../components/CreditCard';
-import {FormatTime} from '../../../../utils/formatTime';
+import { FormatTime } from '../../../../utils/formatTime';
 
-const PaymentHistory = ({navigation}: any) => {
+const PaymentHistory = ({ navigation }: any) => {
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
   const [payment, setPayment] = useState<Payment[]>([]);
 
-  useEffect(() => {
-    const unsubscribePaymentMethods = firestore()
-      .collection('paymentMethods')
-      .where('patientId', '==', auth().currentUser?.uid)
-      .onSnapshot(querySnapshot => {
-        const items: PaymentMethod[] = [];
-        querySnapshot.forEach((doc: any) => {
-          items.push({
-            methodId: doc.id,
-            ...doc.data(),
-          });
-        });
-        setPaymentMethods(items);
-      });
+  // useEffect(() => {
+  //   const unsubscribePaymentMethods = firestore()
+  //     .collection('paymentMethods')
+  //     .where('patientId', '==', auth().currentUser?.uid)
+  //     .onSnapshot(querySnapshot => {
+  //       const items: PaymentMethod[] = [];
+  //       querySnapshot.forEach((doc: any) => {
+  //         items.push({
+  //           methodId: doc.id,
+  //           ...doc.data(),
+  //         });
+  //       });
+  //       items.sort((a, b) => b.timestamp - a.timestamp);
+  //       setPaymentMethods(items);
+  //     });
 
+  //   const unsubscribePaymentHistory = firestore()
+  //     .collection('payments')
+  //     .where('patientId', '==', auth().currentUser?.uid)
+  //     .onSnapshot(querySnapshot => {
+  //       const items: Payment[] = [];
+  //       querySnapshot.forEach((doc: any) => {
+  //         const data = doc.data();
+  //         const timestamp = (data.timestamp as Timestamp).toDate();
+  //         items.push({
+  //           methodId: doc.id,
+  //           ...doc.data(),
+  //           timestamp: timestamp,
+  //         });
+  //       });
+  //       setPayment(items);
+  //     });
+
+  //   // Cleanup listener on unmount
+  //   return () => {
+  //     unsubscribePaymentMethods();
+  //     unsubscribePaymentHistory();
+  //   };
+  // }, []);
+  useEffect(() => {
     const unsubscribePaymentHistory = firestore()
       .collection('payments')
       .where('patientId', '==', auth().currentUser?.uid)
+      .orderBy('timestamp', 'desc')
       .onSnapshot(querySnapshot => {
-        const items: Payment[] = [];
-        querySnapshot.forEach((doc: any) => {
-          const data = doc.data();
-          const timestamp = (data.timestamp as Timestamp).toDate();
-          items.push({
-            methodId: doc.id,
-            ...doc.data(),
-            timestamp: timestamp,
+        if (querySnapshot) {
+          const items: Payment[] = [];
+          querySnapshot.forEach((doc: any) => {
+            const data = doc.data();
+            const timestamp = (data.timestamp as Timestamp).toDate();
+            items.push({
+              methodId: doc.id,
+              ...doc.data(),
+              timestamp: timestamp,
+            });
           });
-        });
-        setPayment(items);
+          setPayment(items);
+        }
       });
-
-    // Cleanup listener on unmount
-    return () => {
-      unsubscribePaymentMethods();
-      unsubscribePaymentHistory();
-    };
   }, []);
-
   return (
     <Container
-      style={{marginTop: -16, flex: 1, backgroundColor: '#fff'}}
+      style={{ marginTop: -16, flex: 1, backgroundColor: '#fff' }}
       isScroll>
-      <Section styles={{paddingTop: 16}}>
+      <Section styles={{ paddingTop: 16 }}>
         <Row justifyContent="flex-start">
           <TouchableOpacity
             onPress={() => {
@@ -72,7 +93,7 @@ const PaymentHistory = ({navigation}: any) => {
             }}>
             <ArrowLeft2 color="#000" />
           </TouchableOpacity>
-          <View style={{flex: 1, alignItems: 'center'}}>
+          <View style={{ flex: 1, alignItems: 'center' }}>
             <TextComponent
               text="Payment"
               size={20}
@@ -90,21 +111,21 @@ const PaymentHistory = ({navigation}: any) => {
         />
       </Section>
       <Space height={16} />
-      <Section styles={{marginTop: -30, paddingHorizontal: 0}}>
+      <Section styles={{ marginTop: -30, paddingHorizontal: 0 }}>
         <TextComponent
           text="HISTORY"
           font={fontFamilies.semiBold}
           size={14}
           color="gray"
-          styles={{paddingHorizontal: 16}}
+          styles={{ paddingHorizontal: 16 }}
         />
         <Space height={10} />
-        <Section styles={{paddingHorizontal: 0}}>
+        <Section styles={{ paddingHorizontal: 0 }}>
           {payment.map((item, index) => (
             <Card
               key={index}
-              onPress={() => {}}
-              styles={{flexDirection: 'row', borderRadius: 10}}
+              onPress={() => { }}
+              styles={{ flexDirection: 'row', borderRadius: 10 }}
               color="#f8f8f8">
               <Call color="#000" />
               <Space width={16} />

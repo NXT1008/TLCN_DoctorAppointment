@@ -248,7 +248,7 @@ const ProfileScreen = ({navigation, route}: any) => {
           text="My Health Indicator"
           image={require('../../../assets/IconTab/health_indicator.png')}
           onPress={() => {
-            navigation.navigate('ReportScreen');
+            navigation.navigate('ReportScreen', {patient});
           }}
         />
         <ProfileComponent

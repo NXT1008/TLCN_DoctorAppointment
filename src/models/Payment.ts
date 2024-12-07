@@ -10,6 +10,7 @@ export interface Payment {
   timestamp?: Date; // Thời gian thanh toán
 }
 export interface PaymentMethod {
+  timestamp: any;
   methodId: string; // ID của phương thức thanh toán
   patientId: string; // Tham chiếu đến ID của người dùng
   cardNumber: string; // Số thẻ tín dụng (có thể mã hóa)

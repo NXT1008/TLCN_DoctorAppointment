@@ -128,6 +128,7 @@ const NotificationScreen = ({navigation, route}: any) => {
                 };
               }),
             );
+            detailNotification.sort((a, b) => b.notification.sendAt.getTime() - a.notification.sendAt.getTime());
             setNotifications(detailNotification);
           } else {
             console.log('🚀 ~ useEffect ~ No have notification');

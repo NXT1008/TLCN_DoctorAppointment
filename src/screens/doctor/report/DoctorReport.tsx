@@ -1,6 +1,6 @@
 import firestore from '@react-native-firebase/firestore';
-import {ArrowLeft2} from 'iconsax-react-native';
-import React, {useEffect, useState} from 'react';
+import { ArrowLeft2 } from 'iconsax-react-native';
+import React, { useEffect, useState } from 'react';
 import {
   Image,
   ScrollView,
@@ -9,7 +9,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {Toast} from 'toastify-react-native';
+import { Toast } from 'toastify-react-native';
 import {
   Button,
   Card,
@@ -20,34 +20,19 @@ import {
   TextComponent,
 } from '../../../components';
 import Container from '../../../components/ContainerComponent';
-import {fontFamilies} from '../../../constants/fontFamilies';
-import {Appointment} from '../../../models/Appointment';
-import {Doctor} from '../../../models/Doctor';
-import {Patient} from '../../../models/Patient';
-import {DateTime} from '../../../utils/DateTime';
+import { fontFamilies } from '../../../constants/fontFamilies';
+import { Appointment } from '../../../models/Appointment';
+import { Doctor } from '../../../models/Doctor';
+import { Patient } from '../../../models/Patient';
+import { DateTime } from '../../../utils/DateTime';
 import DateTimePickerComponent from './components/DateTimePickerComponent';
 import ModalComponent from './components/ModalComponent';
 import ToastComponent from './components/ToastComponent';
-import {HandleNotification} from '../../../utils/handleNotification';
-import { slice } from 'lodash';
+import { HandleNotification } from '../../../utils/handleNotification';
 
-// Sample Patient Data
-const patientData = {
-  patientId: '123456',
-  name: 'Celeste Lim',
-  gender: 'Female',
-  dateOfBirth: new Date(),
-  age: '7y, 8mos',
-  address: 'St Rita Ward',
-  email: 'celeste.lim@example.com',
-  phone: '079 3988 576',
-  image: 'https://example.com/path-to-image.jpg',
-  allergies: 'N.A.',
-  medicalAlerts: 'N.A.',
-};
 
-const DoctorReportScreen = ({navigation, route}: any) => {
-  const {patient, doctor, appointment} = route.params;
+const DoctorReportScreen = ({ navigation, route }: any) => {
+  const { patient, doctor, appointment } = route.params;
   const patientInfo = patient;
   const doctorInfo = doctor as Doctor;
   const appointmentInfo = appointment as Appointment;
@@ -59,7 +44,6 @@ const DoctorReportScreen = ({navigation, route}: any) => {
 
   const [isModalVisible, setModalVisible] = useState(false);
 
-  useEffect(() => {}, []);
 
   const handleSubmit = () => {
     if (!admissionDetails || !planTreatment || !conditionAtDischarge) {
@@ -93,11 +77,10 @@ const DoctorReportScreen = ({navigation, route}: any) => {
       name: doctorInfo.name,
       receiverId: patientInfo.patientId,
       title: 'Health results are available',
-      body: `Your appointment with doctor ${
-        doctorInfo.name
-      } on ${DateTime.dateToDateString(
-        appointmentInfo.scheduleDate,
-      )} has been completed. Medical examination results have been sent. Please visit the application to see details`,
+      body: `Your appointment with doctor ${doctorInfo.name
+        } on ${DateTime.dateToDateString(
+          appointmentInfo.scheduleDate,
+        )} has been completed. Medical examination results have been sent. Please visit the application to see details`,
       appointmentId: appointmentInfo.appointmentId,
     };
 
@@ -106,13 +89,13 @@ const DoctorReportScreen = ({navigation, route}: any) => {
         .collection('health_reports')
         .add(newReportData);
       const reportId = reportRef.id;
-      await reportRef.update({reportId: reportId});
+      await reportRef.update({ reportId: reportId });
 
       // Update status appointment
       await firestore()
         .collection('appointments')
         .doc(appointmentInfo.appointmentId)
-        .update({status: 'Complete'});
+        .update({ status: 'Complete' });
 
       HandleNotification.sendNotificationDoctorToPatient(sendNotifications);
 
@@ -135,7 +118,7 @@ const DoctorReportScreen = ({navigation, route}: any) => {
         patientName={patientInfo.name}
       />
 
-      <Container isScroll style={{marginTop: -16}}>
+      <Container isScroll style={{ marginTop: -16 }}>
         <ScrollView
           contentContainerStyle={{
             paddingHorizontal: 16,
@@ -143,7 +126,7 @@ const DoctorReportScreen = ({navigation, route}: any) => {
             paddingTop: 20,
             backgroundColor: '#fff',
           }}>
-          <Section styles={{flexDirection: 'row', alignItems: 'center'}}>
+          <Section styles={{ flexDirection: 'row', alignItems: 'center' }}>
             <TouchableOpacity onPress={() => navigation.goBack()}>
               <ArrowLeft2 color="#000" />
             </TouchableOpacity>
@@ -154,7 +137,7 @@ const DoctorReportScreen = ({navigation, route}: any) => {
             <Image
               source={
                 patientInfo?.image && patientInfo?.image.includes('https')
-                  ? {uri: patientInfo.image}
+                  ? { uri: patientInfo.image }
                   : require('../../../assets/images/doctor.png')
               }
               style={styles.profileImage}
@@ -167,14 +150,14 @@ const DoctorReportScreen = ({navigation, route}: any) => {
           </View>
 
           {/* Patient Demographics Card */}
-          <Card styles={{marginHorizontal: 0}}>
+          <Card styles={{ marginHorizontal: 0 }}>
             <TextComponent
               font={fontFamilies.semiBold}
               size={16}
               color="#1c77ff"
               text="Patient Demographics"
               textAlign="center"
-              styles={{marginBottom: 10}}
+              styles={{ marginBottom: 10 }}
             />
 
             <View style={styles.cardRow}>
@@ -185,7 +168,7 @@ const DoctorReportScreen = ({navigation, route}: any) => {
               />
               <Text style={styles.cardValue}>{patientInfo.gender}</Text>
             </View>
-            <Divider styles={{marginTop: -10, marginBottom: -10}} />
+            <Divider styles={{ marginTop: -10, marginBottom: -10 }} />
 
             <View style={styles.cardRow}>
               <TextComponent
@@ -196,12 +179,12 @@ const DoctorReportScreen = ({navigation, route}: any) => {
               <Text style={styles.cardValue}>
                 {patientInfo?.dateOfBirth
                   ? DateTime.dateToDateString(
-                      new Date(patientInfo.dateOfBirth.seconds * 1000),
-                    )
+                    new Date(patientInfo.dateOfBirth.seconds * 1000),
+                  )
                   : DateTime.dateToDateString(new Date())}
               </Text>
             </View>
-            <Divider styles={{marginTop: -10, marginBottom: -10}} />
+            <Divider styles={{ marginTop: -10, marginBottom: -10 }} />
 
             <View style={styles.cardRow}>
               <TextComponent
@@ -212,13 +195,13 @@ const DoctorReportScreen = ({navigation, route}: any) => {
               <Text style={styles.cardValue}>
                 {patientInfo.dateOfBirth
                   ? new Date().getFullYear() -
-                    new Date(
-                      patientInfo.dateOfBirth.seconds * 1000,
-                    ).getFullYear()
+                  new Date(
+                    patientInfo.dateOfBirth.seconds * 1000,
+                  ).getFullYear()
                   : '18'}
               </Text>
             </View>
-            <Divider styles={{marginTop: -10, marginBottom: -10}} />
+            <Divider styles={{ marginTop: -10, marginBottom: -10 }} />
 
             <View
               style={{
@@ -231,7 +214,7 @@ const DoctorReportScreen = ({navigation, route}: any) => {
                 text="Address:"
                 font={fontFamilies.semiBold}
                 color="#333"
-                
+
               />
               <TextComponent
                 styles={{
@@ -240,11 +223,11 @@ const DoctorReportScreen = ({navigation, route}: any) => {
                 }}
                 textAlign='right'
                 text={
-                  patient.address ? patientInfo.address.toString().slice(0,25) : patientData.address
+                  patient.address ? patientInfo.address.toString().slice(0, 25) : ""
                 }
               />
             </View>
-            <Divider styles={{marginTop: -10, marginBottom: -10}} />
+            <Divider styles={{ marginTop: -10, marginBottom: -10 }} />
 
             <View style={styles.cardRow}>
               <TextComponent
@@ -255,7 +238,7 @@ const DoctorReportScreen = ({navigation, route}: any) => {
               <Text
                 style={styles.cardValue}>{`${patientInfo.bloodPressure}`}</Text>
             </View>
-            <Divider styles={{marginTop: -10, marginBottom: -10}} />
+            <Divider styles={{ marginTop: -10, marginBottom: -10 }} />
 
             <View style={styles.cardRow}>
               <TextComponent
@@ -266,7 +249,7 @@ const DoctorReportScreen = ({navigation, route}: any) => {
               <Text
                 style={styles.cardValue}>{`${patientInfo.heartRate} bpm`}</Text>
             </View>
-            <Divider styles={{marginTop: -10, marginBottom: -10}} />
+            <Divider styles={{ marginTop: -10, marginBottom: -10 }} />
 
             <View style={styles.cardRow}>
               <TextComponent
@@ -279,7 +262,7 @@ const DoctorReportScreen = ({navigation, route}: any) => {
                   styles.cardValue
                 }>{`${patientInfo.bloodSugar} mmol/l`}</Text>
             </View>
-            <Divider styles={{marginTop: -10, marginBottom: -10}} />
+            <Divider styles={{ marginTop: -10, marginBottom: -10 }} />
 
             <View style={styles.cardRow}>
               <TextComponent
@@ -289,18 +272,18 @@ const DoctorReportScreen = ({navigation, route}: any) => {
               />
               <Text style={styles.cardValue}>{`${patientInfo.BMI} Kg/m2`}</Text>
             </View>
-            <Divider styles={{marginTop: -10, marginBottom: -10}} />
+            <Divider styles={{ marginTop: -10, marginBottom: -10 }} />
           </Card>
 
           {/* Clinical Summary Section */}
-          <Card styles={{marginHorizontal: 0}}>
+          <Card styles={{ marginHorizontal: 0 }}>
             <TextComponent
               font={fontFamilies.semiBold}
               size={16}
               color="#1c77ff"
               text="Clinical Summary"
               textAlign="center"
-              styles={{marginBottom: 10}}
+              styles={{ marginBottom: 10 }}
             />
 
             <TextComponent
@@ -317,7 +300,7 @@ const DoctorReportScreen = ({navigation, route}: any) => {
               radius={10}
               placeholder="Enter history and assessment details..."
               placeholderColor="#bbb"
-              inputStyles={{fontFamily: fontFamilies.regular, fontSize: 13}}
+              inputStyles={{ fontFamily: fontFamilies.regular, fontSize: 13 }}
             />
 
             <Space height={10} />
@@ -336,19 +319,19 @@ const DoctorReportScreen = ({navigation, route}: any) => {
               radius={10}
               placeholder="Enter treatment plan details..."
               placeholderColor="#bbb"
-              inputStyles={{fontFamily: fontFamilies.regular, fontSize: 13}}
+              inputStyles={{ fontFamily: fontFamilies.regular, fontSize: 13 }}
             />
           </Card>
 
           {/* Discharge Details Section */}
-          <Card styles={{marginHorizontal: 0}}>
+          <Card styles={{ marginHorizontal: 0 }}>
             <TextComponent
               font={fontFamilies.semiBold}
               size={16}
               color="#1c77ff"
               text="Discharge Details"
               textAlign="center"
-              styles={{marginBottom: 10}}
+              styles={{ marginBottom: 10 }}
             />
 
             <DateTimePickerComponent
@@ -366,14 +349,14 @@ const DoctorReportScreen = ({navigation, route}: any) => {
               text="Condition at Discharge"
               font={fontFamilies.semiBold}
               color="#333"
-              styles={{marginBottom: 6}}
+              styles={{ marginBottom: 6 }}
             />
             <Input
               value={conditionAtDischarge}
               onChange={setConditionAtDischarge}
               placeholder="Enter condition at discharge..."
               radius={5}
-              inputStyles={{fontFamily: fontFamilies.regular, fontSize: 13}}
+              inputStyles={{ fontFamily: fontFamilies.regular, fontSize: 13 }}
             />
           </Card>
 
@@ -382,8 +365,8 @@ const DoctorReportScreen = ({navigation, route}: any) => {
             title="Submit"
             onPress={handleSubmit}
             color="#25b8cc"
-            textStyleProps={{fontFamily: fontFamilies.semiBold}}
-            styles={{width: '80%', alignItems: 'center', alignSelf: 'center'}}
+            textStyleProps={{ fontFamily: fontFamilies.semiBold }}
+            styles={{ width: '80%', alignItems: 'center', alignSelf: 'center' }}
             radius={10}
           />
         </ScrollView>
