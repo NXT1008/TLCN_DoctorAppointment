@@ -1,5 +1,5 @@
 import {View, TouchableOpacity} from 'react-native';
-import React, {useState} from 'react';
+import React, {} from 'react';
 import {
   ContainerComponent,
   Row,
@@ -8,32 +8,9 @@ import {
 } from '../../../../components';
 import {ArrowLeft2, ArrowRight2} from 'iconsax-react-native';
 import {fontFamilies} from '../../../../constants/fontFamilies';
-import i18n, {changeLanguage} from 'i18next';
-import ToggleSwitch from '../../../../components/ToggleSwitch';
 
 const SettingScreen = (props: any) => {
-  // States for toggles
-  const [isLanguageVietnamese, setIsLanguageVietnamese] = useState(false);
-  const [isDarkTheme, setIsDarkTheme] = useState(true);
-  const [isNotificationsEnabled, setIsNotificationsEnabled] = useState(true);
 
-  // Handle language change
-  const toggleLanguage = () => {
-    setIsLanguageVietnamese(previousState => !previousState);
-    const newLanguage = isLanguageVietnamese ? 'en' : 'vi';
-    i18n.changeLanguage(newLanguage);
-  };
-
-  // Handle theme change
-  const toggleTheme = () => {
-    setIsDarkTheme(isDarkTheme);
-  };
-
-  // Handle notifications
-  const toggleNotifications = () => {
-    setIsNotificationsEnabled(previousState => !previousState);
-    // You can implement logic to enable/disable notifications here
-  };
 
   return (
     <ContainerComponent>

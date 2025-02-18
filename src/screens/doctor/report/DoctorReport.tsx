@@ -82,7 +82,7 @@ const DoctorReportScreen = ({ navigation, route }: any) => {
 
 
   const handleSubmit = () => {
-    if (!admissionDetails || !planTreatment || !conditionAtDischarge) {
+    if (!selectedProblem) {
       // Toast.error('Please filling!', 'top',);
       Toast.error('Please fill in all information!');
       // Alert.alert('Lỗi')
@@ -99,9 +99,9 @@ const DoctorReportScreen = ({ navigation, route }: any) => {
     const newReportData = {
       patientId: patientInfo.patientId,
       histoty: admissionDetails,
-      planTreatment: planTreatment,
+      planTreatment: selectedDiagnosis,
       dateOfDischarge: dischargeDate,
-      conditon: conditionAtDischarge,
+      conditon: treatmentPlan,
       doctorId: doctorInfo.doctorId,
     };
 
